@@ -1,6 +1,6 @@
 {
   "currentPlayer": 0,
-  "currentMovesCount": 4,
+  "currentMovesLeft": 4,
   "curedDiseases": [],
   "playerPosition": {
     "0": 3,
@@ -11,16 +11,16 @@
   ],
   "playerCards": {
     "0": [
-      46,
-      3,
-      31,
-      45
+      37,
+      18,
+      14,
+      22
     ],
     "1": [
-      1,
-      16,
-      10,
-      7
+      28,
+      15,
+      13,
+      42
     ]
   },
   "playedPlayerCards": [],

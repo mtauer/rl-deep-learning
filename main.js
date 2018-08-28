@@ -1,3 +1,4 @@
-import { initialState } from './pandemic-light/PandemicLight';
+import { printState } from './pandemic-light/PandemicLight';
+import initialState from './pandemic-light/initialState.json';
 
-console.log(JSON.stringify(initialState, null, 2));
+console.log(printState(initialState));
