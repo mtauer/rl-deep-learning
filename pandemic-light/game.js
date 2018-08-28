@@ -12,6 +12,40 @@ export const players = getPlayers();
 export const diseases = ['Yellow', 'Red', 'Blue', 'Black'];
 export const initialState = prepareInitialState();
 
+export const PLAYERS = 'PLAYERS';
+export const BOARD = 'BOARD';
+
+export default {
+  toNNInput,
+  toKey,
+  getValidActions,
+  hasEnded,
+  getWinner,
+};
+
+export function getValidActions(state = initialState) {
+  console.log('getValidActions', state);
+  return [];
+}
+
+export function hasEnded(state = initialState) {
+  return Boolean(getWinner(state));
+}
+
+export function getWinner(state = initialState) {
+  const {
+    curedDiseases, insufficientPlayerCards,
+  } = state;
+  // TODO Change this back to length >= 4
+  if (curedDiseases.length >= 2) {
+    return PLAYERS;
+  }
+  if (insufficientPlayerCards) {
+    return BOARD;
+  }
+  return null;
+}
+
 export function printState(state) {
   const buffer = toBuffer(state);
   const currentP0 = `${state.currentPlayer === 0 ? 'X' : ' '} ${state.currentPlayer === 0 ? state.currentMovesLeft : ' '}`;
