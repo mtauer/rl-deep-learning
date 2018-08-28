@@ -4,6 +4,7 @@
   "description": "",
   "main": "main.js",
   "scripts": {
+    "start": "babel-node main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -17,11 +18,17 @@
   },
   "homepage": "https://github.com/mtauer/rl-deep-learning#readme",
   "devDependencies": {
+    "babel-cli": "^6.26.0",
     "babel-eslint": "^9.0.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-stage-0": "^6.24.1",
     "eslint": "^5.4.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-jsx-a11y": "^6.1.1",
     "eslint-plugin-react": "^7.11.1"
+  },
+  "dependencies": {
+    "lodash": "^4.17.10"
   }
 }
