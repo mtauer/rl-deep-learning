@@ -1,0 +1,28 @@
+{
+  "currentPlayer": 0,
+  "currentMovesCount": 4,
+  "curedDiseases": [],
+  "playerPosition": {
+    "0": 3,
+    "1": 3
+  },
+  "researchCenters": [
+    3
+  ],
+  "playerCards": {
+    "0": [
+      46,
+      3,
+      31,
+      45
+    ],
+    "1": [
+      1,
+      16,
+      10,
+      7
+    ]
+  },
+  "playedPlayerCards": [],
+  "insufficientPlayerCards": false
+}

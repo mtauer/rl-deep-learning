@@ -1,3 +1,3 @@
-import { locationsMap, players, initialState } from './pandemic-light/PandemicLight';
+import { initialState } from './pandemic-light/PandemicLight';
 
-console.log(locationsMap, players, initialState);
+console.log(JSON.stringify(initialState, null, 2));
