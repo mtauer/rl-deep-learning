@@ -1,7 +1,3 @@
-import game from './pandemic-light/game';
-import neuralNetwork from './pandemic-light/neuralNetwork';
-import initialState from './pandemic-light/initialState.json';
-import MonteCarloSearchTreeNN from './MonteCarloSearchTreeNN';
+import { train } from './coach';
 
-const mcst = new MonteCarloSearchTreeNN();
-mcst.getTrainingData(game, initialState, neuralNetwork);
+train();

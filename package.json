@@ -29,6 +29,7 @@
     "eslint-plugin-react": "^7.11.1"
   },
   "dependencies": {
-    "lodash": "^4.17.10"
+    "lodash": "^4.17.10",
+    "pngjs": "^3.3.3"
   }
 }

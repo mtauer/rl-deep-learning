@@ -42,7 +42,7 @@ export default {
   getWinner,
 };
 
-export function getValidActions(state = initialState) {
+function getValidActions(state = initialState) {
   const { currentPlayer, playerPosition, playerCards, researchCenters } = state;
   const actions = [];
 
@@ -167,7 +167,7 @@ export function getValidActions(state = initialState) {
   return flatten(actions);
 }
 
-export function performAction(state = initialState, action) {
+function performAction(state = initialState, action) {
   const { player } = action;
   const newState = cloneDeep(state);
   switch (action.type) {
@@ -256,7 +256,7 @@ export function performAction(state = initialState, action) {
   return newState;
 }
 
-export function getValue(state = initialState, timePenalty = 0) {
+function getValue(state = initialState, timePenalty = 0) {
   const winner = getWinner(state);
   switch (winner) {
     case PLAYERS: return 1;
@@ -265,17 +265,16 @@ export function getValue(state = initialState, timePenalty = 0) {
   }
 }
 
-export function hasEnded(state = initialState) {
+function hasEnded(state = initialState) {
   return Boolean(getWinner(state));
 }
 
-export function getWinner(state = initialState) {
+function getWinner(state = initialState) {
   const {
     curedDiseases, insufficientPlayerCards,
   } = state;
   // TODO Change this back to length >= 4
   if (curedDiseases.length >= 1) {
-    console.log('+++ GEWONNEN +++');
     return PLAYERS;
   }
   if (insufficientPlayerCards) {
@@ -300,7 +299,7 @@ export function printState(state) {
   /* eslint-enable no-console */
 }
 
-export function toNNInput(state) {
+function toNNInput(state) {
   const buffer = toBuffer(state);
   return concat(
     buffer.currentPlayer,
@@ -316,7 +315,7 @@ export function toNNInput(state) {
   );
 }
 
-export function toKey(state) {
+function toKey(state) {
   return [
     state.currentPlayer,
     state.currentMovesLeft,

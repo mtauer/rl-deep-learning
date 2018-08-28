@@ -3,10 +3,9 @@ import sum from 'lodash/sum';
 import range from 'lodash/range';
 import max from 'lodash/max';
 import sample from 'lodash/sample';
-import values from 'lodash/values';
-import mean from 'lodash/mean';
 
 const cPuct = 1;
+const temperature = 1;
 
 class MonteCarloSearchTreeNN {
   constructor() {
@@ -16,18 +15,27 @@ class MonteCarloSearchTreeNN {
     this.P_s = {}; // stores initial policy (returned by neural network)
   }
 
-  getTrainingData(game, state, neuralNetwork) {
-    range(100).forEach(() => {
-      range(5000).forEach(() => this.search(game, state, neuralNetwork));
-      console.log('Mean', mean(values(this.Q_sa)));
-    });
+  getActionProbabilities(game, state, neuralNetwork) {
+    range(200).forEach(() => this.search(game, state, neuralNetwork));
+
+    const s = game.toKey(state);
+    const nValues = range(200)
+      .map((i) => {
+        const sa = `${s}__${i}`;
+        return this.N_sa[sa] || 0;
+      })
+      .map(v => v ** (1 / temperature));
+    const nSum = sum(nValues);
+    return nValues.map(v => v / nSum);
   }
 
   search(game, state, neuralNetwork) {
     const s = game.toKey(state);
 
     if (game.hasEnded(state)) {
-      return game.getValue(state);
+      const value = game.getValue(state);
+      if (value === 1) { console.log(':))'); }
+      return value;
     }
 
     let validActions;
@@ -41,13 +49,13 @@ class MonteCarloSearchTreeNN {
       const sumP = sum(this.P_s[s]);
       if (sumP === 0) {
         // eslint-disable-next-line no-console
-        console.log('Warning: All valid moves were masked.');
+        // console.log('Warning: All valid moves were masked.');
         this.P_s[s] = validActions.map(() => 1.0 / validActions.length);
       } else {
         this.P_s[s] = this.P_s[s].map(x => x / sumP);
       }
 
-      if (Math.random() < 0.1) {
+      if (Math.random() < 0.99) {
         v = getRolloutValue(game, state);
       } else {
         v = neuralNetwork.predictV(state);
@@ -61,7 +69,7 @@ class MonteCarloSearchTreeNN {
     const ucbQValues = validActions.map((a, i) => {
       const sa = `${s}__${i}`;
       const q = this.Q_sa[sa] || 0.0;
-      const ucb = !this.N_s[s]
+      const ucb = !this.N_s[s] || !this.N_sa[sa]
         ? cPuct * this.P_s[s][i]
         : Math.sqrt(this.N_s[s]) / (1 + this.N_sa[sa]);
       return q + ucb;
