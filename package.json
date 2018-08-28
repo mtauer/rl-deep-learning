@@ -1,0 +1,19 @@
+{
+  "name": "rl-deep-learning",
+  "version": "0.0.1",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mtauer/rl-deep-learning.git"
+  },
+  "author": "Michael Tauer",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mtauer/rl-deep-learning/issues"
+  },
+  "homepage": "https://github.com/mtauer/rl-deep-learning#readme"
+}
