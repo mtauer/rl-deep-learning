@@ -1,10 +1,16 @@
 import fromPairs from 'lodash/fromPairs';
+import toPairs from 'lodash/toPairs';
 import range from 'lodash/range';
 import shuffle from 'lodash/shuffle';
 import slice from 'lodash/slice';
 import concat from 'lodash/concat';
 import includes from 'lodash/includes';
 import flatten from 'lodash/flatten';
+import cloneDeep from 'lodash/cloneDeep';
+import values from 'lodash/values';
+import take from 'lodash/take';
+import groupBy from 'lodash/groupBy';
+import difference from 'lodash/difference';
 
 import { locations, routes } from './constants';
 
@@ -18,6 +24,10 @@ export const DRIVE_FERRY = 'DRIVE_FERRY';
 export const DIRECT_FLIGHT = 'DIRECT_FLIGHT';
 export const CHARTER_FLIGHT = 'CHARTER_FLIGHT';
 export const SHUTTLE_FLIGHT = 'SHUTTLE_FLIGHT';
+export const BUILD_RESEARCH_CENTER = 'BUILD_RESEARCH_CENTER';
+export const DISCOVER_CURE = 'DISCOVER_CURE';
+export const SHARE_KNOWLEDGE = 'SHARE_KNOWLEDGE';
+export const DISCARD_CARD = 'DISCARD_CARD';
 
 export const PLAYERS = 'PLAYERS';
 export const BOARD = 'BOARD';
@@ -26,15 +36,31 @@ export default {
   toNNInput,
   toKey,
   getValidActions,
+  performAction,
+  getValue,
   hasEnded,
   getWinner,
 };
 
 export function getValidActions(state = initialState) {
   const { currentPlayer, playerPosition, playerCards, researchCenters } = state;
+  const actions = [];
+
+  // Immediate actions
+  toPairs(playerCards).forEach(([player, cards]) => {
+    if (cards.length > 7) {
+      actions.push(cards.map(card => ({
+        type: DISCARD_CARD,
+        player,
+        card,
+      })));
+    }
+  });
+  if (actions.length > 0) {
+    return flatten(actions);
+  }
 
   // DO_NOTHING
-  const actions = [];
   actions.push({
     type: DO_NOTHING,
     player: currentPlayer,
@@ -83,8 +109,160 @@ export function getValidActions(state = initialState) {
         })),
     );
   }
+  // BUILD_RESEARCH_CENTER
+  if (includes(cards, location.id)) {
+    actions.push({
+      type: BUILD_RESEARCH_CENTER,
+      player: currentPlayer,
+      at: location.id,
+      card: location.id,
+    });
+  }
+  // DISCOVER_CURE
+  const cardsByDisease = groupBy(cards, (c => locationsMap[c].disease));
+  if (includes(researchCenters, location.id)) {
+    actions.push(
+      toPairs(cardsByDisease)
+        .filter(pair => pair[1].length >= 5)
+        .map((pair) => {
+          const usedCards = take(pair[1], 5);
+          return {
+            type: DISCOVER_CURE,
+            player: currentPlayer,
+            disease: pair[0],
+            usedCards,
+          };
+        }),
+    );
+  }
+  // SHARE_KNOWLEDGE
+  const playersOnLocation = toPairs(playerPosition)
+    .filter(pair => pair[1] === location.id)
+    .map(pair => Number(pair[0]));
+  if (playersOnLocation.length > 1) {
+    const others = playersOnLocation.filter(id => id !== currentPlayer);
+    if (includes(cards, location.id)) {
+      actions.push(others.map(id => ({
+        type: SHARE_KNOWLEDGE,
+        player: currentPlayer,
+        card: location.id,
+        from: currentPlayer,
+        to: id,
+      })));
+    } else {
+      others.forEach((id) => {
+        if (includes(playerCards[id], location.id)) {
+          actions.push({
+            type: SHARE_KNOWLEDGE,
+            player: currentPlayer,
+            card: location.id,
+            from: id,
+            to: currentPlayer,
+          });
+        }
+      });
+    }
+  }
 
   return flatten(actions);
+}
+
+export function performAction(state = initialState, action) {
+  const { player } = action;
+  const newState = cloneDeep(state);
+  switch (action.type) {
+    case DO_NOTHING: {
+      newState.currentMovesLeft -= 1;
+      break;
+    }
+    case DRIVE_FERRY: {
+      const { to } = action;
+      newState.currentMovesLeft -= 1;
+      newState.playerPosition[player] = to;
+      break;
+    }
+    case DIRECT_FLIGHT: {
+      const { to, card } = action;
+      newState.currentMovesLeft -= 1;
+      newState.playerPosition[player] = to;
+      newState.playerCards[player] = newState.playerCards[player].filter(id => id !== card);
+      newState.playedPlayerCards.push(card);
+      break;
+    }
+    case CHARTER_FLIGHT: {
+      const { to, card } = action;
+      newState.currentMovesLeft -= 1;
+      newState.playerPosition[player] = to;
+      newState.playerCards[player] = newState.playerCards[player].filter(id => id !== card);
+      newState.playedPlayerCards.push(card);
+      break;
+    }
+    case SHUTTLE_FLIGHT: {
+      const { to } = action;
+      newState.currentMovesLeft -= 1;
+      newState.playerPosition[player] = to;
+      break;
+    }
+    case BUILD_RESEARCH_CENTER: {
+      const { at, card } = action;
+      newState.currentMovesCount -= 1;
+      newState.researchCenters = [...newState.researchCenters, at];
+      newState.playerCards[player] = newState.playerCards[player].filter(id => id !== card);
+      newState.playedPlayerCards.push(card);
+      break;
+    }
+    case DISCOVER_CURE: {
+      const { disease, usedCards } = action;
+      newState.currentMovesCount -= 1;
+      newState.curedDiseases.push(disease);
+      newState.playerCards[player] = difference(newState.playerCards[player], usedCards);
+      newState.playedPlayerCards.push(...usedCards);
+      break;
+    }
+    case SHARE_KNOWLEDGE: {
+      const { card, from, to } = action;
+      newState.currentMovesCount -= 1;
+      newState.playerCards[from] = newState.playerCards[from].filter(id => id !== card);
+      newState.playerCards[to] = [...newState.playerCards[to], card];
+      break;
+    }
+    case DISCARD_CARD: {
+      const { card } = action;
+      newState.playerCards[player] = newState.playerCards[player].filter(c => c !== card);
+      newState.playedPlayerCards.push(card);
+      break;
+    }
+    default:
+      break;
+  }
+  if (newState.currentMovesLeft === 0) {
+    // Draw 2 cards
+    const cardsOut = concat(...values(newState.playerCards), newState.playedPlayerCards);
+    const unplayedPlayerCards = locations.filter(l => !includes(cardsOut, l.id)).map(l => l.id);
+    if (unplayedPlayerCards.length <= 2) {
+      newState.insufficientPlayerCards = true;
+    } else {
+      const shuffledCards = shuffle(unplayedPlayerCards);
+      const newCards = take(shuffledCards, 2);
+      newState.playerCards[player] = [
+        ...newState.playerCards[player],
+        ...newCards.filter(id => id < 48),
+      ];
+    }
+    // End of turn
+    newState.currentPlayer = (newState.currentPlayer + 1) % players.length;
+    newState.currentMovesLeft = 4;
+  }
+  return newState;
+}
+
+export function getValue(state = initialState, timePenalty = 0) {
+  const winner = getWinner(state);
+  switch (winner) {
+    case PLAYERS: return 1;
+    case BOARD: return -1;
+    default: return timePenalty;
+  }
 }
 
 export function hasEnded(state = initialState) {
@@ -96,7 +274,8 @@ export function getWinner(state = initialState) {
     curedDiseases, insufficientPlayerCards,
   } = state;
   // TODO Change this back to length >= 4
-  if (curedDiseases.length >= 2) {
+  if (curedDiseases.length >= 1) {
+    console.log('+++ GEWONNEN +++');
     return PLAYERS;
   }
   if (insufficientPlayerCards) {
@@ -138,7 +317,18 @@ export function toNNInput(state) {
 }
 
 export function toKey(state) {
-  return toNNInput(state).map(b => (b === 1 ? 'X' : '_')).join('');
+  return [
+    state.currentPlayer,
+    state.currentMovesLeft,
+    state.playerPosition[0],
+    state.playerCards[0].sort().join(','),
+    state.playerPosition[1],
+    state.playerCards[1].sort().join(','),
+    state.researchCenters.sort().join(','),
+    state.playedPlayerCards.sort().join(','),
+    state.curedDiseases.sort().join(','),
+    state.insufficientPlayerCards ? 'X' : '_',
+  ].join('|');
 }
 
 function toBuffer(state) {
