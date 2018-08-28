@@ -4,6 +4,7 @@ import shuffle from 'lodash/shuffle';
 import slice from 'lodash/slice';
 import concat from 'lodash/concat';
 import includes from 'lodash/includes';
+import flatten from 'lodash/flatten';
 
 import { locations, routes } from './constants';
 
@@ -11,6 +12,12 @@ export const locationsMap = getLocationsMap();
 export const players = getPlayers();
 export const diseases = ['Yellow', 'Red', 'Blue', 'Black'];
 export const initialState = prepareInitialState();
+
+export const DO_NOTHING = 'DO_NOTHING';
+export const DRIVE_FERRY = 'DRIVE_FERRY';
+export const DIRECT_FLIGHT = 'DIRECT_FLIGHT';
+export const CHARTER_FLIGHT = 'CHARTER_FLIGHT';
+export const SHUTTLE_FLIGHT = 'SHUTTLE_FLIGHT';
 
 export const PLAYERS = 'PLAYERS';
 export const BOARD = 'BOARD';
@@ -24,8 +31,60 @@ export default {
 };
 
 export function getValidActions(state = initialState) {
-  console.log('getValidActions', state);
-  return [];
+  const { currentPlayer, playerPosition, playerCards, researchCenters } = state;
+
+  // DO_NOTHING
+  const actions = [];
+  actions.push({
+    type: DO_NOTHING,
+    player: currentPlayer,
+  });
+  const location = locationsMap[playerPosition[currentPlayer]];
+  const cards = playerCards[currentPlayer];
+  // DRIVE_FERRY
+  actions.push(location.connectedLocations.map(id => ({
+    type: DRIVE_FERRY,
+    player: currentPlayer,
+    from: location.id,
+    to: id,
+  })));
+  // DIRECT_FLIGHT
+  actions.push(cards.map(id => ({
+    type: DIRECT_FLIGHT,
+    player: currentPlayer,
+    from: location.id,
+    to: id,
+    card: id,
+  })));
+  // CHARTER_FLIGHT
+  if (includes(cards, location.id)) {
+    actions.push(
+      locations
+        .filter(l => l.id !== location.id)
+        .map(l => ({
+          type: CHARTER_FLIGHT,
+          player: currentPlayer,
+          from: location.id,
+          to: l.id,
+          card: location.id,
+        })),
+    );
+  }
+  // SHUTTLE_FLIGHT
+  if (researchCenters.length > 1 && includes(researchCenters, location.id)) {
+    actions.push(
+      researchCenters
+        .filter(rc => rc !== location.id)
+        .map(rc => ({
+          type: SHUTTLE_FLIGHT,
+          player: currentPlayer,
+          from: location.id,
+          to: rc,
+        })),
+    );
+  }
+
+  return flatten(actions);
 }
 
 export function hasEnded(state = initialState) {
