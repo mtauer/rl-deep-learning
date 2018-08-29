@@ -29,7 +29,10 @@
     "eslint-plugin-react": "^7.11.1"
   },
   "dependencies": {
+    "@tensorflow/tfjs": "^0.12.6",
+    "@tensorflow/tfjs-node": "^0.1.14",
     "lodash": "^4.17.10",
-    "pngjs": "^3.3.3"
+    "pngjs": "^3.3.3",
+    "progress": "^1.1.8"
   }
 }

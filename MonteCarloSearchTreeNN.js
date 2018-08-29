@@ -55,7 +55,7 @@ class MonteCarloSearchTreeNN {
         this.P_s[s] = this.P_s[s].map(x => x / sumP);
       }
 
-      if (Math.random() < 0.99) {
+      if (Math.random() < 0.5) {
         v = getRolloutValue(game, state);
       } else {
         v = neuralNetwork.predictV(state);
