@@ -43,7 +43,7 @@ class MonteCarloSearchTreeNN {
 
     if (!this.P_s[s]) {
       // This is a leaf node
-      this.P_s[s] = neuralNetwork.predictP(state);
+      this.P_s[s] = neuralNetwork.predictP(game.toNNInput(state));
       validActions = game.getValidActions(state);
       this.P_s[s] = slice(this.P_s[s], 0, validActions.length);
       const sumP = sum(this.P_s[s]);
@@ -55,10 +55,10 @@ class MonteCarloSearchTreeNN {
         this.P_s[s] = this.P_s[s].map(x => x / sumP);
       }
 
-      if (Math.random() < 0.5) {
+      if (Math.random() < 0.0) {
         v = getRolloutValue(game, state);
       } else {
-        v = neuralNetwork.predictV(state);
+        v = neuralNetwork.predictV(game.toNNInput(state));
       }
 
       return v;

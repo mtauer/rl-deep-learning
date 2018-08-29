@@ -38,7 +38,7 @@ export async function train() {
     console.log(`=== Iteration ${i} ===`);
     console.log();
     iterationTrainingExamples = [];
-    for (let j = 0; j < 20; j += 1) {
+    for (let j = 0; j < 10; j += 1) {
       console.log('Episode', j, '| training examples', iterationTrainingExamples.length);
       mcst = new MonteCarloSearchTreeNN();
       const trainingExamples = executeEpisode(mcst, neuralNetwork);

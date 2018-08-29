@@ -13,7 +13,7 @@ async function run() {
       tf.layers.flatten({ inputShape: [28, 28, 1] }),
       tf.layers.dense({ units: 512, activation: 'relu' }),
       tf.layers.dropout({ rate: 0.2 }),
-      tf.layers.dense({ units: 10, activation: 'softmax' })
+      tf.layers.dense({ units: 10, activation: 'softmax' }),
     ],
   });
   model.compile({

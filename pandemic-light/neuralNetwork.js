@@ -1,6 +1,7 @@
 import * as tf from '@tensorflow/tfjs';
 import '@tensorflow/tfjs-node';
-import range from 'lodash/range';
+
+import packageJson from '../package.json';
 
 export default class PandemicNeuronalNetwork {
   constructor() {
@@ -31,14 +32,14 @@ export default class PandemicNeuronalNetwork {
     });
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  predictP() {
-    return range(200).map(() => Math.random());
+  predictP(s) {
+    const p = this.pModel.predict(tf.tensor2d([s]));
+    return p.dataSync()[0];
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  predictV() {
-    return (Math.random() * 2.0) - 1.0;
+  predictV(s) {
+    const v = this.vModel.predict(tf.tensor2d([s]));
+    return v.dataSync()[0];
   }
 
   async train(trainingExamples) {
@@ -53,13 +54,15 @@ export default class PandemicNeuronalNetwork {
         },
       },
     });
+    await this.pModel.save(`file://pandemic-light/nn-models/pModel-${packageJson.version}-rules-0`);
     await this.vModel.fit(trainingStates, trainingV, {
-      epochs: 20,
+      epochs: 50,
       callbacks: {
         onEpochEnd: (epoch, logs) => {
           console.log('vModel onEpochEnd', epoch + 1, logs);
         },
       },
     });
+    await this.pModel.save(`file://pandemic-light/nn-models/vModel-${packageJson.version}-rules-0`);
   }
 }

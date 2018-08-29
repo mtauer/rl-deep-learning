@@ -120,21 +120,21 @@ function getValidActions(state = initialState) {
   }
   // DISCOVER_CURE
   const cardsByDisease = groupBy(cards, (c => locationsMap[c].disease));
-  if (includes(researchCenters, location.id)) {
-    actions.push(
-      toPairs(cardsByDisease)
-        .filter(pair => pair[1].length >= 5)
-        .map((pair) => {
-          const usedCards = take(pair[1], 5);
-          return {
-            type: DISCOVER_CURE,
-            player: currentPlayer,
-            disease: pair[0],
-            usedCards,
-          };
-        }),
-    );
-  }
+  // if (includes(researchCenters, location.id)) {
+  actions.push(
+    toPairs(cardsByDisease)
+      .filter(pair => pair[1].length >= 5)
+      .map((pair) => {
+        const usedCards = take(pair[1], 5);
+        return {
+          type: DISCOVER_CURE,
+          player: currentPlayer,
+          disease: pair[0],
+          usedCards,
+        };
+      }),
+  );
+  // }
   // SHARE_KNOWLEDGE
   const playersOnLocation = toPairs(playerPosition)
     .filter(pair => pair[1] === location.id)
