@@ -31,6 +31,7 @@ export function executeEpisode(mcst, neuralNetwork) {
 
 export async function train() {
   const neuralNetwork = new PandemicNeuronalNetwork();
+  await neuralNetwork.init();
   let mcst;
   let iterationTrainingExamples;
   for (let i = 0; i < 5; i += 1) {
@@ -38,7 +39,7 @@ export async function train() {
     console.log(`=== Iteration ${i} ===`);
     console.log();
     iterationTrainingExamples = [];
-    for (let j = 0; j < 10; j += 1) {
+    for (let j = 0; j < 20; j += 1) {
       console.log('Episode', j, '| training examples', iterationTrainingExamples.length);
       mcst = new MonteCarloSearchTreeNN();
       const trainingExamples = executeEpisode(mcst, neuralNetwork);
