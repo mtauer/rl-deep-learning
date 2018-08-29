@@ -169,7 +169,7 @@ function getValidActions(state = initialState) {
 
 function performAction(state = initialState, action) {
   const { player } = action;
-  const newState = cloneDeep(state);
+  const newState = cloneState(state);
   switch (action.type) {
     case DO_NOTHING: {
       newState.currentMovesLeft -= 1;
@@ -362,6 +362,10 @@ function getLocationsMap() {
 
 function getPlayers() {
   return range(2).map(i => ({ id: i }));
+}
+
+function cloneState(state) {
+  return cloneDeep(state);
 }
 
 function prepareInitialState() {

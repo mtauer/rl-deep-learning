@@ -16,7 +16,7 @@ class MonteCarloSearchTreeNN {
   }
 
   getActionProbabilities(game, state, neuralNetwork) {
-    range(400).forEach(() => this.search(game, state, neuralNetwork));
+    range(800).forEach(() => this.search(game, state, neuralNetwork));
 
     const s = game.toKey(state);
     const nValues = range(200)
@@ -33,9 +33,7 @@ class MonteCarloSearchTreeNN {
     const s = game.toKey(state);
 
     if (game.hasEnded(state)) {
-      const value = game.getValue(state);
-      if (value === 1) { console.log(':))'); }
-      return value;
+      return game.getValue(state);
     }
 
     let validActions;

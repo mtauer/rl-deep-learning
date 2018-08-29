@@ -8,11 +8,11 @@ export default class PandemicNeuronalNetwork {
     try {
       const pModelPath = `file://pandemic-light/nn-models/pModel-${packageJson.version}-rules-0/model.json`;
       // eslint-disable-next-line no-console
-      console.log(`Loading p model from path "${pModelPath}"`);
+      console.log(`-> Loading p model from path "${pModelPath}"`);
       this.pModel = await tf.loadModel(pModelPath);
     } catch (e) {
       // eslint-disable-next-line no-console
-      console.log('-> Could not load model. It will be created from scratch.');
+      console.error('Could not load model. It will be created from scratch.');
       this.pModel = tf.sequential({
         layers: [
           tf.layers.dense({ units: 512, inputShape: [299], activation: 'relu' }),
@@ -29,11 +29,11 @@ export default class PandemicNeuronalNetwork {
     try {
       const vModelPath = `file://pandemic-light/nn-models/vModel-${packageJson.version}-rules-0/model.json`;
       // eslint-disable-next-line no-console
-      console.log(`Loading v model from path "${vModelPath}"`);
+      console.log(`-> Loading v model from path "${vModelPath}"`);
       this.vModel = await tf.loadModel(vModelPath);
     } catch (e) {
       // eslint-disable-next-line no-console
-      console.log('-> Could not load model. It will be created from scratch.');
+      console.error('Could not load model. It will be created from scratch.');
       this.vModel = tf.sequential({
         layers: [
           tf.layers.dense({ units: 512, inputShape: [299], activation: 'relu' }),
@@ -64,7 +64,7 @@ export default class PandemicNeuronalNetwork {
     const trainingP = tf.tensor2d(trainingExamples.map(e => e[1]), undefined, 'float32');
     const trainingV = tf.tensor2d(trainingExamples.map(e => [e[3]]), undefined, 'float32');
     await this.pModel.fit(trainingStates, trainingP, {
-      epochs: 50,
+      epochs: 40,
       callbacks: {
         onEpochEnd: (epoch, logs) => {
           console.log('pModel onEpochEnd', epoch + 1, logs);
@@ -73,7 +73,7 @@ export default class PandemicNeuronalNetwork {
     });
     await this.pModel.save(`file://pandemic-light/nn-models/pModel-${packageJson.version}-rules-0`);
     await this.vModel.fit(trainingStates, trainingV, {
-      epochs: 50,
+      epochs: 40,
       callbacks: {
         onEpochEnd: (epoch, logs) => {
           console.log('vModel onEpochEnd', epoch + 1, logs);
