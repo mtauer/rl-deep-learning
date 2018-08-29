@@ -71,7 +71,7 @@ class MonteCarloSearchTreeNN {
       const q = this.Q_sa[sa] || 0.0;
       const ucb = !this.N_s[s] || !this.N_sa[sa]
         ? cPuct * this.P_s[s][i]
-        : Math.sqrt(this.N_s[s]) / (1 + this.N_sa[sa]);
+        : cPuct * this.P_s[s][i] * Math.sqrt(this.N_s[s]) / (1 + this.N_sa[sa]);
       return q + ucb;
     });
 
