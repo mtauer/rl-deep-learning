@@ -1,13 +1,14 @@
 import Coach from './coach';
 
 const coach = new Coach({
-  iterations: 5,
-  episodes: 20,
+  iterations: 1,
+  episodes: 10,
   mcts: {
-    simulations: 800,
-    cPuct: 1,
+    simulations: 4000,
+    cPuct: 1.0,
+    cUcb1: 1.4,
     temperature: 1,
-    rolloutThreshold: 0.25,
+    rolloutThreshold: 0.5,
   },
   neuralNetwork: {
     modelPath: 'pandemic-light/nn-models/',
@@ -27,13 +28,14 @@ coach.train();
 //   episodes: 2000,
 //   mcts: {
 //     simulations: 10,
-//     cPuct: 0,
+//     cPuct: 1.0,
+//     cUcb1: 1.4,
 //     temperature: 1,
 //     rolloutThreshold: 0.5,
 //   },
 //   neuralNetwork: {
 //     modelPath: 'pandemic-light/nn-models/',
-//     trainingEpochs: 40,
+//     trainingEpochs: 30,
 //   },
 // };
 //
@@ -43,13 +45,13 @@ coach.train();
 //   await nn.init();
 //
 //   const mcts = new MonteCarloTreeSearchNN(config.mcts);
-//   for (let i = 0; i < 800; i += 1) {
+//   for (let i = 0; i < 4000; i += 1) {
 //     mcts.search(game, state, nn);
 //   }
 //   console.log('getPsValues', mcts.getPsValues(game, state));
 //   console.log('getQsaValues', mcts.getQsaValues(game, state));
 //   console.log('getNsaValues', mcts.getNsaValues(game, state));
-//   console.log('getUcbQValues', mcts.getUcbQValues(game, state));
+//   console.log('getUcbSumValues', mcts.getUcbSumValues(game, state));
 //   console.log('getValidActions', game.getValidActions(state));
 // }
 //

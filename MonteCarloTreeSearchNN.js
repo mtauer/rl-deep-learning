@@ -8,6 +8,7 @@ import sample from 'lodash/sample';
 const defaultConfig = {
   simulations: 400,
   cPuct: 1,
+  cUcb1: Math.sqrt(2),
   temperature: 1,
   rolloutThreshold: 0,
 };
@@ -19,6 +20,7 @@ class MonteCarloTreeSearchNN {
     this.N_sa = {}; // stores #times edge s,a was visited
     this.N_s = {}; // stores #times state s was visited
     this.P_s = {}; // stores initial policy (returned by neural network)
+    this.N = 0;
   }
 
   getActionProbabilities(game, state, neuralNetwork) {
@@ -71,17 +73,9 @@ class MonteCarloTreeSearchNN {
 
     validActions = game.getValidActions(state).map((a, index) => ({ ...a, index }));
     // Upper confidence bound
-    const ucbQValues = validActions.map((a, i) => {
-      const sa = `${s}__${i}`;
-      const q = this.Q_sa[sa] || 0.0;
-      const ucb = !this.N_s[s] || !this.N_sa[sa]
-        ? this.config.cPuct * this.P_s[s][i]
-        : this.config.cPuct * this.P_s[s][i] * Math.sqrt(this.N_s[s]) / (1 + this.N_sa[sa]);
-      return q + ucb;
-    });
-
-    const maxUcbQ = max(ucbQValues);
-    const nextAction = sample(validActions.filter((a, i) => ucbQValues[i] === maxUcbQ));
+    const ucbSumValues = this.getUcbSumValues(game, state);
+    const maxUcbSum = max(ucbSumValues);
+    const nextAction = sample(validActions.filter((a, i) => ucbSumValues[i] === maxUcbSum));
     const nextState = game.performAction(state, nextAction);
     v = this.search(game, nextState, neuralNetwork);
 
@@ -89,12 +83,27 @@ class MonteCarloTreeSearchNN {
     if (!this.Q_sa[sa]) {
       this.Q_sa[sa] = v;
       this.N_sa[sa] = 1;
+      this.N += 1;
     } else {
       this.Q_sa[sa] = (this.N_sa[sa] * this.Q_sa[sa] + v) / (this.N_sa[sa] + 1);
       this.N_sa[sa] += 1;
+      this.N += 1;
     }
 
     this.N_s[s] = this.N_s[s] ? this.N_s[s] + 1 : 1;
+    return v;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  getPredictedPValues(game, state, neuralNetwork) {
+    const p = neuralNetwork.predictP(game.toNNInput(state));
+    const validActions = game.getValidActions(state);
+    return slice(p, 0, validActions.length);
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  getPredictedVValues(game, state, neuralNetwork) {
+    const v = neuralNetwork.predictV(game.toNNInput(state));
     return v;
   }
 
@@ -125,16 +134,19 @@ class MonteCarloTreeSearchNN {
     });
   }
 
-  getUcbQValues(game, state) {
+  getUcbSumValues(game, state) {
     const s = game.toKey(state);
     const validActions = game.getValidActions(state).map((a, index) => ({ ...a, index }));
     return validActions.map((a, i) => {
       const sa = `${s}__${i}`;
       const q = this.Q_sa[sa] || 0.0;
-      const ucb = !this.N_s[s] || !this.N_sa[sa]
+      const ucb1 = !this.N_sa[sa]
+        ? q + this.config.cUcb1 * 2
+        : q + this.config.cUcb1 * Math.sqrt(Math.log(this.N) / this.N_sa[sa]);
+      const puct = !this.N_s[s] || !this.N_sa[sa]
         ? this.config.cPuct * this.P_s[s][i]
         : this.config.cPuct * this.P_s[s][i] * Math.sqrt(this.N_s[s]) / (1 + this.N_sa[sa]);
-      return q + ucb;
+      return ucb1 + puct;
     });
   }
 }
