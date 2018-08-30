@@ -3,12 +3,46 @@ import { PNG } from 'pngjs';
 import slice from 'lodash/slice';
 import groupBy from 'lodash/groupBy';
 import toPairs from 'lodash/toPairs';
+import reduce from 'lodash/reduce';
+import transform from 'lodash/transform';
+import keys from 'lodash/keys';
+import sum from 'lodash/sum';
+import sortBy from 'lodash/sortBy';
 
-export function printStatistics(trainingExamples) {
+export function getEpisodeStats(trainingExamples) {
   const actionGroups = groupBy(trainingExamples, e => e[2].type);
-  const actionStats = toPairs(actionGroups).map(pair => [pair[0], pair[1].length]);
-  actionStats.forEach((s) => {
-    console.log('  ', s[0], (s[1] / trainingExamples.length * 100).toFixed(2));
+  const actionCounts = transform(actionGroups, (acc, actions, actionType) => {
+    acc[actionType] = actions.length;
+  }, {});
+  return {
+    won: trainingExamples[0][3] === 1,
+    actionCounts,
+  };
+}
+
+export function getIterationStats(episodesStats) {
+  const episodesWon = episodesStats.filter(stats => stats.won).length;
+  const episodesLost = episodesStats.filter(stats => !stats.won).length;
+  const actionCounts = episodesStats.map(stats => stats.actionCounts);
+  const actionCountsSum = reduce(actionCounts, (acc, counts) => {
+    keys(counts).forEach((actionType) => {
+      acc[actionType] = (acc[actionType] || 0) + counts[actionType];
+    });
+    return acc;
+  }, {});
+  return {
+    episodesWon,
+    episodesLost,
+    actionCounts: actionCountsSum,
+  };
+}
+
+export function printIterationStats(iterationStats) {
+  console.log('Won/lost', iterationStats.episodesWon, iterationStats.episodesLost);
+  const actionPairs = sortBy(toPairs(iterationStats.actionCounts), pair => -pair[1]);
+  const actionsCount = sum(actionPairs.map(pair => pair[1]));
+  actionPairs.forEach((pair) => {
+    console.log('  ', pair[0], (pair[1] / actionsCount * 100).toFixed(2));
   });
 }
 

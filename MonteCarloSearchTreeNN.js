@@ -97,6 +97,46 @@ class MonteCarloSearchTreeNN {
     this.N_s[s] = this.N_s[s] ? this.N_s[s] + 1 : 1;
     return v;
   }
+
+  getPsValues(game, state) {
+    const s = game.toKey(state);
+    const validActions = game.getValidActions(state).map((a, index) => ({ ...a, index }));
+    // Upper confidence bound
+    return validActions.map((a, i) => this.P_s[s][i] || 0.0);
+  }
+
+  getQsaValues(game, state) {
+    const s = game.toKey(state);
+    const validActions = game.getValidActions(state).map((a, index) => ({ ...a, index }));
+    // Upper confidence bound
+    return validActions.map((a, i) => {
+      const sa = `${s}__${i}`;
+      return this.Q_sa[sa] || 0.0;
+    });
+  }
+
+  getNsaValues(game, state) {
+    const s = game.toKey(state);
+    const validActions = game.getValidActions(state).map((a, index) => ({ ...a, index }));
+    // Upper confidence bound
+    return validActions.map((a, i) => {
+      const sa = `${s}__${i}`;
+      return this.N_sa[sa] || 0.0;
+    });
+  }
+
+  getUcbQValues(game, state) {
+    const s = game.toKey(state);
+    const validActions = game.getValidActions(state).map((a, index) => ({ ...a, index }));
+    return validActions.map((a, i) => {
+      const sa = `${s}__${i}`;
+      const q = this.Q_sa[sa] || 0.0;
+      const ucb = !this.N_s[s] || !this.N_sa[sa]
+        ? this.config.cPuct * this.P_s[s][i]
+        : this.config.cPuct * this.P_s[s][i] * Math.sqrt(this.N_s[s]) / (1 + this.N_sa[sa]);
+      return q + ucb;
+    });
+  }
 }
 
 function getRolloutValue(game, state) {
