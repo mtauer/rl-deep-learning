@@ -32,6 +32,11 @@ export const DISCARD_CARD = 'DISCARD_CARD';
 export const PLAYERS = 'PLAYERS';
 export const BOARD = 'BOARD';
 
+export const DISEASE_BLUE = 'Blue';
+export const DISEASE_YELLOW = 'Yellow';
+export const DISEASE_BLACK = 'Black';
+export const DISEASE_RED = 'Red';
+
 export default {
   toNNInput,
   toKey,

@@ -36,6 +36,7 @@ export default class PandemicNeuronalNetwork {
       loss: 'categoricalCrossentropy',
       metrics: ['accuracy'],
     });
+    this.pModel.summary();
     try {
       const vModelPath = `file://${this.config.modelPath}vModel-${packageJson.version}-rules-0/model.json`;
       // eslint-disable-next-line no-console
@@ -57,6 +58,7 @@ export default class PandemicNeuronalNetwork {
       loss: 'meanSquaredError',
       metrics: ['accuracy'],
     });
+    this.vModel.summary();
   }
 
   predictP(s) {

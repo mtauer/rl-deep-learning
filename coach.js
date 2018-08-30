@@ -3,9 +3,9 @@ import concat from 'lodash/concat';
 import shuffle from 'lodash/shuffle';
 import ProgressBar from 'progress';
 
-import game from './pandemic-light/game';
+import game from './pandemic-web/src/pandemic-shared/game';
 import PandemicNeuronalNetwork from './pandemic-light/neuralNetwork';
-import initialState from './pandemic-light/initialState.json';
+import initialState from './pandemic-web/src/pandemic-shared/initialState.json';
 import MonteCarloTreeSearchNN from './MonteCarloTreeSearchNN';
 import { getEpisodeStats, getIterationStats, printIterationStats, saveTrainingExamplesAsImage } from './pandemic-light/stats';
 

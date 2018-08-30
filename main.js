@@ -18,9 +18,9 @@ const coach = new Coach({
 coach.train();
 
 // import MonteCarloTreeSearchNN from './MonteCarloTreeSearchNN';
-// import initialState from './pandemic-light/initialState.json';
+// import initialState from './pandemic-web/src/pandemic-shared/initialState.json';
 // import PandemicNeuronalNetwork from './pandemic-light/neuralNetwork';
-// import game from './pandemic-light/game';
+// import game from './pandemic-web/src/pandemic-shared/game';
 //
 // const config = {
 //   iterations: 5,
