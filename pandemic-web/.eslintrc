@@ -1,0 +1,26 @@
+{
+  "extends": "airbnb",
+  "parser": "babel-eslint",
+  "rules": {
+    "no-use-before-define": 0,
+    "object-curly-newline": [0, { "ImportDeclaration": "never" }],
+    "react/jsx-filename-extension": 0,
+    "react/jsx-one-expression-per-line": 0
+  },
+  "env": {
+    "browser": true,
+    "commonjs": true,
+    "es6": true,
+    "jest": true,
+    "node": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true,
+      "generators": true,
+      "experimentalObjectRestSpread": true
+    }
+  }
+}

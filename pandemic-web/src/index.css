@@ -1,0 +1,25 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #f7f7f9;
+  color: #1b1e23;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 16px;
+  margin: 0;
+  padding: 0;
+}
+
+strong {
+  color: #000000;
+}
+
+a[href] {
+  color: #3182bd;
+  text-decoration: none;
+}
+
+a[href]:hover {
+  text-decoration: underline;
+}
