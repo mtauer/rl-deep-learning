@@ -61,7 +61,7 @@ export default class PandemicNeuronalNetwork {
 
   predictP(s) {
     const p = this.pModel.predict(tf.tensor2d([s]));
-    return p.dataSync()[0];
+    return p.dataSync();
   }
 
   predictV(s) {
