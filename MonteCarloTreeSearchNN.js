@@ -12,7 +12,7 @@ const defaultConfig = {
   rolloutThreshold: 0,
 };
 
-class MonteCarloSearchTreeNN {
+class MonteCarloTreeSearchNN {
   constructor(config = {}) {
     this.config = defaultsDeep(config, defaultConfig);
     this.Q_sa = {}; // stores Q values for s,a
@@ -146,4 +146,4 @@ function getRolloutValue(game, state) {
   return getRolloutValue(game, nextState);
 }
 
-export default MonteCarloSearchTreeNN;
+export default MonteCarloTreeSearchNN;

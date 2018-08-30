@@ -6,13 +6,13 @@ import ProgressBar from 'progress';
 import game from './pandemic-light/game';
 import PandemicNeuronalNetwork from './pandemic-light/neuralNetwork';
 import initialState from './pandemic-light/initialState.json';
-import MonteCarloSearchTreeNN from './MonteCarloSearchTreeNN';
+import MonteCarloTreeSearchNN from './MonteCarloTreeSearchNN';
 import { getEpisodeStats, getIterationStats, printIterationStats, saveTrainingExamplesAsImage } from './pandemic-light/stats';
 
 const defaultConfig = {
   iterations: 5,
   episodes: 20,
-  mcst: {
+  mcts: {
     simulations: 400,
     cPuct: 1,
     temperature: 1,
@@ -32,7 +32,7 @@ export default class Coach {
   async train() {
     this.neuralNetwork = new PandemicNeuronalNetwork(this.config.neuralNetwork);
     await this.neuralNetwork.init();
-    let mcst;
+    let mcts;
     let iterationTrainingExamples;
     for (let i = 0; i < this.config.iterations; i += 1) {
       const episodeStats = [];
@@ -42,8 +42,8 @@ export default class Coach {
       iterationTrainingExamples = [];
       for (let j = 0; j < this.config.episodes; j += 1) {
         console.log('Episode', j, '| training examples', iterationTrainingExamples.length);
-        mcst = new MonteCarloSearchTreeNN(this.config.mcst);
-        const trainingExamples = this.executeEpisode(mcst, this.neuralNetwork);
+        mcts = new MonteCarloTreeSearchNN(this.config.mcts);
+        const trainingExamples = this.executeEpisode(mcts, this.neuralNetwork);
         episodeStats.push(getEpisodeStats(trainingExamples));
         saveTrainingExamplesAsImage(trainingExamples, './pandemic-light/log/', i, j);
         iterationTrainingExamples = concat(
@@ -58,13 +58,13 @@ export default class Coach {
     }
   }
 
-  executeEpisode(mcst) {
+  executeEpisode(mcts) {
     let state = initialState;
     const trainingExamples = [];
     const bar = new ProgressBar('[:bar] :etas', { total: 80, head: '>', incomplete: ' ' });
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      const pi = mcst.getActionProbabilities(game, state, this.neuralNetwork);
+      const pi = mcts.getActionProbabilities(game, state, this.neuralNetwork);
       const trainingExample = [game.toNNInput(state), pi];
       const actionIndex = randomChoice(pi);
       const nextAction = game.getValidActions(state)[actionIndex];
