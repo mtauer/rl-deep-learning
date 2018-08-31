@@ -9,6 +9,7 @@ import initialState from './pandemic-web/src/pandemic-shared/initialState.json';
 import MonteCarloTreeSearchNN from './MonteCarloTreeSearchNN';
 import { getEpisodeStats, getIterationStats, printIterationStats,
   saveTrainingExamplesAsImage } from './pandemic-light/stats';
+import { saveEpisode, getSavedEpisodesCount, summarizeSavedEpisodes } from './pandemic-light/trainingData';
 
 const defaultConfig = {
   iterations: 1,
@@ -30,29 +31,49 @@ export default class Coach {
     this.config = defaultsDeep(config, defaultConfig);
   }
 
+  async play(monitor) {
+    this.neuralNetwork = new PandemicNeuronalNetwork(this.config.neuralNetwork);
+    await this.neuralNetwork.init();
+    summarizeSavedEpisodes();
+    let mcts;
+    const episodesStats = [];
+    for (let j = getSavedEpisodesCount(); j < this.config.episodes; j += 1) {
+      console.log('Episode', j);
+      mcts = new MonteCarloTreeSearchNN(this.config.mcts, monitor);
+      // eslint-disable-next-line no-await-in-loop
+      const trainingExamples = await this.executeEpisode(mcts, this.neuralNetwork);
+      const episodeStats = getEpisodeStats(trainingExamples);
+      episodesStats.push(episodeStats);
+      saveEpisode(episodeStats, trainingExamples);
+      printIterationStats(getIterationStats(episodesStats));
+    }
+  }
+
   async train(monitor) {
     this.neuralNetwork = new PandemicNeuronalNetwork(this.config.neuralNetwork);
     await this.neuralNetwork.init();
     let mcts;
     let iterationTrainingExamples;
     for (let i = 0; i < this.config.iterations; i += 1) {
-      const episodeStats = [];
+      const episodesStats = [];
       console.log();
       console.log(`=== Iteration ${i} ===`);
       console.log();
       iterationTrainingExamples = [];
-      for (let j = 0; j < this.config.episodes; j += 1) {
+      for (let j = getSavedEpisodesCount(); j < this.config.episodes; j += 1) {
         console.log('Episode', j, '| training examples', iterationTrainingExamples.length);
         mcts = new MonteCarloTreeSearchNN(this.config.mcts, monitor);
         // eslint-disable-next-line no-await-in-loop
         const trainingExamples = await this.executeEpisode(mcts, this.neuralNetwork);
-        episodeStats.push(getEpisodeStats(trainingExamples));
+        const episodeStats = getEpisodeStats(trainingExamples);
+        episodesStats.push(episodeStats);
+        saveEpisode(episodesStats, trainingExamples);
         saveTrainingExamplesAsImage(trainingExamples, './pandemic-light/log/', i, j);
         iterationTrainingExamples = concat(
           iterationTrainingExamples,
           trainingExamples,
         );
-        printIterationStats(getIterationStats(episodeStats));
+        printIterationStats(getIterationStats(episodesStats));
       }
       iterationTrainingExamples = shuffle(iterationTrainingExamples);
       // eslint-disable-next-line no-await-in-loop

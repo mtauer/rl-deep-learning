@@ -5,11 +5,11 @@ const monitor = new Monitor();
 
 const coach = new Coach({
   iterations: 2,
-  episodes: 20,
+  episodes: 500,
   mcts: {
     simulations: 400,
     cPuct: 1.0,
-    cUcb1: 1.4,
+    cUcb1: 0.7,
     temperature: 1,
     rolloutThreshold: 0.0,
   },
@@ -19,7 +19,7 @@ const coach = new Coach({
   },
 });
 
-coach.train(monitor);
+coach.play(monitor);
 
 
 // import MonteCarloTreeSearchNN from './MonteCarloTreeSearchNN';
