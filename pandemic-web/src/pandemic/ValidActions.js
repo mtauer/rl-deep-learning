@@ -81,12 +81,12 @@ const Disease = styled.span`
   transform: translateY(1px);
 `;
 
-const NextActions = ({ gameNextActions }) => {
-  console.log('gameNextActions', gameNextActions);
+const NextActions = ({ validActions, values }) => {
+  console.log('validActions', validActions);
   return (
     <Container>
-      { gameNextActions.map((action, i) => {
-        const nextActionValue = 0.0;
+      { validActions.map((action, i) => {
+        const nextActionValue = values[i];
         const cellBgColor = nextActionValue !== undefined ? getCellBgColor(nextActionValue) : '#e6e6e6';
         return (
           <Row
@@ -114,7 +114,9 @@ const NextActions = ({ gameNextActions }) => {
 };
 NextActions.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
-  gameNextActions: PropTypes.array.isRequired,
+  validActions: PropTypes.array.isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
+  values: PropTypes.array.isRequired,
 };
 
 function formatActionType(type) {

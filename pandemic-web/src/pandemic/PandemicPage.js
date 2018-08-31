@@ -1,12 +1,12 @@
 import React from 'react';
 
 import { Container, Title } from '../components/Page';
-import NextActionsSection from './NextActionsSection';
+import ValidActionsSection from './ValidActionsSection';
 
 const PandemicPage = () => (
   <Container>
     <Title>Deep reinforcement learning for Pandemic</Title>
-    <NextActionsSection />
+    <ValidActionsSection />
   </Container>
 );
 

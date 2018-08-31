@@ -102,7 +102,7 @@ class MonteCarloTreeSearchNN {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  getPredictedVValues(game, state, neuralNetwork) {
+  getPredictedVValue(game, state, neuralNetwork) {
     const v = neuralNetwork.predictV(game.toNNInput(state));
     return v;
   }

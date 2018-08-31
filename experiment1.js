@@ -11,7 +11,7 @@ const config = {
     cPuct: 1.0,
     cUcb1: 1.4,
     temperature: 1,
-    rolloutThreshold: 0.5,
+    rolloutThreshold: 0.0,
   },
   neuralNetwork: {
     modelPath: 'pandemic-light/nn-models/',
@@ -25,13 +25,18 @@ export default async function runExperiment1(socket) {
   await nn.init();
 
   const mcts = new MonteCarloTreeSearchNN(config.mcts);
-  for (let i = 0; i < 10; i += 1) {
+  for (let i = 0; i < 400; i += 1) {
     mcts.search(game, state, nn);
   }
   if (socket) {
-    socket.emit('simulation_start', {
-      predictedPValues: mcts.getPredictedPValues(game, state, nn),
+    socket.emit('simulation_update', {
+      state,
       validActions: game.getValidActions(state),
+      predictedPValues: mcts.getPredictedPValues(game, state, nn),
+      predictedVValues: [mcts.getPredictedVValue(game, state, nn)],
+      naValues: mcts.getNsaValues(game, state),
+      qaValues: mcts.getQsaValues(game, state),
+      ucbSumValues: mcts.getUcbSumValues(game, state),
     });
   }
 }

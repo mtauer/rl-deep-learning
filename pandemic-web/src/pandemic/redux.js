@@ -1,15 +1,47 @@
 import io from 'socket.io-client';
-
-import initialGameState from '../pandemic-shared/initialState.json';
-import game from '../pandemic-shared/game';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 const initialState = {
-  gameState: initialGameState,
-  gameNextActions: game.getValidActions(initialGameState),
+  gameState: {},
+  validActions: [],
+  predictedPValues: [],
+  predictedVValues: [],
+  naValues: [],
+  qaValues: [],
+  ucbSumValues: [],
 };
+
+const PREFIX = 'pandemic/';
+const SIMULATION_UPDATE = `${PREFIX}SIMULATION_UPDATE`;
+
+export function simulationUpdateAction(data) {
+  return { type: SIMULATION_UPDATE, data };
+}
 
 export default function pandemicReducer(state = initialState, action) {
   switch (action.type) {
+    case SIMULATION_UPDATE: {
+      const {
+        state: gameState,
+        validActions,
+        predictedPValues,
+        predictedVValues,
+        naValues,
+        qaValues,
+        ucbSumValues,
+      } = action.data;
+      return {
+        ...state,
+        gameState,
+        validActions,
+        predictedPValues,
+        predictedVValues,
+        naValues,
+        qaValues,
+        ucbSumValues,
+      };
+    }
     default: return state;
   }
 }
@@ -18,19 +50,52 @@ export function getGameState(state) {
   return state.pandemic.gameState;
 }
 
-export function getGameNextActions(state) {
-  return state.pandemic.gameNextActions;
+export function getValidActions(state) {
+  return state.pandemic.validActions;
 }
 
-const socket = io('http://localhost:3001');
-socket.on('simulation_start', (data) => {
-  console.log('on simulation_start', data);
-});
-socket.on('connect_error', () => {
-  console.log('connect_error');
-  socket.close();
-});
-socket.on('disconnect', () => {
-  console.log('disconnect');
-  socket.close();
-});
+export function getPredictedPValues(state) {
+  return state.pandemic.predictedPValues;
+}
+
+export function getPredictedVValues(state) {
+  return state.pandemic.predictedVValues;
+}
+
+export function getNaValues(state) {
+  return state.pandemic.naValues;
+}
+
+export function getQaValues(state) {
+  return state.pandemic.qaValues;
+}
+
+export function getUcbSumValues(state) {
+  return state.pandemic.ucbSumValues;
+}
+
+export function serverEpic() {
+  const socketEvents$ = new Observable((observer) => {
+    const socket = io('http://localhost:3001');
+    socket.on('simulation_update', (data) => {
+      console.log('data', data);
+      observer.next({ on: 'simulation_update', data });
+    });
+    socket.on('connect_error', () => {
+      socket.close();
+      observer.error();
+    });
+    socket.on('disconnect', () => {
+      socket.close();
+      observer.complete();
+    });
+  });
+  return socketEvents$.pipe(
+    map((event) => {
+      switch (event.on) {
+        case 'simulation_update': return simulationUpdateAction(event.data);
+        default: return { type: 'DO_NOTHING' };
+      }
+    }),
+  );
+}
