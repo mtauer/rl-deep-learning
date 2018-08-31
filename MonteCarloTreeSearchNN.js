@@ -14,19 +14,23 @@ const defaultConfig = {
 };
 
 class MonteCarloTreeSearchNN {
-  constructor(config = {}) {
+  constructor(config = {}, monitor) {
     this.config = defaultsDeep(config, defaultConfig);
     this.Q_sa = {}; // stores Q values for s,a
     this.N_sa = {}; // stores #times edge s,a was visited
     this.N_s = {}; // stores #times state s was visited
     this.P_s = {}; // stores initial policy (returned by neural network)
     this.N = 0;
+    this.monitor = monitor;
   }
 
   getActionProbabilities(game, state, neuralNetwork) {
     range(this.config.simulations).forEach(() => {
       this.search(game, state, neuralNetwork);
     });
+    if (this.monitor) {
+      this.monitor.updateSimulation(this, game, state, neuralNetwork);
+    }
 
     const s = game.toKey(state);
     const nValues = range(200)

@@ -1,14 +1,17 @@
 import Coach from './coach';
+import Monitor from './monitor';
+
+const monitor = new Monitor();
 
 const coach = new Coach({
-  iterations: 1,
-  episodes: 10,
+  iterations: 2,
+  episodes: 20,
   mcts: {
-    simulations: 4000,
+    simulations: 400,
     cPuct: 1.0,
     cUcb1: 1.4,
     temperature: 1,
-    rolloutThreshold: 0.5,
+    rolloutThreshold: 0.0,
   },
   neuralNetwork: {
     modelPath: 'pandemic-light/nn-models/',
@@ -16,7 +19,8 @@ const coach = new Coach({
   },
 });
 
-coach.train();
+coach.train(monitor);
+
 
 // import MonteCarloTreeSearchNN from './MonteCarloTreeSearchNN';
 // import initialState from './pandemic-web/src/pandemic-shared/initialState.json';

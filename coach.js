@@ -7,10 +7,11 @@ import game from './pandemic-web/src/pandemic-shared/game';
 import PandemicNeuronalNetwork from './pandemic-light/neuralNetwork';
 import initialState from './pandemic-web/src/pandemic-shared/initialState.json';
 import MonteCarloTreeSearchNN from './MonteCarloTreeSearchNN';
-import { getEpisodeStats, getIterationStats, printIterationStats, saveTrainingExamplesAsImage } from './pandemic-light/stats';
+import { getEpisodeStats, getIterationStats, printIterationStats,
+  saveTrainingExamplesAsImage } from './pandemic-light/stats';
 
 const defaultConfig = {
-  iterations: 5,
+  iterations: 1,
   episodes: 20,
   mcts: {
     simulations: 400,
@@ -29,7 +30,7 @@ export default class Coach {
     this.config = defaultsDeep(config, defaultConfig);
   }
 
-  async train() {
+  async train(monitor) {
     this.neuralNetwork = new PandemicNeuronalNetwork(this.config.neuralNetwork);
     await this.neuralNetwork.init();
     let mcts;
@@ -42,8 +43,9 @@ export default class Coach {
       iterationTrainingExamples = [];
       for (let j = 0; j < this.config.episodes; j += 1) {
         console.log('Episode', j, '| training examples', iterationTrainingExamples.length);
-        mcts = new MonteCarloTreeSearchNN(this.config.mcts);
-        const trainingExamples = this.executeEpisode(mcts, this.neuralNetwork);
+        mcts = new MonteCarloTreeSearchNN(this.config.mcts, monitor);
+        // eslint-disable-next-line no-await-in-loop
+        const trainingExamples = await this.executeEpisode(mcts, this.neuralNetwork);
         episodeStats.push(getEpisodeStats(trainingExamples));
         saveTrainingExamplesAsImage(trainingExamples, './pandemic-light/log/', i, j);
         iterationTrainingExamples = concat(
@@ -55,15 +57,18 @@ export default class Coach {
       iterationTrainingExamples = shuffle(iterationTrainingExamples);
       // eslint-disable-next-line no-await-in-loop
       await this.neuralNetwork.train(iterationTrainingExamples);
+      console.log('=== Iteration finished ===');
     }
   }
 
-  executeEpisode(mcts) {
+  async executeEpisode(mcts) {
     let state = initialState;
     const trainingExamples = [];
     const bar = new ProgressBar('[:bar] :etas', { total: 80, head: '>', incomplete: ' ' });
     // eslint-disable-next-line no-constant-condition
     while (true) {
+      // eslint-disable-next-line no-await-in-loop
+      await sleep(0);
       const pi = mcts.getActionProbabilities(game, state, this.neuralNetwork);
       const trainingExample = [game.toNNInput(state), pi];
       const actionIndex = randomChoice(pi);
@@ -77,6 +82,10 @@ export default class Coach {
       }
     }
   }
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 function randomChoice(p) {

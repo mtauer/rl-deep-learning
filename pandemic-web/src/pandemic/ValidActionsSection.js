@@ -55,6 +55,7 @@ const NextActionsSection = ({
           <BarChart
             values={ucbSumValues}
             color="#fca982"
+            offset={-1}
             formatFunc={f => f.toFixed(3)}
           />
         </BarChartContainer>
