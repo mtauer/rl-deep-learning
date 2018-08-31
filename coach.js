@@ -1,5 +1,4 @@
 import defaultsDeep from 'lodash/defaultsDeep';
-import concat from 'lodash/concat';
 import shuffle from 'lodash/shuffle';
 import ProgressBar from 'progress';
 
@@ -7,9 +6,9 @@ import game from './pandemic-web/src/pandemic-shared/game';
 import PandemicNeuronalNetwork from './pandemic-light/neuralNetwork';
 import initialState from './pandemic-web/src/pandemic-shared/initialState.json';
 import MonteCarloTreeSearchNN from './MonteCarloTreeSearchNN';
-import { getEpisodeStats, getIterationStats, printIterationStats,
-  saveTrainingExamplesAsImage } from './pandemic-light/stats';
-import { saveEpisode, getSavedEpisodesCount, summarizeSavedEpisodes } from './pandemic-light/trainingData';
+import { getEpisodeStats, getIterationStats, printIterationStats } from './pandemic-light/stats';
+import { saveEpisode, getSavedEpisodesCount, summarizeSavedEpisodes,
+  getSavedTrainingExamples } from './pandemic-light/trainingData';
 
 const defaultConfig = {
   iterations: 1,
@@ -49,37 +48,14 @@ export default class Coach {
     }
   }
 
-  async train(monitor) {
+  async train() {
     this.neuralNetwork = new PandemicNeuronalNetwork(this.config.neuralNetwork);
     await this.neuralNetwork.init();
-    let mcts;
-    let iterationTrainingExamples;
-    for (let i = 0; i < this.config.iterations; i += 1) {
-      const episodesStats = [];
-      console.log();
-      console.log(`=== Iteration ${i} ===`);
-      console.log();
-      iterationTrainingExamples = [];
-      for (let j = getSavedEpisodesCount(); j < this.config.episodes; j += 1) {
-        console.log('Episode', j, '| training examples', iterationTrainingExamples.length);
-        mcts = new MonteCarloTreeSearchNN(this.config.mcts, monitor);
-        // eslint-disable-next-line no-await-in-loop
-        const trainingExamples = await this.executeEpisode(mcts, this.neuralNetwork);
-        const episodeStats = getEpisodeStats(trainingExamples);
-        episodesStats.push(episodeStats);
-        saveEpisode(episodesStats, trainingExamples);
-        saveTrainingExamplesAsImage(trainingExamples, './pandemic-light/log/', i, j);
-        iterationTrainingExamples = concat(
-          iterationTrainingExamples,
-          trainingExamples,
-        );
-        printIterationStats(getIterationStats(episodesStats));
-      }
-      iterationTrainingExamples = shuffle(iterationTrainingExamples);
-      // eslint-disable-next-line no-await-in-loop
-      await this.neuralNetwork.train(iterationTrainingExamples);
-      console.log('=== Iteration finished ===');
-    }
+    summarizeSavedEpisodes();
+    const trainingExamples = shuffle(getSavedTrainingExamples());
+    console.log('Training examples', trainingExamples.length);
+    await this.neuralNetwork.train(trainingExamples);
+    console.log('Training complete');
   }
 
   async executeEpisode(mcts) {
