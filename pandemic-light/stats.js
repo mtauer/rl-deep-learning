@@ -40,7 +40,8 @@ export function getIterationStats(episodesStats) {
 export function printIterationStats(iterationStats) {
   const won = iterationStats.episodesWon;
   const lost = iterationStats.episodesLost;
-  console.log('Won/lost', won, lost, won / (won + lost));
+  const winRate = won + lost === 0 ? '' : (won / (won + lost)).toFixed(2);
+  console.log('Won / Lost', won, lost, ' | Win rate', winRate);
   const actionPairs = sortBy(toPairs(iterationStats.actionCounts), pair => -pair[1]);
   const actionsCount = sum(actionPairs.map(pair => pair[1]));
   actionPairs.forEach((pair) => {
