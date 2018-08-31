@@ -71,6 +71,16 @@ export default class PandemicNeuronalNetwork {
     return v.dataSync()[0];
   }
 
+  evaluate(testExamples) {
+    const testStates = tf.tensor2d(testExamples.map(e => e.s), undefined, 'bool');
+    const testP = tf.tensor2d(testExamples.map(e => e.pValues), undefined, 'float32');
+    const testV = tf.tensor2d(testExamples.map(e => [e.vValue]), undefined, 'float32');
+    const resP = this.pModel.evaluate(testStates, testP);
+    console.log('probabilities loss and accuracy', resP[0].dataSync()[0], resP[1].dataSync()[0]);
+    const resV = this.vModel.evaluate(testStates, testV);
+    console.log('v value loss and accuracy', resV[0].dataSync()[0], resV[1].dataSync()[0]);
+  }
+
   async train(trainingExamples) {
     const trainingStates = tf.tensor2d(trainingExamples.map(e => e[0]), undefined, 'bool');
     const trainingP = tf.tensor2d(trainingExamples.map(e => e[1]), undefined, 'float32');

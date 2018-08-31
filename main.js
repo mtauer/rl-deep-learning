@@ -20,4 +20,5 @@ const coach = new Coach({
 });
 
 // coach.play(monitor);
-coach.train(monitor);
+// coach.train(monitor);
+coach.evaluate(monitor);

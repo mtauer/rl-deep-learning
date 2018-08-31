@@ -9,6 +9,7 @@ import MonteCarloTreeSearchNN from './MonteCarloTreeSearchNN';
 import { getEpisodeStats, getIterationStats, printIterationStats } from './pandemic-light/stats';
 import { saveEpisode, getSavedEpisodesCount, summarizeSavedEpisodes,
   getSavedTrainingExamples } from './pandemic-light/trainingData';
+import { getTestExamples } from './pandemic-light/testData';
 
 const defaultConfig = {
   iterations: 1,
@@ -56,6 +57,15 @@ export default class Coach {
     console.log('Training examples', trainingExamples.length);
     await this.neuralNetwork.train(trainingExamples);
     console.log('Training complete');
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  async evaluate() {
+    this.neuralNetwork = new PandemicNeuronalNetwork(this.config.neuralNetwork);
+    await this.neuralNetwork.init();
+    const testExamples = getTestExamples();
+    // console.log('testExamples', testExamples);
+    this.neuralNetwork.evaluate(testExamples);
   }
 
   async executeEpisode(mcts) {
