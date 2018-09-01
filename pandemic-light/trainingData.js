@@ -23,8 +23,9 @@ export function getSavedEpisodesCount() {
 export function summarizeSavedEpisodes() {
   const episodes = JSON.parse(fs.readFileSync(episodesFile));
   const episodesStats = episodes.map(e => last(e.episodeStats) || e.episodeStats);
-  const iterationStats = getIterationStats(episodesStats);
-  printIterationStats(iterationStats);
+  printIterationStats(getIterationStats(episodesStats));
+  const wonEpisodesStats = episodesStats.filter(stats => stats.won);
+  printIterationStats(getIterationStats(wonEpisodesStats));
 }
 
 export function getSavedTrainingExamples() {
