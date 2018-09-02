@@ -76,16 +76,20 @@ export default class Coach {
     while (true) {
       // eslint-disable-next-line no-await-in-loop
       await sleep(0);
-      const pi = mcts.getActionProbabilities(game, state, this.neuralNetwork);
-      const trainingExample = [game.toNNInput(state), pi];
-      const actionIndex = randomChoice(pi);
+      const pValues = mcts.getActionProbabilities(game, state, this.neuralNetwork);
+      const actionIndex = randomChoice(pValues);
       const nextAction = game.getValidActions(state)[actionIndex];
-      trainingExamples.push([...trainingExample, nextAction]);
+      const trainingExample = {
+        s: game.toNNInput(state),
+        pValues,
+        action: nextAction,
+      };
+      trainingExamples.push(trainingExample);
       state = game.performAction(state, nextAction);
       bar.tick();
       if (game.hasEnded(state)) {
-        const value = game.getValue(state);
-        return trainingExamples.map(e => [...e, value]);
+        const vValue = game.getValue(state);
+        return trainingExamples.map(e => ({ ...e, vValue }));
       }
     }
   }

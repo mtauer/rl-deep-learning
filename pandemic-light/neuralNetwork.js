@@ -82,9 +82,9 @@ export default class PandemicNeuronalNetwork {
   }
 
   async train(trainingExamples) {
-    const trainingStates = tf.tensor2d(trainingExamples.map(e => e[0]), undefined, 'bool');
-    const trainingP = tf.tensor2d(trainingExamples.map(e => e[1]), undefined, 'float32');
-    const trainingV = tf.tensor2d(trainingExamples.map(e => [e[3]]), undefined, 'float32');
+    const trainingStates = tf.tensor2d(trainingExamples.map(e => e.s), undefined, 'bool');
+    const trainingP = tf.tensor2d(trainingExamples.map(e => e.pValues), undefined, 'float32');
+    const trainingV = tf.tensor2d(trainingExamples.map(e => [e.vValue]), undefined, 'float32');
     await this.pModel.fit(trainingStates, trainingP, {
       epochs: this.config.trainingEpochs,
       callbacks: {

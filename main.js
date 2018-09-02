@@ -7,11 +7,11 @@ const coach = new Coach({
   iterations: 2,
   episodes: 500,
   mcts: {
-    simulations: 500,
+    simulations: 400,
     cPuct: 1.0,
     cUcb1: 0.7,
     temperature: 1,
-    rolloutThreshold: 0.1,
+    rolloutThreshold: 0.0,
   },
   neuralNetwork: {
     modelPath: 'pandemic-light/nn-models/',

@@ -1,6 +1,6 @@
-import fs from 'fs';
-import { PNG } from 'pngjs';
-import slice from 'lodash/slice';
+// import fs from 'fs';
+// import { PNG } from 'pngjs';
+// import slice from 'lodash/slice';
 import groupBy from 'lodash/groupBy';
 import toPairs from 'lodash/toPairs';
 import reduce from 'lodash/reduce';
@@ -10,12 +10,12 @@ import sum from 'lodash/sum';
 import sortBy from 'lodash/sortBy';
 
 export function getEpisodeStats(trainingExamples) {
-  const actionGroups = groupBy(trainingExamples, e => e[2].type);
+  const actionGroups = groupBy(trainingExamples, e => e.action.type);
   const actionCounts = transform(actionGroups, (acc, actions, actionType) => {
     acc[actionType] = actions.length;
   }, {});
   return {
-    won: trainingExamples[0][3] === 1,
+    won: trainingExamples[0].vValue === 1,
     actionCounts,
   };
 }
@@ -49,6 +49,7 @@ export function printIterationStats(iterationStats) {
   });
 }
 
+/*
 export function saveTrainingExamplesAsImage(trainingExamples, path, iteration, episode) {
   const decodedExamples = trainingExamples.map(examples => ({
     player0Position: slice(examples[0], 6, 6 + 48),
@@ -142,3 +143,4 @@ export function saveTrainingExamplesAsImage(trainingExamples, path, iteration, e
   const buff = PNG.sync.write(dstBuffer);
   fs.writeFileSync(`${path}training-${iteration}-${episode}.png`, buff);
 }
+*/

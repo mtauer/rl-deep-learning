@@ -58,7 +58,7 @@ export function getTestExamples() {
     const validActions = game.getValidActions(state);
     const actionIndex = findIndex(validActions, a => a.type === DISCOVER_CURE);
     return {
-      s: game.toNNInput(state),
+      state,
       pValues: range(200).map((n, i) => (i === actionIndex ? 1 : 0)),
       vValue: 1,
       action: validActions[actionIndex],
