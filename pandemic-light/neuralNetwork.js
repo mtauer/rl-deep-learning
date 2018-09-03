@@ -25,9 +25,10 @@ export default class PandemicNeuronalNetwork {
       console.error('Could not load model. It will be created from scratch.');
       this.pModel = tf.sequential({
         layers: [
-          tf.layers.dense({ units: 512, inputShape: [299], activation: 'relu' }),
+          tf.layers.dense({ units: 256, inputShape: [299], activation: 'relu' }),
           tf.layers.dropout({ rate: 0.2 }),
-          tf.layers.dense({ units: 200, activation: 'softmax' }),
+          tf.layers.dense({ units: 256, activation: 'relu' }),
+          tf.layers.dense({ units: 69, activation: 'softmax' }),
         ],
       });
     }
@@ -47,8 +48,9 @@ export default class PandemicNeuronalNetwork {
       console.error('Could not load model. It will be created from scratch.');
       this.vModel = tf.sequential({
         layers: [
-          tf.layers.dense({ units: 512, inputShape: [299], activation: 'relu' }),
+          tf.layers.dense({ units: 256, inputShape: [299], activation: 'relu' }),
           tf.layers.dropout({ rate: 0.2 }),
+          tf.layers.dense({ units: 256, activation: 'relu' }),
           tf.layers.dense({ units: 1, activation: 'tanh' }),
         ],
       });

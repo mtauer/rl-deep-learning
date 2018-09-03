@@ -191,7 +191,7 @@ function performAction(state = initialState, action) {
       newState.currentMovesLeft -= 1;
       newState.playerPosition[player] = to;
       newState.playerCards[player] = newState.playerCards[player].filter(id => id !== card);
-      newState.playedPlayerCards.push(card);
+      newState.playedPlayerCards.push(card).sort();
       break;
     }
     case CHARTER_FLIGHT: {
@@ -199,7 +199,7 @@ function performAction(state = initialState, action) {
       newState.currentMovesLeft -= 1;
       newState.playerPosition[player] = to;
       newState.playerCards[player] = newState.playerCards[player].filter(id => id !== card);
-      newState.playedPlayerCards.push(card);
+      newState.playedPlayerCards.push(card).sort();
       break;
     }
     case SHUTTLE_FLIGHT: {
@@ -211,9 +211,9 @@ function performAction(state = initialState, action) {
     case BUILD_RESEARCH_CENTER: {
       const { at, card } = action;
       newState.currentMovesCount -= 1;
-      newState.researchCenters = [...newState.researchCenters, at];
+      newState.researchCenters = [...newState.researchCenters, at].sort();
       newState.playerCards[player] = newState.playerCards[player].filter(id => id !== card);
-      newState.playedPlayerCards.push(card);
+      newState.playedPlayerCards.push(card).sort();
       break;
     }
     case DISCOVER_CURE: {
@@ -221,20 +221,20 @@ function performAction(state = initialState, action) {
       newState.currentMovesCount -= 1;
       newState.curedDiseases.push(disease);
       newState.playerCards[player] = difference(newState.playerCards[player], usedCards);
-      newState.playedPlayerCards.push(...usedCards);
+      newState.playedPlayerCards.push(...usedCards).sort();
       break;
     }
     case SHARE_KNOWLEDGE: {
       const { card, from, to } = action;
       newState.currentMovesCount -= 1;
       newState.playerCards[from] = newState.playerCards[from].filter(id => id !== card);
-      newState.playerCards[to] = [...newState.playerCards[to], card];
+      newState.playerCards[to] = [...newState.playerCards[to], card].sort();
       break;
     }
     case DISCARD_CARD: {
       const { card } = action;
       newState.playerCards[player] = newState.playerCards[player].filter(c => c !== card);
-      newState.playedPlayerCards.push(card);
+      newState.playedPlayerCards.push(card).sort();
       break;
     }
     default:
@@ -252,7 +252,7 @@ function performAction(state = initialState, action) {
       newState.playerCards[player] = [
         ...newState.playerCards[player],
         ...newCards.filter(id => id < 48),
-      ];
+      ].sort();
     }
     // End of turn
     newState.currentPlayer = (newState.currentPlayer + 1) % players.length;
@@ -400,7 +400,7 @@ function preparePlayerCards(state) {
   const cardsPerPlayer = cardsPerPlayerMap[players.length];
   const playerCards = fromPairs(players.map((p, i) => [
     p.id,
-    slice(cards, i * cardsPerPlayer, (i + 1) * cardsPerPlayer),
+    slice(cards, i * cardsPerPlayer, (i + 1) * cardsPerPlayer).sort(),
   ]));
   return {
     ...state,

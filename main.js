@@ -1,9 +1,9 @@
 import Coach from './coach';
 import Monitor from './monitor';
+// import runExperiment2 from './experiment2';
 
 const monitor = new Monitor();
-
-const coach = new Coach({
+const config = {
   iterations: 2,
   episodes: 500,
   mcts: {
@@ -15,10 +15,13 @@ const coach = new Coach({
   },
   neuralNetwork: {
     modelPath: 'pandemic-light/nn-models/',
-    trainingEpochs: 25,
+    trainingEpochs: 20,
   },
-});
+};
 
+const coach = new Coach(config);
 coach.generateTrainingData(monitor);
 // coach.train(monitor);
 // coach.evaluate(monitor);
+
+// runExperiment2(config, monitor);

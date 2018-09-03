@@ -8,6 +8,7 @@ const initialState = {
   predictedPValues: [],
   predictedVValues: [],
   naValues: [],
+  paValues: [],
   qaValues: [],
   ucbSumValues: [],
 };
@@ -28,6 +29,7 @@ export default function pandemicReducer(state = initialState, action) {
         predictedPValues,
         predictedVValues,
         naValues,
+        paValues,
         qaValues,
         ucbSumValues,
       } = action.data;
@@ -38,6 +40,7 @@ export default function pandemicReducer(state = initialState, action) {
         predictedPValues,
         predictedVValues,
         naValues,
+        paValues,
         qaValues,
         ucbSumValues,
       };
@@ -64,6 +67,10 @@ export function getPredictedVValues(state) {
 
 export function getNaValues(state) {
   return state.pandemic.naValues;
+}
+
+export function getPaValues(state) {
+  return state.pandemic.paValues;
 }
 
 export function getQaValues(state) {

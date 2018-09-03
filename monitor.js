@@ -6,6 +6,7 @@ export default class Monitor {
   constructor() {
     this.connectedSocket = null;
     this.lastUpdate = 0;
+    this.listeners = [];
     const app = express();
     const server = http.Server(app);
     const io = new SocketIo(server);
@@ -13,8 +14,10 @@ export default class Monitor {
 
     io.on('connection', (socket) => {
       this.connectedSocket = socket;
+      this.listeners.forEach(l => l.onConnection());
       socket.on('disconnect', () => {
         this.connectedSocket = null;
+        this.listeners.forEach(l => l.onDisconnection());
       });
     });
 
@@ -33,9 +36,17 @@ export default class Monitor {
         predictedPValues: mcts.getPredictedPValues(game, state, neuralNetwork),
         predictedVValues: [mcts.getPredictedVValue(game, state, neuralNetwork)],
         naValues: mcts.getNsaValues(game, state),
+        paValues: mcts.getPsaValues(game, state),
         qaValues: mcts.getQsaValues(game, state),
         ucbSumValues: mcts.getUcbSumValues(game, state),
       });
     }
+  }
+
+  addListener(listener) {
+    this.listeners = [...this.listeners, listener];
+    return () => {
+      this.listeners = this.listeners.filter(l => l !== listener);
+    };
   }
 }

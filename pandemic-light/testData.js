@@ -4,23 +4,37 @@ import groupBy from 'lodash/groupBy';
 import sampleSize from 'lodash/sampleSize';
 import difference from 'lodash/difference';
 import findIndex from 'lodash/findIndex';
+import shuffle from 'lodash/shuffle';
 
 import game, { locationsMap, DISCOVER_CURE } from '../pandemic-web/src/pandemic-shared/game';
 
 // eslint-disable-next-line import/prefer-default-export
 export function getTestExamples() {
   // generate perfect states
-  const perfectStates = [];
+  const perfectStates = getStatesWithSameCards(4, 100);
+  return shuffle(perfectStates.map((state) => {
+    const validActions = game.getValidActions(state);
+    const actionIndex = findIndex(validActions, a => a.type === DISCOVER_CURE);
+    return {
+      state,
+      pValues: range(200).map((n, i) => (i === actionIndex ? 1 : 0)),
+      vValue: 1,
+      action: validActions[actionIndex],
+    };
+  }));
+}
+
+function getStatesWithSameCards(sameCardsCount, samplesPerDisease) {
+  const states = [];
   const cards = range(48);
-  const samplesPerDisease = 100;
   const groupedCards = groupBy(cards, c => locationsMap[c].disease);
   keys(groupedCards).forEach((disease) => {
     for (let i = 0; i < samplesPerDisease; i += 1) {
-      let playerACards = sampleSize(groupedCards[disease], 5);
+      let playerACards = sampleSize(groupedCards[disease], sameCardsCount);
       let otherCards = difference(cards, playerACards);
       playerACards = [
         ...playerACards,
-        ...sampleSize(otherCards, Math.floor(Math.random() * 2)),
+        ...sampleSize(otherCards, Math.floor(Math.random() * (7 - sameCardsCount))),
       ];
       otherCards = difference(otherCards, playerACards);
       const playerBCards = sampleSize(otherCards, Math.floor(Math.random() * 7));
@@ -51,17 +65,8 @@ export function getTestExamples() {
         playedPlayerCards,
         insufficientPlayerCards: false,
       };
-      perfectStates.push(state);
+      states.push(state);
     }
   });
-  return perfectStates.map((state) => {
-    const validActions = game.getValidActions(state);
-    const actionIndex = findIndex(validActions, a => a.type === DISCOVER_CURE);
-    return {
-      state,
-      pValues: range(200).map((n, i) => (i === actionIndex ? 1 : 0)),
-      vValue: 1,
-      action: validActions[actionIndex],
-    };
-  });
+  return states;
 }

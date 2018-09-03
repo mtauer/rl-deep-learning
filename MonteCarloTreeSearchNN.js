@@ -24,10 +24,12 @@ class MonteCarloTreeSearchNN {
     this.monitor = monitor;
   }
 
-  getActionProbabilities(game, state, neuralNetwork) {
-    range(this.config.simulations).forEach(() => {
+  async getActionProbabilities(game, state, neuralNetwork) {
+    for (let i = 0; i < this.config.simulations; i += 1) {
+      // eslint-disable-next-line no-await-in-loop
+      await sleep(0);
       this.search(game, state, neuralNetwork);
-    });
+    }
     if (this.monitor) {
       this.monitor.updateSimulation(this, game, state, neuralNetwork);
     }
@@ -138,6 +140,19 @@ class MonteCarloTreeSearchNN {
     });
   }
 
+  getPsaValues(game, state) {
+    const s = game.toKey(state);
+    const validActions = game.getValidActions(state).map((a, index) => ({ ...a, index }));
+    const nValues = validActions
+      .map((a, i) => {
+        const sa = `${s}__${i}`;
+        return this.N_sa[sa] || 0;
+      })
+      .map(v => v ** (1 / this.config.temperature));
+    const nSum = sum(nValues);
+    return nValues.map(v => v / nSum);
+  }
+
   getUcbSumValues(game, state) {
     const s = game.toKey(state);
     const validActions = game.getValidActions(state).map((a, index) => ({ ...a, index }));
@@ -160,6 +175,10 @@ function getRolloutValue(game, state) {
   const nextAction = sample(game.getValidActions(state));
   const nextState = game.performAction(state, nextAction);
   return getRolloutValue(game, nextState);
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 export default MonteCarloTreeSearchNN;

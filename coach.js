@@ -75,8 +75,7 @@ export default class Coach {
     // eslint-disable-next-line no-constant-condition
     while (true) {
       // eslint-disable-next-line no-await-in-loop
-      await sleep(0);
-      const pValues = mcts.getActionProbabilities(game, state, this.neuralNetwork);
+      const pValues = await mcts.getActionProbabilities(game, state, this.neuralNetwork);
       const actionIndex = randomChoice(pValues);
       const nextAction = game.getValidActions(state)[actionIndex];
       const trainingExample = {
@@ -93,10 +92,6 @@ export default class Coach {
       }
     }
   }
-}
-
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 function randomChoice(p) {
