@@ -17,7 +17,7 @@ import { locations, routes } from './constants';
 export const locationsMap = getLocationsMap();
 export const players = getPlayers();
 export const diseases = ['Yellow', 'Red', 'Blue', 'Black'];
-export const initialState = prepareInitialState();
+export const initialState = getInitialState();
 
 export const DO_NOTHING = 'DO_NOTHING';
 export const DRIVE_FERRY = 'DRIVE_FERRY';
@@ -45,6 +45,7 @@ export default {
   getValue,
   hasEnded,
   getWinner,
+  getInitialState,
 };
 
 function getValidActions(state = initialState) {
@@ -191,7 +192,7 @@ function performAction(state = initialState, action) {
       newState.currentMovesLeft -= 1;
       newState.playerPosition[player] = to;
       newState.playerCards[player] = newState.playerCards[player].filter(id => id !== card);
-      newState.playedPlayerCards.push(card).sort();
+      newState.playedPlayerCards = [...newState.playedPlayerCards, card].sort();
       break;
     }
     case CHARTER_FLIGHT: {
@@ -199,7 +200,7 @@ function performAction(state = initialState, action) {
       newState.currentMovesLeft -= 1;
       newState.playerPosition[player] = to;
       newState.playerCards[player] = newState.playerCards[player].filter(id => id !== card);
-      newState.playedPlayerCards.push(card).sort();
+      newState.playedPlayerCards = [...newState.playedPlayerCards, card].sort();
       break;
     }
     case SHUTTLE_FLIGHT: {
@@ -213,15 +214,15 @@ function performAction(state = initialState, action) {
       newState.currentMovesCount -= 1;
       newState.researchCenters = [...newState.researchCenters, at].sort();
       newState.playerCards[player] = newState.playerCards[player].filter(id => id !== card);
-      newState.playedPlayerCards.push(card).sort();
+      newState.playedPlayerCards = [...newState.playedPlayerCards, card].sort();
       break;
     }
     case DISCOVER_CURE: {
       const { disease, usedCards } = action;
       newState.currentMovesCount -= 1;
-      newState.curedDiseases.push(disease);
+      newState.curedDiseases = [...newState.curedDiseases, disease].sort();
       newState.playerCards[player] = difference(newState.playerCards[player], usedCards);
-      newState.playedPlayerCards.push(...usedCards).sort();
+      newState.playedPlayerCards = [...newState.playedPlayerCards, ...usedCards].sort();
       break;
     }
     case SHARE_KNOWLEDGE: {
@@ -234,7 +235,7 @@ function performAction(state = initialState, action) {
     case DISCARD_CARD: {
       const { card } = action;
       newState.playerCards[player] = newState.playerCards[player].filter(c => c !== card);
-      newState.playedPlayerCards.push(card).sort();
+      newState.playedPlayerCards = [...newState.playedPlayerCards, card].sort();
       break;
     }
     default:
@@ -373,7 +374,7 @@ function cloneState(state) {
   return cloneDeep(state);
 }
 
-function prepareInitialState() {
+function getInitialState() {
   let state = {};
   state = prepareResources(state);
   state = preparePlayerCards(state);

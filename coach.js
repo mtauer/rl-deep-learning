@@ -4,7 +4,6 @@ import ProgressBar from 'progress';
 
 import game from './pandemic-web/src/pandemic-shared/game';
 import PandemicNeuronalNetwork from './pandemic-light/neuralNetwork';
-import initialState from './pandemic-web/src/pandemic-shared/initialState.json';
 import MonteCarloTreeSearchNN from './MonteCarloTreeSearchNN';
 import { getEpisodeStats, getIterationStats, printIterationStats } from './pandemic-light/stats';
 import { saveEpisode, getSavedEpisodesCount, summarizeSavedEpisodes,
@@ -13,7 +12,7 @@ import { getTestExamples } from './pandemic-light/testData';
 
 const defaultConfig = {
   iterations: 1,
-  episodes: 20,
+  trainingEpisodes: 20,
   mcts: {
     simulations: 400,
     cPuct: 1,
@@ -37,7 +36,7 @@ export default class Coach {
     summarizeSavedEpisodes();
     let mcts;
     const episodesStats = [];
-    for (let j = getSavedEpisodesCount(); j < this.config.episodes; j += 1) {
+    for (let j = getSavedEpisodesCount(); j < this.config.trainingEpisodes; j += 1) {
       console.log('Episode', j);
       mcts = new MonteCarloTreeSearchNN(this.config.mcts, monitor);
       // eslint-disable-next-line no-await-in-loop
@@ -64,40 +63,32 @@ export default class Coach {
     this.neuralNetwork = new PandemicNeuronalNetwork(this.config.neuralNetwork);
     await this.neuralNetwork.init();
     const testExamples = getTestExamples();
-    // console.log('testExamples', testExamples);
     this.neuralNetwork.evaluate(testExamples);
   }
 
   async executeEpisode(mcts) {
-    let state = initialState;
+    let state = game.getInitialState();
+    let step = 0;
     const trainingExamples = [];
-    const bar = new ProgressBar('[:bar] :etas', { total: 80, head: '>', incomplete: ' ' });
+    const bar = new ProgressBar('[:bar] :etas :ended', { total: 80, head: '>', incomplete: ' ' });
     // eslint-disable-next-line no-constant-condition
     while (true) {
       // eslint-disable-next-line no-await-in-loop
-      const pValues = await mcts.getActionProbabilities(game, state, this.neuralNetwork);
-      const actionIndex = randomChoice(pValues);
-      const nextAction = game.getValidActions(state)[actionIndex];
+      const { probabilities, nextAction, stats } = await mcts
+        .getActionProbabilities(game, state, this.neuralNetwork, step, true);
       const trainingExample = {
         s: game.toNNInput(state),
-        pValues,
+        pValues: probabilities,
         action: nextAction,
       };
       trainingExamples.push(trainingExample);
       state = game.performAction(state, nextAction);
-      bar.tick();
+      bar.tick({ ended: stats.simulationsEnded });
       if (game.hasEnded(state)) {
         const vValue = game.getValue(state);
         return trainingExamples.map(e => ({ ...e, vValue }));
       }
+      step += 1;
     }
   }
-}
-
-function randomChoice(p) {
-  let random = Math.random();
-  return p.findIndex((a) => {
-    random -= a;
-    return random < 0;
-  });
 }

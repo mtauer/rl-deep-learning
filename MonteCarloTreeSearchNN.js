@@ -5,11 +5,14 @@ import range from 'lodash/range';
 import max from 'lodash/max';
 import sample from 'lodash/sample';
 
+import { randomChoice } from './utils';
+
 const defaultConfig = {
   simulations: 400,
   cPuct: 1,
   cUcb1: Math.sqrt(2),
   temperature: 1,
+  explorationSteps: 20,
   rolloutThreshold: 0,
 };
 
@@ -24,7 +27,8 @@ class MonteCarloTreeSearchNN {
     this.monitor = monitor;
   }
 
-  async getActionProbabilities(game, state, neuralNetwork) {
+  async getActionProbabilities(game, state, neuralNetwork, step, isTraining) {
+    this.simulationsEnded = 0;
     for (let i = 0; i < this.config.simulations; i += 1) {
       // eslint-disable-next-line no-await-in-loop
       await sleep(0);
@@ -34,21 +38,34 @@ class MonteCarloTreeSearchNN {
       this.monitor.updateSimulation(this, game, state, neuralNetwork);
     }
 
+    const temperature = isTraining && (step < this.config.explorationSteps)
+      ? this.config.temperature
+      : 0.01;
     const s = game.toKey(state);
     const nValues = range(200)
       .map((i) => {
         const sa = `${s}__${i}`;
         return this.N_sa[sa] || 0;
-      })
-      .map(v => v ** (1 / this.config.temperature));
+      });
+      //
     const nSum = sum(nValues);
-    return nValues.map(v => v / nSum);
+    const probabilities = nValues.map(v => v / nSum);
+    const temperatureNValues = nValues.map(v => v ** (1 / temperature));
+    const temperatureNSum = sum(temperatureNValues);
+    const temperatureProbabilities = temperatureNValues.map(v => v / temperatureNSum);
+    const nextActionIndex = randomChoice(temperatureProbabilities);
+    return {
+      probabilities,
+      nextAction: game.getValidActions(state)[nextActionIndex],
+      stats: { simulationsEnded: this.simulationsEnded },
+    };
   }
 
   search(game, state, neuralNetwork) {
     const s = game.toKey(state);
 
     if (game.hasEnded(state)) {
+      this.simulationsEnded += 1;
       return game.getValue(state);
     }
 
@@ -69,6 +86,7 @@ class MonteCarloTreeSearchNN {
         this.P_s[s] = this.P_s[s].map(x => x / sumP);
       }
       if (Math.random() < this.config.rolloutThreshold) {
+        this.simulationsEnded += 1;
         v = getRolloutValue(game, state);
       } else {
         v = neuralNetwork.predictV(game.toNNInput(state));

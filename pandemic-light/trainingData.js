@@ -16,7 +16,7 @@ export function saveEpisode(episodeStats, trainingExamples) {
 }
 
 export function getSavedEpisodesCount() {
-  const episodes = fs.readFileSync(episodesFile) || [];
+  const episodes = readEpisodes();
   return episodes.length;
 }
 
