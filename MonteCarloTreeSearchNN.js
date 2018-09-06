@@ -54,9 +54,10 @@ class MonteCarloTreeSearchNN {
     const temperatureNSum = sum(temperatureNValues);
     const temperatureProbabilities = temperatureNValues.map(v => v / temperatureNSum);
     const nextActionIndex = randomChoice(temperatureProbabilities);
+    const validActions = game.getValidActions(state);
     return {
       probabilities,
-      nextAction: game.getValidActions(state)[nextActionIndex],
+      nextAction: validActions[nextActionIndex],
       stats: { simulationsEnded: this.simulationsEnded },
     };
   }
@@ -74,9 +75,9 @@ class MonteCarloTreeSearchNN {
 
     if (!this.P_s[s]) {
       // This is a leaf node
-      this.P_s[s] = neuralNetwork.predictP(game.toNNInput(state));
+      const probabilities = neuralNetwork.predictP(game.toNNInput(state));
       validActions = game.getValidActions(state);
-      this.P_s[s] = slice(this.P_s[s], 0, validActions.length);
+      this.P_s[s] = slice(probabilities, 0, validActions.length);
       const sumP = sum(this.P_s[s]);
       if (sumP === 0) {
         // eslint-disable-next-line no-console

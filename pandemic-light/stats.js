@@ -1,6 +1,4 @@
-// import fs from 'fs';
-// import { PNG } from 'pngjs';
-// import slice from 'lodash/slice';
+import fs from 'fs';
 import groupBy from 'lodash/groupBy';
 import toPairs from 'lodash/toPairs';
 import reduce from 'lodash/reduce';
@@ -8,6 +6,8 @@ import transform from 'lodash/transform';
 import keys from 'lodash/keys';
 import sum from 'lodash/sum';
 import sortBy from 'lodash/sortBy';
+
+const playingEpisodesFile = './pandemic-light/stats/iteration_000_playingEpisodes.json';
 
 export function getEpisodeStats(trainingExamples) {
   const actionGroups = groupBy(trainingExamples, e => e.action.type);
@@ -47,6 +47,33 @@ export function printIterationStats(iterationStats) {
   actionPairs.forEach((pair) => {
     console.log('  ', pair[0], (pair[1] / actionsCount * 100).toFixed(2));
   });
+}
+
+export function savePlayingStats(steps, vValue) {
+  const actionGroups = groupBy(steps, e => e.action.type);
+  const actionCounts = transform(actionGroups, (acc, actions, actionType) => {
+    acc[actionType] = actions.length;
+  }, {});
+  const stats = {
+    won: vValue === 1,
+    matchLength: steps.length,
+    actionCounts,
+  };
+  const playingEpisodes = readPlayingEpisodes();
+  playingEpisodes.push(stats);
+  writePlayingEpisodes(playingEpisodes);
+}
+
+export function loadPlayingStats() {
+  return readPlayingEpisodes();
+}
+
+function readPlayingEpisodes() {
+  return JSON.parse(fs.readFileSync(playingEpisodesFile) || []);
+}
+
+function writePlayingEpisodes(playingEpisodes) {
+  fs.writeFileSync(playingEpisodesFile, JSON.stringify(playingEpisodes));
 }
 
 /*

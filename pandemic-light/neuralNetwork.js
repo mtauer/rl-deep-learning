@@ -6,8 +6,13 @@ import packageJson from '../package.json';
 
 const defaultConfig = {
   modelPath: 'pandemic-light/nn-models/',
-  trainingEpochs: 40,
+  trainingEpochs: 20,
 };
+
+const INPUT_UNITS = 299;
+const HIDDEN_LAYER_UNITS = 400;
+const P_OUTPUT_UNITS = 69;
+const V_OUTPUT_UNITS = 1;
 
 export default class PandemicNeuronalNetwork {
   constructor(config = {}) {
@@ -25,10 +30,10 @@ export default class PandemicNeuronalNetwork {
       console.error('Could not load model. It will be created from scratch.');
       this.pModel = tf.sequential({
         layers: [
-          tf.layers.dense({ units: 256, inputShape: [299], activation: 'relu' }),
+          tf.layers.dense({ units: HIDDEN_LAYER_UNITS, inputShape: [INPUT_UNITS], activation: 'relu' }),
           tf.layers.dropout({ rate: 0.2 }),
-          tf.layers.dense({ units: 256, activation: 'relu' }),
-          tf.layers.dense({ units: 69, activation: 'softmax' }),
+          tf.layers.dense({ units: HIDDEN_LAYER_UNITS, activation: 'relu' }),
+          tf.layers.dense({ units: P_OUTPUT_UNITS, activation: 'softmax' }),
         ],
       });
     }
@@ -48,10 +53,10 @@ export default class PandemicNeuronalNetwork {
       console.error('Could not load model. It will be created from scratch.');
       this.vModel = tf.sequential({
         layers: [
-          tf.layers.dense({ units: 256, inputShape: [299], activation: 'relu' }),
+          tf.layers.dense({ units: HIDDEN_LAYER_UNITS, inputShape: [INPUT_UNITS], activation: 'relu' }),
           tf.layers.dropout({ rate: 0.2 }),
-          tf.layers.dense({ units: 256, activation: 'relu' }),
-          tf.layers.dense({ units: 1, activation: 'tanh' }),
+          tf.layers.dense({ units: HIDDEN_LAYER_UNITS, activation: 'relu' }),
+          tf.layers.dense({ units: V_OUTPUT_UNITS, activation: 'tanh' }),
         ],
       });
     }
