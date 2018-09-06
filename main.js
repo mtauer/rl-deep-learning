@@ -10,7 +10,7 @@ const config = {
   mcts: {
     simulations: 400,
     cPuct: 1.0,
-    cUcb1: 0.7,
+    cUcb1: 0.3,
     temperature: 1,
     explorationSteps: 28,
     rolloutThreshold: 0,
