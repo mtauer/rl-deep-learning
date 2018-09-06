@@ -11,6 +11,7 @@ import values from 'lodash/values';
 import take from 'lodash/take';
 import groupBy from 'lodash/groupBy';
 import difference from 'lodash/difference';
+import sortBy from 'lodash/sortBy';
 
 import { locations, routes } from './constants';
 
@@ -192,7 +193,7 @@ function performAction(state = initialState, action) {
       newState.currentMovesLeft -= 1;
       newState.playerPosition[player] = to;
       newState.playerCards[player] = newState.playerCards[player].filter(id => id !== card);
-      newState.playedPlayerCards = [...newState.playedPlayerCards, card].sort();
+      newState.playedPlayerCards = sortBy([...newState.playedPlayerCards, card]);
       break;
     }
     case CHARTER_FLIGHT: {
@@ -200,7 +201,7 @@ function performAction(state = initialState, action) {
       newState.currentMovesLeft -= 1;
       newState.playerPosition[player] = to;
       newState.playerCards[player] = newState.playerCards[player].filter(id => id !== card);
-      newState.playedPlayerCards = [...newState.playedPlayerCards, card].sort();
+      newState.playedPlayerCards = sortBy([...newState.playedPlayerCards, card]);
       break;
     }
     case SHUTTLE_FLIGHT: {
@@ -212,30 +213,30 @@ function performAction(state = initialState, action) {
     case BUILD_RESEARCH_CENTER: {
       const { at, card } = action;
       newState.currentMovesCount -= 1;
-      newState.researchCenters = [...newState.researchCenters, at].sort();
+      newState.researchCenters = sortBy([...newState.researchCenters, at]);
       newState.playerCards[player] = newState.playerCards[player].filter(id => id !== card);
-      newState.playedPlayerCards = [...newState.playedPlayerCards, card].sort();
+      newState.playedPlayerCards = sortBy([...newState.playedPlayerCards, card]);
       break;
     }
     case DISCOVER_CURE: {
       const { disease, usedCards } = action;
       newState.currentMovesCount -= 1;
-      newState.curedDiseases = [...newState.curedDiseases, disease].sort();
+      newState.curedDiseases = sortBy([...newState.curedDiseases, disease]);
       newState.playerCards[player] = difference(newState.playerCards[player], usedCards);
-      newState.playedPlayerCards = [...newState.playedPlayerCards, ...usedCards].sort();
+      newState.playedPlayerCards = sortBy([...newState.playedPlayerCards, ...usedCards]);
       break;
     }
     case SHARE_KNOWLEDGE: {
       const { card, from, to } = action;
       newState.currentMovesCount -= 1;
       newState.playerCards[from] = newState.playerCards[from].filter(id => id !== card);
-      newState.playerCards[to] = [...newState.playerCards[to], card].sort();
+      newState.playerCards[to] = sortBy([...newState.playerCards[to], card]);
       break;
     }
     case DISCARD_CARD: {
       const { card } = action;
       newState.playerCards[player] = newState.playerCards[player].filter(c => c !== card);
-      newState.playedPlayerCards = [...newState.playedPlayerCards, card].sort();
+      newState.playedPlayerCards = sortBy([...newState.playedPlayerCards, card]);
       break;
     }
     default:
@@ -250,10 +251,10 @@ function performAction(state = initialState, action) {
     } else {
       const shuffledCards = shuffle(unplayedPlayerCards);
       const newCards = take(shuffledCards, 2);
-      newState.playerCards[player] = [
+      newState.playerCards[player] = sortBy([
         ...newState.playerCards[player],
         ...newCards.filter(id => id < 48),
-      ].sort();
+      ]);
     }
     // End of turn
     newState.currentPlayer = (newState.currentPlayer + 1) % players.length;
@@ -326,12 +327,12 @@ function toKey(state) {
     state.currentPlayer,
     state.currentMovesLeft,
     state.playerPosition[0],
-    state.playerCards[0].sort().join(','),
+    sortBy(state.playerCards[0]).join(','),
     state.playerPosition[1],
-    state.playerCards[1].sort().join(','),
-    state.researchCenters.sort().join(','),
-    state.playedPlayerCards.sort().join(','),
-    state.curedDiseases.sort().join(','),
+    sortBy(state.playerCards[1]).join(','),
+    sortBy(state.researchCenters).join(','),
+    sortBy(state.playedPlayerCards).join(','),
+    sortBy(state.curedDiseases).join(','),
     state.insufficientPlayerCards ? 'X' : '_',
   ].join('|');
 }
@@ -401,7 +402,7 @@ function preparePlayerCards(state) {
   const cardsPerPlayer = cardsPerPlayerMap[players.length];
   const playerCards = fromPairs(players.map((p, i) => [
     p.id,
-    slice(cards, i * cardsPerPlayer, (i + 1) * cardsPerPlayer).sort(),
+    sortBy(slice(cards, i * cardsPerPlayer, (i + 1) * cardsPerPlayer)),
   ]));
   return {
     ...state,
