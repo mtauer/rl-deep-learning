@@ -6,11 +6,12 @@ const monitor = new Monitor();
 const config = {
   iterations: 2,
   trainingEpisodes: 300,
-  playingEpisodes: 40,
+  playingEpisodes: 50,
   mcts: {
-    simulations: 400,
+    playingSimulations: 400,
+    trainingSimulations: 800,
     cPuct: 1.0,
-    cUcb1: 0.3,
+    cUcb1: 0.7,
     temperature: 1,
     explorationSteps: 28,
     rolloutThreshold: 0,

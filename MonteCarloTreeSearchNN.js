@@ -8,7 +8,8 @@ import sample from 'lodash/sample';
 import { randomChoice } from './utils';
 
 const defaultConfig = {
-  simulations: 400,
+  playingSimulations: 400,
+  trainingSimulations: 800,
   cPuct: 1,
   cUcb1: Math.sqrt(2),
   temperature: 1,
@@ -29,7 +30,10 @@ class MonteCarloTreeSearchNN {
 
   async getActionProbabilities(game, state, neuralNetwork, step, isTraining) {
     this.simulationsEnded = 0;
-    for (let i = 0; i < this.config.simulations; i += 1) {
+    const simulations = isTraining
+      ? this.config.trainingSimulations
+      : this.config.playingSimulations;
+    for (let i = 0; i < simulations; i += 1) {
       // eslint-disable-next-line no-await-in-loop
       await sleep(0);
       this.search(game, state, neuralNetwork);
