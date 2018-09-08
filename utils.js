@@ -10,6 +10,7 @@ export function randomChoice(p) {
   });
 }
 
+// TODO move to game class
 export function toModelProbabilities(game, p, actions) {
   const pOffset = getPOffset(game);
   const length = sum(values(game.getActionsMaxCount()));
@@ -22,6 +23,7 @@ export function toModelProbabilities(game, p, actions) {
   return probabilities;
 }
 
+// TODO move to game class
 export function fromModelProbabilities(game, p, actions) {
   const pOffset = getPOffset(game);
   const probabilities = [];
