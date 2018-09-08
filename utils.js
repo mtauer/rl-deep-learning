@@ -10,7 +10,7 @@ export function randomChoice(p) {
   });
 }
 
-export function diffuseProbabilities(game, p, actions) {
+export function toModelProbabilities(game, p, actions) {
   const pOffset = getPOffset(game);
   const length = sum(values(game.getActionsMaxCount()));
   const probabilities = range(0, length, 0);
@@ -22,7 +22,7 @@ export function diffuseProbabilities(game, p, actions) {
   return probabilities;
 }
 
-export function condenseProbabilities(game, p, actions) {
+export function fromModelProbabilities(game, p, actions) {
   const pOffset = getPOffset(game);
   const probabilities = [];
   actions.forEach((a) => {
