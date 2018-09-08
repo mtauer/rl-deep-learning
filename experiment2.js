@@ -14,10 +14,10 @@ function showTestExamples(config, monitor) {
   return async function show() {
     const neuralNetwork = new PandemicNeuronalNetwork(config.neuralNetwork);
     await neuralNetwork.init();
-    const mcts = new MonteCarloTreeSearchNN(config.mcts, monitor);
+    const mcts = new MonteCarloTreeSearchNN(config.mcts, game, neuralNetwork, monitor);
     // const testExamples = getTestExamples();
     for (let i = 0; i < 1; i += 1) {
-      mcts.getActionProbabilities(game, initialState, neuralNetwork);
+      mcts.getActionProbabilities(initialState, i);
       // eslint-disable-next-line no-await-in-loop
       await sleep(6000);
     }

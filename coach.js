@@ -38,7 +38,7 @@ export default class Coach {
     let mcts;
     for (let i = allPlayingStats.length; i < this.config.playingEpisodes; i += 1) {
       console.log('Playing Episode', i);
-      mcts = new MonteCarloTreeSearchNN(this.config.mcts, monitor);
+      mcts = new MonteCarloTreeSearchNN(this.config.mcts, game, this.neuralNetwork, monitor);
       // eslint-disable-next-line no-await-in-loop
       const { steps, vValue } = await this.executeEpisode(mcts, false);
       savePlayingStats(steps, vValue);
@@ -54,7 +54,7 @@ export default class Coach {
     const episodesStats = [];
     for (let j = getSavedEpisodesCount(); j < this.config.trainingEpisodes; j += 1) {
       console.log('Training Episode', j);
-      mcts = new MonteCarloTreeSearchNN(this.config.mcts, monitor);
+      mcts = new MonteCarloTreeSearchNN(this.config.mcts, game, this.neuralNetwork, monitor);
       // eslint-disable-next-line no-await-in-loop
       const trainingExamples = await this.executeEpisode(mcts);
       const episodeStats = getEpisodeStats(trainingExamples);
@@ -74,7 +74,6 @@ export default class Coach {
     console.log('Training complete');
   }
 
-  // eslint-disable-next-line class-methods-use-this
   async evaluate() {
     this.neuralNetwork = new PandemicNeuronalNetwork(this.config.neuralNetwork);
     await this.neuralNetwork.init();
@@ -82,6 +81,7 @@ export default class Coach {
     this.neuralNetwork.evaluate(testExamples);
   }
 
+  // eslint-disable-next-line class-methods-use-this
   async executeEpisode(mcts, isTraining = true) {
     let state = game.getInitialState();
     let step = 0;
@@ -92,7 +92,7 @@ export default class Coach {
     while (true) {
       // eslint-disable-next-line no-await-in-loop
       const { probabilities, nextAction, stats } = await mcts
-        .getActionProbabilities(game, state, this.neuralNetwork, step, isTraining);
+        .getActionProbabilities(state, step, isTraining);
       const trainingExample = {
         s: game.toNNInput(state),
         pValues: probabilities,

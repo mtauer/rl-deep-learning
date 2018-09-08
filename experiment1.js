@@ -21,22 +21,22 @@ const config = {
 
 export default async function runExperiment1(socket) {
   const state = initialState;
-  const nn = new PandemicNeuronalNetwork(config.neuralNetwork);
-  await nn.init();
+  const neuralNetwork = new PandemicNeuronalNetwork(config.neuralNetwork);
+  await neuralNetwork.init();
 
-  const mcts = new MonteCarloTreeSearchNN(config.mcts);
+  const mcts = new MonteCarloTreeSearchNN(config.mcts, game, neuralNetwork);
   for (let i = 0; i < 400; i += 1) {
-    mcts.search(game, state, nn);
+    mcts.search(state);
   }
   if (socket) {
     socket.emit('simulation_update', {
       state,
       validActions: game.getValidActions(state),
-      predictedPValues: mcts.getPredictedPValues(game, state, nn),
-      predictedVValues: [mcts.getPredictedVValue(game, state, nn)],
-      naValues: mcts.getNsaValues(game, state),
-      qaValues: mcts.getQsaValues(game, state),
-      ucbSumValues: mcts.getUcbSumValues(game, state),
+      predictedPValues: mcts.getPredictedPValues(state),
+      predictedVValues: [mcts.getPredictedVValue(state)],
+      naValues: mcts.getNsaValues(state),
+      qaValues: mcts.getQsaValues(state),
+      ucbSumValues: mcts.getUcbSumValues(state),
     });
   }
 }
