@@ -6,7 +6,7 @@
   "scripts": {
     "start": "babel-node main.js",
     "server": "babel-node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -27,7 +27,8 @@
     "eslint-config-airbnb": "^17.1.0",
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-jsx-a11y": "^6.1.1",
-    "eslint-plugin-react": "^7.11.1"
+    "eslint-plugin-react": "^7.11.1",
+    "jest": "^23.5.0"
   },
   "dependencies": {
     "@tensorflow/tfjs": "^0.12.6",

@@ -1,3 +1,6 @@
+import values from 'lodash/values';
+import sum from 'lodash/sum';
+import range from 'lodash/range';
 
 export function randomChoice(p) {
   let random = Math.random();
@@ -7,12 +10,37 @@ export function randomChoice(p) {
   });
 }
 
-export function diffuseProbabilities(p, actions) {
-  const actionTypes = actions.map(a => a.type);
-  console.log('diffuseProbabilities', p, actionTypes);
+export function diffuseProbabilities(game, p, actions) {
+  const pOffset = getPOffset(game);
+  const length = sum(values(game.getActionsMaxCount()));
+  const probabilities = range(0, length, 0);
+  actions.forEach((a, i) => {
+    const offset = pOffset[a.type];
+    probabilities[offset] = p[i];
+    pOffset[a.type] += 1;
+  });
+  return probabilities;
 }
 
-export function condenseProbabilities(p, actions) {
-  const actionTypes = actions.map(a => a.type);
-  console.log('condenseProbabilities', p, actionTypes);
+export function condenseProbabilities(game, p, actions) {
+  const pOffset = getPOffset(game);
+  const probabilities = [];
+  actions.forEach((a) => {
+    const offset = pOffset[a.type];
+    probabilities.push(p[offset]);
+    pOffset[a.type] += 1;
+  });
+  return probabilities;
+}
+
+function getPOffset(game) {
+  const actionsMaxCount = game.getActionsMaxCount();
+  const actionsOrder = game.getActionsOrder();
+  const pOffset = {};
+  let offset = 0;
+  actionsOrder.forEach((type) => {
+    pOffset[type] = offset;
+    offset += actionsMaxCount[type];
+  });
+  return pOffset;
 }
