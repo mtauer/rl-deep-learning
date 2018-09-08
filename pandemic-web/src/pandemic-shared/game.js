@@ -39,7 +39,7 @@ export const DISEASE_BLACK = 'Black';
 export const DISEASE_RED = 'Red';
 
 export default {
-  toNNInput,
+  toNNState,
   toKey,
   getValidActions,
   performAction,
@@ -308,7 +308,7 @@ export function printState(state) {
   /* eslint-enable no-console */
 }
 
-function toNNInput(state) {
+function toNNState(state) {
   const buffer = toBuffer(state);
   return concat(
     buffer.currentPlayer,

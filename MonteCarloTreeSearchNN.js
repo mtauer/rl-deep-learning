@@ -82,7 +82,7 @@ class MonteCarloTreeSearchNN {
 
     if (!this.P_s[s]) {
       // This is a leaf node
-      const modelProbabilities = this.neuralNetwork.predictP(this.game.toNNInput(state));
+      const modelProbabilities = this.neuralNetwork.predictP(this.game.toNNState(state));
       validActions = this.game.getValidActions(state);
       const probabilities = fromNNProbabilities(this.game, modelProbabilities, validActions);
       this.P_s[s] = slice(probabilities, 0, validActions.length);
@@ -98,7 +98,7 @@ class MonteCarloTreeSearchNN {
         this.simulationsEnded += 1;
         v = getRolloutValue(this.game, state);
       } else {
-        v = this.neuralNetwork.predictV(this.game.toNNInput(state));
+        v = this.neuralNetwork.predictV(this.game.toNNState(state));
       }
 
       return v;
@@ -129,14 +129,14 @@ class MonteCarloTreeSearchNN {
 
   // eslint-disable-next-line class-methods-use-this
   getPredictedPValues(state) {
-    const p = this.neuralNetwork.predictP(this.game.toNNInput(state));
+    const p = this.neuralNetwork.predictP(this.game.toNNState(state));
     const validActions = this.game.getValidActions(state);
     return slice(p, 0, validActions.length);
   }
 
   // eslint-disable-next-line class-methods-use-this
   getPredictedVValue(state) {
-    const v = this.neuralNetwork.predictV(this.game.toNNInput(state));
+    const v = this.neuralNetwork.predictV(this.game.toNNState(state));
     return v;
   }
 

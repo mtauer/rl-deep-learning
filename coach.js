@@ -94,7 +94,7 @@ export default class Coach {
       const { probabilities, nextAction, stats } = await mcts
         .getActionProbabilities(state, step, isTraining);
       const trainingExample = {
-        s: game.toNNInput(state),
+        s: game.toNNState(state),
         pValues: probabilities,
         action: nextAction,
       };
