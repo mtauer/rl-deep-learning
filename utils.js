@@ -32,7 +32,8 @@ export function fromNNProbabilities(game, p, actions) {
     probabilities.push(p[offset]);
     pOffset[a.type] += 1;
   });
-  return probabilities;
+  const pSum = sum(probabilities);
+  return probabilities.map(probability => probability / pSum);
 }
 
 function getPOffset(game) {
