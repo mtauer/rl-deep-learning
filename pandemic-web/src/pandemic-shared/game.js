@@ -47,6 +47,8 @@ export default {
   hasEnded,
   getWinner,
   getInitialState,
+  getActionsOrder,
+  getActionsMaxCount,
 };
 
 function getValidActions(state = initialState) {
@@ -409,5 +411,33 @@ function preparePlayerCards(state) {
     playerCards,
     playedPlayerCards: [],
     insufficientPlayerCards: false,
+  };
+}
+
+function getActionsOrder() {
+  return [
+    DO_NOTHING,
+    BUILD_RESEARCH_CENTER,
+    DISCOVER_CURE,
+    SHARE_KNOWLEDGE,
+    DISCARD_CARD,
+    DRIVE_FERRY,
+    DIRECT_FLIGHT,
+    SHUTTLE_FLIGHT,
+    CHARTER_FLIGHT,
+  ];
+}
+
+function getActionsMaxCount() {
+  return {
+    DO_NOTHING: 1,
+    BUILD_RESEARCH_CENTER: 1,
+    DISCOVER_CURE: 1,
+    SHARE_KNOWLEDGE: 1,
+    DISCARD_CARD: 9,
+    DRIVE_FERRY: 6,
+    DIRECT_FLIGHT: 7,
+    SHUTTLE_FLIGHT: 4,
+    CHARTER_FLIGHT: 47,
   };
 }

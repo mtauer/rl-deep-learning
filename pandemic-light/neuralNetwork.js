@@ -11,7 +11,7 @@ const defaultConfig = {
 
 const INPUT_UNITS = 299;
 const HIDDEN_LAYER_UNITS = 400;
-const P_OUTPUT_UNITS = 69;
+const P_OUTPUT_UNITS = 77;
 const V_OUTPUT_UNITS = 1;
 
 export default class PandemicNeuronalNetwork {

@@ -26,19 +26,19 @@ export default class Monitor {
     });
   }
 
-  updateSimulation(mcts, game, state, neuralNetwork) {
+  updateSimulation(mcts, state) {
     const now = Date.now();
     if (mcts && this.connectedSocket && now - this.lastUpdate > 5000) {
       this.lastUpdate = now;
       this.connectedSocket.emit('simulation_update', {
         state,
-        validActions: game.getValidActions(state),
-        predictedPValues: mcts.getPredictedPValues(game, state, neuralNetwork),
-        predictedVValues: [mcts.getPredictedVValue(game, state, neuralNetwork)],
-        naValues: mcts.getNsaValues(game, state),
-        paValues: mcts.getPsaValues(game, state),
-        qaValues: mcts.getQsaValues(game, state),
-        ucbSumValues: mcts.getUcbSumValues(game, state),
+        validActions: mcts.getGame().getValidActions(state),
+        predictedPValues: mcts.getPredictedPValues(state),
+        predictedVValues: [mcts.getPredictedVValue(state)],
+        naValues: mcts.getNsaValues(state),
+        paValues: mcts.getPsaValues(state),
+        qaValues: mcts.getQsaValues(state),
+        ucbSumValues: mcts.getUcbSumValues(state),
       });
     }
   }

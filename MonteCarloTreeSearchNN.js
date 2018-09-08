@@ -5,7 +5,7 @@ import range from 'lodash/range';
 import max from 'lodash/max';
 import sample from 'lodash/sample';
 
-import { randomChoice } from './utils';
+import { randomChoice, toModelProbabilities, fromModelProbabilities } from './utils';
 
 const defaultConfig = {
   playingSimulations: 400,
@@ -18,17 +18,19 @@ const defaultConfig = {
 };
 
 class MonteCarloTreeSearchNN {
-  constructor(config = {}, monitor) {
+  constructor(config = {}, game, neuralNetwork, monitor) {
     this.config = defaultsDeep(config, defaultConfig);
     this.Q_sa = {}; // stores Q values for s,a
     this.N_sa = {}; // stores #times edge s,a was visited
     this.N_s = {}; // stores #times state s was visited
     this.P_s = {}; // stores initial policy (returned by neural network)
     this.N = 0;
+    this.game = game;
+    this.neuralNetwork = neuralNetwork;
     this.monitor = monitor;
   }
 
-  async getActionProbabilities(game, state, neuralNetwork, step, isTraining) {
+  async getActionProbabilities(state, step = null, isTraining = true) {
     this.simulationsEnded = 0;
     const simulations = isTraining
       ? this.config.trainingSimulations
@@ -36,16 +38,16 @@ class MonteCarloTreeSearchNN {
     for (let i = 0; i < simulations; i += 1) {
       // eslint-disable-next-line no-await-in-loop
       await sleep(0);
-      this.search(game, state, neuralNetwork);
+      this.search(state);
     }
     if (this.monitor) {
-      this.monitor.updateSimulation(this, game, state, neuralNetwork);
+      this.monitor.updateSimulation(this, state);
     }
 
     const temperature = isTraining && (step < this.config.explorationSteps)
       ? this.config.temperature
       : 0.01;
-    const s = game.toKey(state);
+    const s = this.game.toKey(state);
     const nValues = range(200)
       .map((i) => {
         const sa = `${s}__${i}`;
@@ -58,20 +60,21 @@ class MonteCarloTreeSearchNN {
     const temperatureNSum = sum(temperatureNValues);
     const temperatureProbabilities = temperatureNValues.map(v => v / temperatureNSum);
     const nextActionIndex = randomChoice(temperatureProbabilities);
-    const validActions = game.getValidActions(state);
+    const validActions = this.game.getValidActions(state);
+    const modelProbabilities = toModelProbabilities(this.game, probabilities, validActions);
     return {
-      probabilities,
+      probabilities: modelProbabilities,
       nextAction: validActions[nextActionIndex],
       stats: { simulationsEnded: this.simulationsEnded },
     };
   }
 
-  search(game, state, neuralNetwork) {
-    const s = game.toKey(state);
+  search(state) {
+    const s = this.game.toKey(state);
 
-    if (game.hasEnded(state)) {
+    if (this.game.hasEnded(state)) {
       this.simulationsEnded += 1;
-      return game.getValue(state);
+      return this.game.getValue(state);
     }
 
     let validActions;
@@ -79,8 +82,9 @@ class MonteCarloTreeSearchNN {
 
     if (!this.P_s[s]) {
       // This is a leaf node
-      const probabilities = neuralNetwork.predictP(game.toNNInput(state));
-      validActions = game.getValidActions(state);
+      const modelProbabilities = this.neuralNetwork.predictP(this.game.toNNInput(state));
+      validActions = this.game.getValidActions(state);
+      const probabilities = fromModelProbabilities(this.game, modelProbabilities, validActions);
       this.P_s[s] = slice(probabilities, 0, validActions.length);
       const sumP = sum(this.P_s[s]);
       if (sumP === 0) {
@@ -92,21 +96,21 @@ class MonteCarloTreeSearchNN {
       }
       if (Math.random() < this.config.rolloutThreshold) {
         this.simulationsEnded += 1;
-        v = getRolloutValue(game, state);
+        v = getRolloutValue(this.game, state);
       } else {
-        v = neuralNetwork.predictV(game.toNNInput(state));
+        v = this.neuralNetwork.predictV(this.game.toNNInput(state));
       }
 
       return v;
     }
 
-    validActions = game.getValidActions(state).map((a, index) => ({ ...a, index }));
+    validActions = this.game.getValidActions(state).map((a, index) => ({ ...a, index }));
     // Upper confidence bound
-    const ucbSumValues = this.getUcbSumValues(game, state);
+    const ucbSumValues = this.getUcbSumValues(state);
     const maxUcbSum = max(ucbSumValues);
     const nextAction = sample(validActions.filter((a, i) => ucbSumValues[i] === maxUcbSum));
-    const nextState = game.performAction(state, nextAction);
-    v = this.search(game, nextState, neuralNetwork);
+    const nextState = this.game.performAction(state, nextAction);
+    v = this.search(nextState);
 
     const sa = `${s}__${nextAction.index}`;
     if (!this.Q_sa[sa]) {
@@ -124,28 +128,28 @@ class MonteCarloTreeSearchNN {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  getPredictedPValues(game, state, neuralNetwork) {
-    const p = neuralNetwork.predictP(game.toNNInput(state));
-    const validActions = game.getValidActions(state);
+  getPredictedPValues(state) {
+    const p = this.neuralNetwork.predictP(this.game.toNNInput(state));
+    const validActions = this.game.getValidActions(state);
     return slice(p, 0, validActions.length);
   }
 
   // eslint-disable-next-line class-methods-use-this
-  getPredictedVValue(game, state, neuralNetwork) {
-    const v = neuralNetwork.predictV(game.toNNInput(state));
+  getPredictedVValue(state) {
+    const v = this.neuralNetwork.predictV(this.game.toNNInput(state));
     return v;
   }
 
-  getPsValues(game, state) {
-    const s = game.toKey(state);
-    const validActions = game.getValidActions(state).map((a, index) => ({ ...a, index }));
+  getPsValues(state) {
+    const s = this.game.toKey(state);
+    const validActions = this.game.getValidActions(state).map((a, index) => ({ ...a, index }));
     // Upper confidence bound
     return validActions.map((a, i) => this.P_s[s][i] || 0.0);
   }
 
-  getQsaValues(game, state) {
-    const s = game.toKey(state);
-    const validActions = game.getValidActions(state).map((a, index) => ({ ...a, index }));
+  getQsaValues(state) {
+    const s = this.game.toKey(state);
+    const validActions = this.game.getValidActions(state).map((a, index) => ({ ...a, index }));
     // Upper confidence bound
     return validActions.map((a, i) => {
       const sa = `${s}__${i}`;
@@ -153,9 +157,9 @@ class MonteCarloTreeSearchNN {
     });
   }
 
-  getNsaValues(game, state) {
-    const s = game.toKey(state);
-    const validActions = game.getValidActions(state).map((a, index) => ({ ...a, index }));
+  getNsaValues(state) {
+    const s = this.game.toKey(state);
+    const validActions = this.game.getValidActions(state).map((a, index) => ({ ...a, index }));
     // Upper confidence bound
     return validActions.map((a, i) => {
       const sa = `${s}__${i}`;
@@ -163,9 +167,9 @@ class MonteCarloTreeSearchNN {
     });
   }
 
-  getPsaValues(game, state) {
-    const s = game.toKey(state);
-    const validActions = game.getValidActions(state).map((a, index) => ({ ...a, index }));
+  getPsaValues(state) {
+    const s = this.game.toKey(state);
+    const validActions = this.game.getValidActions(state).map((a, index) => ({ ...a, index }));
     const nValues = validActions
       .map((a, i) => {
         const sa = `${s}__${i}`;
@@ -176,9 +180,9 @@ class MonteCarloTreeSearchNN {
     return nValues.map(v => v / nSum);
   }
 
-  getUcbSumValues(game, state) {
-    const s = game.toKey(state);
-    const validActions = game.getValidActions(state).map((a, index) => ({ ...a, index }));
+  getUcbSumValues(state) {
+    const s = this.game.toKey(state);
+    const validActions = this.game.getValidActions(state).map((a, index) => ({ ...a, index }));
     return validActions.map((a, i) => {
       const sa = `${s}__${i}`;
       const q = this.Q_sa[sa] || 0.0;
@@ -190,6 +194,10 @@ class MonteCarloTreeSearchNN {
         : this.config.cPuct * this.P_s[s][i] * Math.sqrt(this.N_s[s]) / (1 + this.N_sa[sa]);
       return ucb1 + puct;
     });
+  }
+
+  getGame() {
+    return this.game;
   }
 }
 
