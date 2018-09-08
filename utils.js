@@ -11,7 +11,7 @@ export function randomChoice(p) {
 }
 
 // TODO move to game class
-export function toModelProbabilities(game, p, actions) {
+export function toNNProbabilities(game, p, actions) {
   const pOffset = getPOffset(game);
   const length = sum(values(game.getActionsMaxCount()));
   const probabilities = range(0, length, 0);
@@ -24,7 +24,7 @@ export function toModelProbabilities(game, p, actions) {
 }
 
 // TODO move to game class
-export function fromModelProbabilities(game, p, actions) {
+export function fromNNProbabilities(game, p, actions) {
   const pOffset = getPOffset(game);
   const probabilities = [];
   actions.forEach((a) => {

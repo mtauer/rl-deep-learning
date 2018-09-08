@@ -5,7 +5,7 @@ import range from 'lodash/range';
 import max from 'lodash/max';
 import sample from 'lodash/sample';
 
-import { randomChoice, toModelProbabilities, fromModelProbabilities } from './utils';
+import { randomChoice, toNNProbabilities, fromNNProbabilities } from './utils';
 
 const defaultConfig = {
   playingSimulations: 400,
@@ -61,7 +61,7 @@ class MonteCarloTreeSearchNN {
     const temperatureProbabilities = temperatureNValues.map(v => v / temperatureNSum);
     const nextActionIndex = randomChoice(temperatureProbabilities);
     const validActions = this.game.getValidActions(state);
-    const modelProbabilities = toModelProbabilities(this.game, probabilities, validActions);
+    const modelProbabilities = toNNProbabilities(this.game, probabilities, validActions);
     return {
       probabilities: modelProbabilities,
       nextAction: validActions[nextActionIndex],
@@ -84,7 +84,7 @@ class MonteCarloTreeSearchNN {
       // This is a leaf node
       const modelProbabilities = this.neuralNetwork.predictP(this.game.toNNInput(state));
       validActions = this.game.getValidActions(state);
-      const probabilities = fromModelProbabilities(this.game, modelProbabilities, validActions);
+      const probabilities = fromNNProbabilities(this.game, modelProbabilities, validActions);
       this.P_s[s] = slice(probabilities, 0, validActions.length);
       const sumP = sum(this.P_s[s]);
       if (sumP === 0) {
