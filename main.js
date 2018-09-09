@@ -1,6 +1,6 @@
-import Coach from './coach';
+// import Coach from './coach';
 // import Monitor from './monitor';
-// import runExperiment3 from './experiment3';
+import runExperiment3 from './experiment3';
 
 // const monitor = new Monitor();
 const config = {
@@ -22,11 +22,11 @@ const config = {
   },
 };
 
-const coach = new Coach(config);
+// const coach = new Coach(config);
 // coach.play(monitor);
-coach.generateTrainingData();
+// coach.generateTrainingData();
 // coach.train(monitor);
 // coach.evaluate(monitor);
 // coach.initNN(monitor);
 
-// runExperiment3(config, monitor);
+runExperiment3(config);

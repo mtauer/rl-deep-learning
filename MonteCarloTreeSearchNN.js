@@ -45,6 +45,7 @@ export default class MonteCarloTreeSearchNN {
     const simulations = isTraining
       ? this.config.trainingSimulations
       : this.config.playingSimulations;
+    console.log('simulations', simulations);
     for (let i = 0; i < simulations; i += 1) {
       this.runSimulation();
       // Do not block the Node.js event loop
