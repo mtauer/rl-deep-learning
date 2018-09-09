@@ -9,13 +9,13 @@ import sortBy from 'lodash/sortBy';
 
 const playingEpisodesFile = './pandemic-light/stats/iteration_000_playingEpisodes.json';
 
-export function getEpisodeStats(trainingExamples) {
-  const actionGroups = groupBy(trainingExamples, e => e.action.type);
+export function getEpisodeStats(episodeResults) {
+  const actionGroups = groupBy(episodeResults.steps, s => s.action.type);
   const actionCounts = transform(actionGroups, (acc, actions, actionType) => {
     acc[actionType] = actions.length;
   }, {});
   return {
-    won: trainingExamples[0].vValue === 1,
+    won: episodeResults.vValue === 1,
     actionCounts,
   };
 }

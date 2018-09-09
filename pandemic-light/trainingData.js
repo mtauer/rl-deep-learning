@@ -6,11 +6,11 @@ import { getIterationStats, printIterationStats } from './stats';
 
 const episodesFile = './pandemic-light/training-data/episodes.json';
 
-export function saveEpisode(episodeStats, trainingExamples) {
+export function saveEpisode(episodeStats, episodeResults) {
   const episodes = readEpisodes();
   episodes.push({
     episodeStats,
-    trainingExamples,
+    episodeResults,
   });
   writeEpisodes(episodes);
 }

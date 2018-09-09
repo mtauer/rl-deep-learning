@@ -62,10 +62,10 @@ export default class Coach {
       console.log('Training Episode', j);
       mcts.reset();
       // eslint-disable-next-line no-await-in-loop
-      const trainingExamples = await this.executeEpisode(mcts);
-      const episodeStats = getEpisodeStats(trainingExamples);
+      const episodeResults = await this.executeEpisode(mcts);
+      const episodeStats = getEpisodeStats(episodeResults);
       episodesStats.push(episodeStats);
-      saveEpisode(episodeStats, trainingExamples);
+      saveEpisode(episodeStats, episodeResults);
       printIterationStats(getIterationStats(episodesStats));
     }
   }
@@ -89,8 +89,8 @@ export default class Coach {
 
   // eslint-disable-next-line class-methods-use-this
   async executeEpisode(mcts, isTraining = true) {
+    console.log(process.memoryUsage());
     let step = 0;
-    const trainingExamples = [];
     const steps = [];
     const bar = new ProgressBar('[:bar] :elapsed :ended', { total: 100, head: '>', incomplete: ' ' });
     // eslint-disable-next-line no-constant-condition
@@ -98,28 +98,17 @@ export default class Coach {
       // eslint-disable-next-line no-await-in-loop
       const { probabilities, nextAction, stats } = await mcts
         .getActionProbabilities(step, isTraining);
-      const trainingExample = {
-        state: mcts.root.state,
-        pValues: probabilities,
-        action: nextAction,
-      };
       steps.push({
         state: mcts.root.state,
         pValues: probabilities,
         action: nextAction,
       });
-      if (isTraining) {
-        trainingExamples.push(trainingExample);
-      }
       bar.tick({ ended: stats.simulationsEnded });
       // Perform action and get new state
       const nextState = game.performAction(mcts.root.state, nextAction);
       mcts.performAction(nextAction, nextState);
       if (game.hasEnded(mcts.root.state)) {
         const vValue = game.getValue(mcts.root.state);
-        if (isTraining) {
-          return trainingExamples.map(e => ({ ...e, vValue }));
-        }
         return {
           steps,
           vValue,

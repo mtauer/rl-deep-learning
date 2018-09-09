@@ -14,6 +14,10 @@ export function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+export function forceGC() {
+  if (global.gc) { global.gc(); }
+}
+
 // TODO move to game class
 export function toNNProbabilities(game, p, actions) {
   const pOffset = getPOffset(game);
