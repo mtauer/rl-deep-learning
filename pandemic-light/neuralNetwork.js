@@ -69,13 +69,24 @@ export default class PandemicNeuronalNetwork {
   }
 
   predictP(s) {
-    const p = this.pModel.predict(tf.tensor2d([s]));
-    return p.dataSync();
+    return tf.tidy(() => {
+      const p = this.pModel.predict(tf.tensor2d([s]));
+      const res = p.dataSync();
+      return res;
+    });
   }
 
   predictV(s) {
-    const v = this.vModel.predict(tf.tensor2d([s]));
-    return v.dataSync()[0];
+    return tf.tidy(() => {
+      const v = this.vModel.predict(tf.tensor2d([s]));
+      const res = v.dataSync()[0];
+      return res;
+    });
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  getMemory() {
+    return tf.memory();
   }
 
   evaluate(testExamples) {
