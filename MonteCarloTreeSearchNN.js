@@ -11,7 +11,7 @@ import find from 'lodash/find';
 import isEqual from 'lodash/isEqual';
 import remove from 'lodash/remove';
 
-import { sleep, randomChoice, fromNNProbabilities } from './utils';
+import { sleep, randomChoice, forceGC, fromNNProbabilities } from './utils';
 
 const defaultConfig = {
   playingSimulations: 400,
@@ -35,6 +35,7 @@ export default class MonteCarloTreeSearchNN {
   reset() {
     this.root = new StateNode(this.game.getInitialState(), false);
     this.simulationsEnded = 0;
+    forceGC();
   }
 
   async getActionProbabilities(step = 0, isTraining = true) {
