@@ -38,6 +38,9 @@ export default class MonteCarloTreeSearchNN {
   }
 
   async getActionProbabilities(step = 0, isTraining = true) {
+    if (step % 10 === 0) {
+      console.log('Heap used (in MB)', (process.memoryUsage().heapUsed / 1000000).toFixed(3));
+    }
     this.simulationsEnded = 0;
     const simulations = isTraining
       ? this.config.trainingSimulations

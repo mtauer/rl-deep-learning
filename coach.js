@@ -10,6 +10,7 @@ import { getEpisodeStats, getIterationStats, printIterationStats,
 import { saveEpisode, getSavedEpisodesCount, summarizeSavedEpisodes,
   getSavedTrainingExamples } from './pandemic-light/trainingData';
 import { getTestExamples } from './pandemic-light/testData';
+import { forceGC } from './utils';
 
 const defaultConfig = {
   iterations: 1,
@@ -41,10 +42,12 @@ export default class Coach {
     this.neuralNetwork = new PandemicNeuronalNetwork(this.config.neuralNetwork);
     await this.neuralNetwork.init();
     const allPlayingStats = loadPlayingStats();
-    const mcts = new MonteCarloTreeSearchNN(this.config.mcts, game, this.neuralNetwork, monitor);
+    let mcts;
+    // const mcts = new MonteCarloTreeSearchNN(this.config.mcts, game, this.neuralNetwork, monitor);
     for (let i = allPlayingStats.length; i < this.config.playingEpisodes; i += 1) {
       console.log('Playing Episode', i);
-      mcts.reset();
+      mcts = new MonteCarloTreeSearchNN(this.config.mcts, game, this.neuralNetwork, monitor);
+      forceGC();
       // eslint-disable-next-line no-await-in-loop
       const { steps, vValue } = await this.executeEpisode(mcts, false);
       savePlayingStats(steps, vValue);
@@ -89,7 +92,6 @@ export default class Coach {
 
   // eslint-disable-next-line class-methods-use-this
   async executeEpisode(mcts, isTraining = true) {
-    console.log(process.memoryUsage());
     let step = 0;
     const steps = [];
     const bar = new ProgressBar('[:bar] :elapsed :ended', { total: 100, head: '>', incomplete: ' ' });
