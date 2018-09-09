@@ -9,6 +9,7 @@ import sample from 'lodash/sample';
 import sum from 'lodash/sum';
 import find from 'lodash/find';
 import isEqual from 'lodash/isEqual';
+import remove from 'lodash/remove';
 
 import { sleep, randomChoice, fromNNProbabilities } from './utils';
 
@@ -87,7 +88,7 @@ export default class MonteCarloTreeSearchNN {
     if (!stateNode) {
       stateNode = new StateNode(state, this.game.hasEnded(state));
     }
-    stateNode.parent = undefined;
+    actionNode.removeStateNode(stateNode);
     this.root = stateNode;
   }
 
@@ -234,6 +235,11 @@ export class ActionNode {
     const newStateNode = new StateNode(state, hasEnded, this);
     this.stateNodes = [...this.stateNodes, newStateNode];
     return newStateNode;
+  }
+
+  removeStateNode(stateNode) {
+    remove(this.stateNodes, sn => sn === stateNode);
+    stateNode.parent = undefined;
   }
 
   print(depth = 0, game) {
