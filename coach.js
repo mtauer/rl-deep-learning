@@ -7,8 +7,9 @@ import PandemicNeuronalNetwork from './pandemic-light/neuralNetwork';
 import MonteCarloTreeSearchNN from './MonteCarloTreeSearchNN';
 import { getEpisodeStats, getIterationStats, printIterationStats,
   savePlayingStats, loadPlayingStats } from './pandemic-light/stats';
-import { saveEpisode, getSavedEpisodesCount, summarizeSavedEpisodes,
+import { getSavedEpisodesCount, summarizeSavedEpisodes,
   getSavedTrainingExamples } from './pandemic-light/trainingData';
+import { writeTrainingEpisode } from './pandemic-light/storage';
 import { getTestExamples } from './pandemic-light/testData';
 
 const defaultConfig = {
@@ -68,7 +69,7 @@ export default class Coach {
       const episodeResults = await this.executeEpisode(mcts);
       const episodeStats = getEpisodeStats(episodeResults);
       episodesStats.push(episodeStats);
-      saveEpisode(episodeStats, episodeResults);
+      writeTrainingEpisode(episodeStats, episodeResults, 0);
       printIterationStats(getIterationStats(episodesStats));
     }
   }
