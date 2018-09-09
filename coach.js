@@ -31,6 +31,12 @@ export default class Coach {
     this.config = defaultsDeep(config, defaultConfig);
   }
 
+  async initNN() {
+    this.neuralNetwork = new PandemicNeuronalNetwork(this.config.neuralNetwork);
+    await this.neuralNetwork.init();
+    await this.neuralNetwork.save();
+  }
+
   async play(monitor) {
     this.neuralNetwork = new PandemicNeuronalNetwork(this.config.neuralNetwork);
     await this.neuralNetwork.init();

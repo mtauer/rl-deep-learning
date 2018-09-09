@@ -111,4 +111,9 @@ export default class PandemicNeuronalNetwork {
     });
     await this.vModel.save(`file://${this.config.modelPath}vModel-${packageJson.version}-rules-0`);
   }
+
+  async save() {
+    await this.pModel.save(`file://${this.config.modelPath}pModel-${packageJson.version}-rules-0`);
+    await this.vModel.save(`file://${this.config.modelPath}vModel-${packageJson.version}-rules-0`);
+  }
 }
