@@ -1,11 +1,16 @@
+/* eslint-disable no-param-reassign */
+/* eslint-disable no-await-in-loop */
+
 import defaultsDeep from 'lodash/defaultsDeep';
-import slice from 'lodash/slice';
-import sum from 'lodash/sum';
-import range from 'lodash/range';
+import isEmpty from 'lodash/isEmpty';
+import repeat from 'lodash/repeat';
 import max from 'lodash/max';
 import sample from 'lodash/sample';
+import sum from 'lodash/sum';
+import find from 'lodash/find';
+import isEqual from 'lodash/isEqual';
 
-import { randomChoice, toNNProbabilities, fromNNProbabilities } from './utils';
+import { sleep, randomChoice, fromNNProbabilities } from './utils';
 
 const defaultConfig = {
   playingSimulations: 400,
@@ -17,183 +22,195 @@ const defaultConfig = {
   rolloutThreshold: 0,
 };
 
-class MonteCarloTreeSearchNN {
+export default class MonteCarloTreeSearchNN {
   constructor(config = {}, game, neuralNetwork, monitor) {
     this.config = defaultsDeep(config, defaultConfig);
-    this.Q_sa = {}; // stores Q values for s,a
-    this.N_sa = {}; // stores #times edge s,a was visited
-    this.N_s = {}; // stores #times state s was visited
-    this.P_s = {}; // stores initial policy (returned by neural network)
-    this.N = 0;
     this.game = game;
     this.neuralNetwork = neuralNetwork;
     this.monitor = monitor;
+    this.reset();
   }
 
-  async getActionProbabilities(state, step = null, isTraining = true) {
+  reset() {
+    this.root = new StateNode(this.game.getInitialState(), false);
+    this.simulationsEnded = 0;
+  }
+
+  async getActionProbabilities(step = 0, isTraining = true) {
     this.simulationsEnded = 0;
     const simulations = isTraining
       ? this.config.trainingSimulations
       : this.config.playingSimulations;
     for (let i = 0; i < simulations; i += 1) {
-      // eslint-disable-next-line no-await-in-loop
+      this.runSimulation();
+      // Do not block the Node.js event loop
       await sleep(0);
-      this.search(state);
     }
     if (this.monitor) {
-      this.monitor.updateSimulation(this, state);
+      this.monitor.updateSimulation(this, this.root.state);
     }
-
     const temperature = isTraining && (step < this.config.explorationSteps)
       ? this.config.temperature
       : 0.01;
-    const s = this.game.toKey(state);
-    const nValues = range(200)
-      .map((i) => {
-        const sa = `${s}__${i}`;
-        return this.N_sa[sa] || 0;
-      });
-      //
+    const nValues = this.getNsaValues()
+      .map(n => n ** temperature);
     const nSum = sum(nValues);
     const probabilities = nValues.map(v => v / nSum);
-    const temperatureNValues = nValues.map(v => v ** (1 / temperature));
-    const temperatureNSum = sum(temperatureNValues);
-    const temperatureProbabilities = temperatureNValues.map(v => v / temperatureNSum);
-    const nextActionIndex = randomChoice(temperatureProbabilities);
-    const validActions = this.game.getValidActions(state);
-    const modelProbabilities = toNNProbabilities(this.game, probabilities, validActions);
+    const nextActionIndex = randomChoice(probabilities);
+    const validActions = this.game.getValidActions(this.root.state);
     return {
-      probabilities: modelProbabilities,
+      probabilities,
       nextAction: validActions[nextActionIndex],
       stats: { simulationsEnded: this.simulationsEnded },
     };
   }
 
-  search(state) {
-    const s = this.game.toKey(state);
+  runSimulation() {
+    let currentStateNode;
+    // 1. Tree traversal
+    currentStateNode = this.traverseTree(this.root);
+    // 2. Node expansion
+    currentStateNode = this.expandNode(currentStateNode);
+    // 3. Rollout / predict v value
+    const vValue = this.getVValue(currentStateNode);
+    // 4. Back propagation
+    this.backPropagateValue(currentStateNode, vValue);
+    // 5. Update UCB values
+    this.calculateUCBValues(this.root);
+  }
 
-    if (this.game.hasEnded(state)) {
+  performAction(action, state) {
+    const actionNode = find(this.root.actionNodes,
+      an => isEqual(an.action, action));
+    let stateNode = find(actionNode.stateNodes,
+      sn => this.game.toKey(sn.state) === this.game.toKey(state));
+    if (!stateNode) {
+      stateNode = new StateNode(state, this.game.hasEnded(state));
+    }
+    stateNode.parent = undefined;
+    this.root = stateNode;
+  }
+
+  traverseTree(stateNode) {
+    const { state } = stateNode;
+    if (stateNode.isLeaf()) { return stateNode; }
+
+    const maxUcb = max(stateNode.actionNodes.map(an => an.ucb));
+    const actionNodes = stateNode.actionNodes.filter(an => an.ucb === maxUcb);
+    const actionNode = sample(actionNodes);
+
+    const nextState = this.game.performAction(state, actionNode.action);
+    const nextStateNodes = actionNode.stateNodes
+      .filter(sn => this.game.toKey(sn.state) === this.game.toKey(nextState));
+    if (nextStateNodes[0]) { return this.traverseTree(nextStateNodes[0]); }
+
+    return actionNode.createAndAddStateNode(nextState, this.game.hasEnded(nextState));
+  }
+
+  expandNode(stateNode) {
+    const { state, hasEnded } = stateNode;
+    if (hasEnded) {
+      return stateNode;
+    }
+
+    const validActions = this.game.getValidActions(state);
+    const actionNodes = stateNode.createAndAddActionNodes(validActions);
+    const probabilities = fromNNProbabilities(
+      this.game,
+      this.neuralNetwork.predictP(this.game.toNNState(state)),
+      validActions,
+    );
+    actionNodes.forEach((actionNode, i) => {
+      actionNode.p = probabilities[i];
+    });
+    const actionIndex = randomChoice(probabilities);
+    const nextState = this.game.performAction(state, validActions[actionIndex]);
+    const nextStateNode = actionNodes[actionIndex]
+      .createAndAddStateNode(nextState, this.game.hasEnded(nextState));
+    return nextStateNode;
+  }
+
+  getVValue(stateNode) {
+    const { state, hasEnded } = stateNode;
+    if (hasEnded) {
       this.simulationsEnded += 1;
       return this.game.getValue(state);
     }
-
-    let validActions;
-    let v;
-
-    if (!this.P_s[s]) {
-      // This is a leaf node
-      const modelProbabilities = this.neuralNetwork.predictP(this.game.toNNState(state));
-      validActions = this.game.getValidActions(state);
-      const probabilities = fromNNProbabilities(this.game, modelProbabilities, validActions);
-      this.P_s[s] = slice(probabilities, 0, validActions.length);
-      const sumP = sum(this.P_s[s]);
-      if (sumP === 0) {
-        // eslint-disable-next-line no-console
-        // console.log('Warning: All valid moves were masked.');
-        this.P_s[s] = validActions.map(() => 1.0 / validActions.length);
-      } else {
-        this.P_s[s] = this.P_s[s].map(x => x / sumP);
-      }
-      if (Math.random() < this.config.rolloutThreshold) {
-        this.simulationsEnded += 1;
-        v = getRolloutValue(this.game, state);
-      } else {
-        v = this.neuralNetwork.predictV(this.game.toNNState(state));
-      }
-
-      return v;
+    if (Math.random() < this.config.rolloutThreshold) {
+      return getRolloutValue(this.game, state);
     }
+    return this.neuralNetwork.predictV(this.game.toNNState(state));
 
-    validActions = this.game.getValidActions(state).map((a, index) => ({ ...a, index }));
-    // Upper confidence bound
-    const ucbSumValues = this.getUcbSumValues(state);
-    const maxUcbSum = max(ucbSumValues);
-    const nextAction = sample(validActions.filter((a, i) => ucbSumValues[i] === maxUcbSum));
-    const nextState = this.game.performAction(state, nextAction);
-    v = this.search(nextState);
-
-    const sa = `${s}__${nextAction.index}`;
-    if (!this.Q_sa[sa]) {
-      this.Q_sa[sa] = v;
-      this.N_sa[sa] = 1;
-      this.N += 1;
-    } else {
-      this.Q_sa[sa] = (this.N_sa[sa] * this.Q_sa[sa] + v) / (this.N_sa[sa] + 1);
-      this.N_sa[sa] += 1;
-      this.N += 1;
+    function getRolloutValue(game, s) {
+      if (game.hasEnded(s)) { return game.getValue(s); }
+      const nextAction = sample(game.getValidActions(s));
+      const nextState = game.performAction(s, nextAction);
+      return getRolloutValue(game, nextState);
     }
-
-    this.N_s[s] = this.N_s[s] ? this.N_s[s] + 1 : 1;
-    return v;
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  getPredictedPValues(state) {
-    const p = this.neuralNetwork.predictP(this.game.toNNState(state));
-    const validActions = this.game.getValidActions(state);
-    return slice(p, 0, validActions.length);
+  backPropagateValue(node, value) {
+    if (!node) { return; }
+    if (node.q !== undefined) {
+      node.q = (node.q * node.n + value) / (node.n + 1);
+    }
+    node.n += 1;
+    this.backPropagateValue(node.parent, value);
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  getPredictedVValue(state) {
-    const v = this.neuralNetwork.predictV(this.game.toNNState(state));
-    return v;
-  }
-
-  getPsValues(state) {
-    const s = this.game.toKey(state);
-    const validActions = this.game.getValidActions(state).map((a, index) => ({ ...a, index }));
-    // Upper confidence bound
-    return validActions.map((a, i) => this.P_s[s][i] || 0.0);
-  }
-
-  getQsaValues(state) {
-    const s = this.game.toKey(state);
-    const validActions = this.game.getValidActions(state).map((a, index) => ({ ...a, index }));
-    // Upper confidence bound
-    return validActions.map((a, i) => {
-      const sa = `${s}__${i}`;
-      return this.Q_sa[sa] || 0.0;
+  calculateUCBValues(stateNode) {
+    const { n: N } = stateNode;
+    const { cUcb1, cPuct } = this.config;
+    stateNode.actionNodes.forEach((actionNode) => {
+      const { q, p, n } = actionNode;
+      const ucb1 = !n
+        ? q + cUcb1 * 1
+        : q + cUcb1 * Math.sqrt(Math.log(this.root.n) / n);
+      const puct = cPuct * p * Math.sqrt(N) / (1 + n);
+      actionNode.ucb = ucb1 + puct;
+      actionNode.stateNodes.forEach((sn) => {
+        this.calculateUCBValues(sn);
+      });
     });
   }
 
-  getNsaValues(state) {
-    const s = this.game.toKey(state);
-    const validActions = this.game.getValidActions(state).map((a, index) => ({ ...a, index }));
-    // Upper confidence bound
-    return validActions.map((a, i) => {
-      const sa = `${s}__${i}`;
-      return this.N_sa[sa] || 0.0;
-    });
+  getPredictedPValues() {
+    const validActions = this.game.getValidActions(this.root.state);
+    const probabilities = fromNNProbabilities(
+      this.game,
+      this.neuralNetwork.predictP(this.game.toNNState(this.root.state)),
+      validActions,
+    );
+    return probabilities;
   }
 
-  getPsaValues(state) {
-    const s = this.game.toKey(state);
-    const validActions = this.game.getValidActions(state).map((a, index) => ({ ...a, index }));
-    const nValues = validActions
-      .map((a, i) => {
-        const sa = `${s}__${i}`;
-        return this.N_sa[sa] || 0;
-      })
+  getPredictedVValue() {
+    const v = this.neuralNetwork.predictV(this.game.toNNState(this.root.state));
+    return v;
+  }
+
+  getQsaValues() {
+    const { actionNodes } = this.root;
+    return actionNodes.map(an => an.q);
+  }
+
+  getNsaValues() {
+    const { actionNodes } = this.root;
+    return actionNodes.map(an => an.n);
+  }
+
+  getPsaValues() {
+    const { actionNodes } = this.root;
+    const nValues = actionNodes
+      .map(an => an.n)
       .map(v => v ** (1 / this.config.temperature));
     const nSum = sum(nValues);
     return nValues.map(v => v / nSum);
   }
 
-  getUcbSumValues(state) {
-    const s = this.game.toKey(state);
-    const validActions = this.game.getValidActions(state).map((a, index) => ({ ...a, index }));
-    return validActions.map((a, i) => {
-      const sa = `${s}__${i}`;
-      const q = this.Q_sa[sa] || 0.0;
-      const ucb1 = !this.N_sa[sa]
-        ? q + this.config.cUcb1 * 2
-        : q + this.config.cUcb1 * Math.sqrt(Math.log(this.N) / this.N_sa[sa]);
-      const puct = !this.N_s[s] || !this.N_sa[sa]
-        ? this.config.cPuct * this.P_s[s][i]
-        : this.config.cPuct * this.P_s[s][i] * Math.sqrt(this.N_s[s]) / (1 + this.N_sa[sa]);
-      return ucb1 + puct;
-    });
+  getUcbSumValues() {
+    const { actionNodes } = this.root;
+    return actionNodes.map(an => an.ucb);
   }
 
   getGame() {
@@ -201,15 +218,57 @@ class MonteCarloTreeSearchNN {
   }
 }
 
-function getRolloutValue(game, state) {
-  if (game.hasEnded(state)) { return game.getValue(state); }
-  const nextAction = sample(game.getValidActions(state));
-  const nextState = game.performAction(state, nextAction);
-  return getRolloutValue(game, nextState);
+export class ActionNode {
+  constructor(action, parent) {
+    this.stateNodes = [];
+    this.parent = parent;
+    this.n = 0;
+    this.w = 0;
+    this.q = 0;
+    this.p = 0;
+    this.ucb = Number.POSITIVE_INFINITY;
+    this.action = action;
+  }
+
+  createAndAddStateNode(state, hasEnded) {
+    const newStateNode = new StateNode(state, hasEnded, this);
+    this.stateNodes = [...this.stateNodes, newStateNode];
+    return newStateNode;
+  }
+
+  print(depth = 0, game) {
+    // eslint-disable-next-line no-console
+    console.log(repeat('  ', depth), '+-', this.n, this.q.toFixed(3), this.ucb.toFixed(3), this.action.type);
+    this.stateNodes.forEach((stateNode) => {
+      stateNode.print(depth + 1, game);
+    });
+  }
 }
 
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
+export class StateNode {
+  constructor(state, hasEnded, parent) {
+    this.actionNodes = [];
+    this.parent = parent;
+    this.n = 0;
+    this.state = state;
+    this.hasEnded = hasEnded;
+  }
 
-export default MonteCarloTreeSearchNN;
+  isLeaf() {
+    return isEmpty(this.actionNodes);
+  }
+
+  createAndAddActionNodes(actions) {
+    const newActionNodes = actions.map(a => new ActionNode(a, this));
+    this.actionNodes = [...this.actionNodes, ...newActionNodes];
+    return newActionNodes;
+  }
+
+  print(depth = 0, game) {
+    // eslint-disable-next-line no-console
+    console.log(repeat('  ', depth), '+-', game ? game.toKey(this.state) : '');
+    this.actionNodes.forEach((actionNode) => {
+      actionNode.print(depth + 1, game);
+    });
+  }
+}

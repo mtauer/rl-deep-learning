@@ -4,7 +4,7 @@ import ProgressBar from 'progress';
 
 import game from './pandemic-web/src/pandemic-shared/game';
 import PandemicNeuronalNetwork from './pandemic-light/neuralNetwork';
-import MonteCarloTreeSearchNN2 from './MonteCarloTreeSearchNN2';
+import MonteCarloTreeSearchNN from './MonteCarloTreeSearchNN';
 import { getEpisodeStats, getIterationStats, printIterationStats,
   savePlayingStats, loadPlayingStats } from './pandemic-light/stats';
 import { saveEpisode, getSavedEpisodesCount, summarizeSavedEpisodes,
@@ -41,7 +41,7 @@ export default class Coach {
     this.neuralNetwork = new PandemicNeuronalNetwork(this.config.neuralNetwork);
     await this.neuralNetwork.init();
     const allPlayingStats = loadPlayingStats();
-    const mcts = new MonteCarloTreeSearchNN2(this.config.mcts, game, this.neuralNetwork, monitor);
+    const mcts = new MonteCarloTreeSearchNN(this.config.mcts, game, this.neuralNetwork, monitor);
     for (let i = allPlayingStats.length; i < this.config.playingEpisodes; i += 1) {
       console.log('Playing Episode', i);
       mcts.reset();
@@ -56,7 +56,7 @@ export default class Coach {
     this.neuralNetwork = new PandemicNeuronalNetwork(this.config.neuralNetwork);
     await this.neuralNetwork.init();
     summarizeSavedEpisodes();
-    const mcts = new MonteCarloTreeSearchNN2(this.config.mcts, game, this.neuralNetwork, monitor);
+    const mcts = new MonteCarloTreeSearchNN(this.config.mcts, game, this.neuralNetwork, monitor);
     const episodesStats = [];
     for (let j = getSavedEpisodesCount(); j < this.config.trainingEpisodes; j += 1) {
       console.log('Training Episode', j);

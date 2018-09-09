@@ -1,6 +1,6 @@
 import ProgressBar from 'progress';
 
-import MonteCarloTreeSearchNN2 from './MonteCarloTreeSearchNN2';
+import MonteCarloTreeSearchNN from './MonteCarloTreeSearchNN';
 import game from './pandemic-web/src/pandemic-shared/game';
 import PandemicNeuronalNetwork from './pandemic-light/neuralNetwork';
 
@@ -12,7 +12,7 @@ function showTestExamples(config, monitor) {
   return async function show() {
     const neuralNetwork = new PandemicNeuronalNetwork(config.neuralNetwork);
     await neuralNetwork.init();
-    const mcts = new MonteCarloTreeSearchNN2(config.mcts, game, neuralNetwork, monitor);
+    const mcts = new MonteCarloTreeSearchNN(config.mcts, game, neuralNetwork, monitor);
     const res = await executeEpisode(mcts, false);
     console.log('res', res);
   };
