@@ -34,7 +34,7 @@ export function getSavedTrainingExamples() {
   return flatten(trainingExamples);
 }
 
-function readEpisodes() {
+export function readEpisodes() {
   return JSON.parse(fs.readFileSync(episodesFile) || []);
 }
 
