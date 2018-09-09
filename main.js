@@ -1,8 +1,8 @@
-// import Coach from './coach';
-// import Monitor from './monitor';
-import runExperiment3 from './experiment3';
+import Coach from './coach';
+import Monitor from './monitor';
+// import runExperiment4 from './experiment4';
 
-// const monitor = new Monitor();
+const monitor = new Monitor();
 const config = {
   iterations: 2,
   trainingEpisodes: 300,
@@ -22,11 +22,11 @@ const config = {
   },
 };
 
-// const coach = new Coach(config);
+const coach = new Coach(config);
 // coach.play(monitor);
-// coach.generateTrainingData();
+coach.generateTrainingData(monitor);
 // coach.train(monitor);
 // coach.evaluate(monitor);
 // coach.initNN(monitor);
 
-runExperiment3(config);
+// runExperiment4(config);

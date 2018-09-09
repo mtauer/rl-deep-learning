@@ -10,7 +10,6 @@ import { getEpisodeStats, getIterationStats, printIterationStats,
 import { saveEpisode, getSavedEpisodesCount, summarizeSavedEpisodes,
   getSavedTrainingExamples } from './pandemic-light/trainingData';
 import { getTestExamples } from './pandemic-light/testData';
-import { forceGC } from './utils';
 
 const defaultConfig = {
   iterations: 1,
@@ -42,12 +41,12 @@ export default class Coach {
     this.neuralNetwork = new PandemicNeuronalNetwork(this.config.neuralNetwork);
     await this.neuralNetwork.init();
     const allPlayingStats = loadPlayingStats();
-    let mcts;
+    const mcts = new MonteCarloTreeSearchNN(this.config.mcts, game, this.neuralNetwork, monitor);
     // const mcts = new MonteCarloTreeSearchNN(this.config.mcts, game, this.neuralNetwork, monitor);
     for (let i = allPlayingStats.length; i < this.config.playingEpisodes; i += 1) {
+      mcts.reset();
       console.log('Playing Episode', i);
-      mcts = new MonteCarloTreeSearchNN(this.config.mcts, game, this.neuralNetwork, monitor);
-      forceGC();
+      console.log('Heap used (in MB)', (process.memoryUsage().heapUsed / 1000000).toFixed(3));
       // eslint-disable-next-line no-await-in-loop
       const { steps, vValue } = await this.executeEpisode(mcts, false);
       savePlayingStats(steps, vValue);
@@ -62,8 +61,9 @@ export default class Coach {
     const mcts = new MonteCarloTreeSearchNN(this.config.mcts, game, this.neuralNetwork, monitor);
     const episodesStats = [];
     for (let j = getSavedEpisodesCount(); j < this.config.trainingEpisodes; j += 1) {
-      console.log('Training Episode', j);
       mcts.reset();
+      console.log('Training Episode', j);
+      console.log('Heap used (in MB)', (process.memoryUsage().heapUsed / 1000000).toFixed(3));
       // eslint-disable-next-line no-await-in-loop
       const episodeResults = await this.executeEpisode(mcts);
       const episodeStats = getEpisodeStats(episodeResults);
