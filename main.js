@@ -1,6 +1,10 @@
-// import Coach from './coach';
+import memwatchNext from 'memwatch-next';
+
+import Coach from './coach';
 import Monitor from './monitor';
-import runExperiment3 from './experiment3';
+// import runExperiment3 from './experiment3';
+
+memwatchNext.on('leak', info => console.log('+++ leak', info));
 
 const monitor = new Monitor();
 const config = {
@@ -22,9 +26,10 @@ const config = {
   },
 };
 
-// const coach = new Coach(config);
+const coach = new Coach(config);
 // coach.play(monitor);
+coach.generateTrainingData(monitor);
 // coach.train(monitor);
 // coach.evaluate(monitor);
 
-runExperiment3(config, monitor);
+// runExperiment3(config, monitor);

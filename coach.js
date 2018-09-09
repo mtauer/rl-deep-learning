@@ -4,7 +4,7 @@ import ProgressBar from 'progress';
 
 import game from './pandemic-web/src/pandemic-shared/game';
 import PandemicNeuronalNetwork from './pandemic-light/neuralNetwork';
-import MonteCarloTreeSearchNN from './MonteCarloTreeSearchNN';
+import MonteCarloTreeSearchNN2 from './MonteCarloTreeSearchNN2';
 import { getEpisodeStats, getIterationStats, printIterationStats,
   savePlayingStats, loadPlayingStats } from './pandemic-light/stats';
 import { saveEpisode, getSavedEpisodesCount, summarizeSavedEpisodes,
@@ -35,10 +35,10 @@ export default class Coach {
     this.neuralNetwork = new PandemicNeuronalNetwork(this.config.neuralNetwork);
     await this.neuralNetwork.init();
     const allPlayingStats = loadPlayingStats();
-    let mcts;
+    const mcts = new MonteCarloTreeSearchNN2(this.config.mcts, game, this.neuralNetwork, monitor);
     for (let i = allPlayingStats.length; i < this.config.playingEpisodes; i += 1) {
       console.log('Playing Episode', i);
-      mcts = new MonteCarloTreeSearchNN(this.config.mcts, game, this.neuralNetwork, monitor);
+      mcts.reset();
       // eslint-disable-next-line no-await-in-loop
       const { steps, vValue } = await this.executeEpisode(mcts, false);
       savePlayingStats(steps, vValue);
@@ -50,11 +50,11 @@ export default class Coach {
     this.neuralNetwork = new PandemicNeuronalNetwork(this.config.neuralNetwork);
     await this.neuralNetwork.init();
     summarizeSavedEpisodes();
-    let mcts;
+    const mcts = new MonteCarloTreeSearchNN2(this.config.mcts, game, this.neuralNetwork, monitor);
     const episodesStats = [];
     for (let j = getSavedEpisodesCount(); j < this.config.trainingEpisodes; j += 1) {
       console.log('Training Episode', j);
-      mcts = new MonteCarloTreeSearchNN(this.config.mcts, game, this.neuralNetwork, monitor);
+      mcts.reset();
       // eslint-disable-next-line no-await-in-loop
       const trainingExamples = await this.executeEpisode(mcts);
       const episodeStats = getEpisodeStats(trainingExamples);
@@ -83,7 +83,6 @@ export default class Coach {
 
   // eslint-disable-next-line class-methods-use-this
   async executeEpisode(mcts, isTraining = true) {
-    let state = game.getInitialState();
     let step = 0;
     const trainingExamples = [];
     const steps = [];
@@ -92,14 +91,14 @@ export default class Coach {
     while (true) {
       // eslint-disable-next-line no-await-in-loop
       const { probabilities, nextAction, stats } = await mcts
-        .getActionProbabilities(state, step, isTraining);
+        .getActionProbabilities(step, isTraining);
       const trainingExample = {
-        s: game.toNNState(state),
+        state: mcts.root.state,
         pValues: probabilities,
         action: nextAction,
       };
       steps.push({
-        state,
+        state: mcts.root.state,
         pValues: probabilities,
         action: nextAction,
       });
@@ -108,9 +107,10 @@ export default class Coach {
       }
       bar.tick({ ended: stats.simulationsEnded });
       // Perform action and get new state
-      state = game.performAction(state, nextAction);
-      if (game.hasEnded(state)) {
-        const vValue = game.getValue(state);
+      const nextState = game.performAction(mcts.root.state, nextAction);
+      mcts.performAction(nextAction, nextState);
+      if (game.hasEnded(mcts.root.state)) {
+        const vValue = game.getValue(mcts.root.state);
         if (isTraining) {
           return trainingExamples.map(e => ({ ...e, vValue }));
         }
