@@ -38,14 +38,10 @@ export default class MonteCarloTreeSearchNN {
   }
 
   async getActionProbabilities(step = 0, isTraining = true) {
-    if (step % 10 === 0) {
-      console.log('Heap used (in MB)', (process.memoryUsage().heapUsed / 1000000).toFixed(3));
-    }
     this.simulationsEnded = 0;
     const simulations = isTraining
       ? this.config.trainingSimulations
       : this.config.playingSimulations;
-    console.log('simulations', simulations);
     for (let i = 0; i < simulations; i += 1) {
       this.runSimulation();
       // Do not block the Node.js event loop
