@@ -46,7 +46,7 @@ export default class Coach {
       const episodeResults = await this.executeEpisode(mcts);
       const episodeStats = getEpisodeStats(episodeResults);
       const trainingEpisode = { episodeStats, episodeResults };
-      writeTrainingEpisode(trainingEpisode, 0);
+      writeTrainingEpisode(trainingEpisode, iteration);
       trainingEpisodes.push(trainingEpisode);
     }
     console.log('Training finished');
