@@ -123,8 +123,50 @@ export default class PandemicNeuronalNetwork {
     await this.vModel.save(`file://${this.config.modelPath}vModel-${packageJson.version}-rules-0`);
   }
 
+  build() {
+    this.pModel = tf.sequential({
+      layers: [
+        tf.layers.dense({ units: HIDDEN_LAYER_UNITS, inputShape: [INPUT_UNITS], activation: 'relu' }),
+        tf.layers.dropout({ rate: 0.2 }),
+        tf.layers.dense({ units: HIDDEN_LAYER_UNITS, activation: 'relu' }),
+        tf.layers.dense({ units: P_OUTPUT_UNITS, activation: 'softmax' }),
+      ],
+    });
+    this.vModel = tf.sequential({
+      layers: [
+        tf.layers.dense({ units: HIDDEN_LAYER_UNITS, inputShape: [INPUT_UNITS], activation: 'relu' }),
+        tf.layers.dropout({ rate: 0.2 }),
+        tf.layers.dense({ units: HIDDEN_LAYER_UNITS, activation: 'relu' }),
+        tf.layers.dense({ units: V_OUTPUT_UNITS, activation: 'tanh' }),
+      ],
+    });
+    this.compile();
+  }
+
+  async load(directory) {
+    this.pModel = await tf.loadModel(`file://${directory}/pModel/model.json`);
+    this.vModel = await tf.loadModel(`file://${directory}/vModel/model.json`);
+    this.compile();
+  }
+
   async save(directory) {
     await this.pModel.save(`file://${directory}/pModel`);
     await this.vModel.save(`file://${directory}/vModel`);
+  }
+
+  compile() {
+    this.pModel.compile({
+      optimizer: 'adam',
+      loss: 'categoricalCrossentropy',
+      metrics: ['accuracy'],
+    });
+    this.pModel.summary();
+
+    this.vModel.compile({
+      optimizer: 'sgd',
+      loss: 'meanSquaredError',
+      metrics: ['accuracy'],
+    });
+    this.vModel.summary();
   }
 }

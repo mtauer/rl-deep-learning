@@ -34,6 +34,15 @@ export async function writeModel(neuralNetwork, iteration, tag) {
   await neuralNetwork.save(directory);
 }
 
+export async function readModel(neuralNetwork, iteration, tag) {
+  const directory = getModelDirectory(iteration, tag);
+  if (fs.existsSync(directory)) {
+    await neuralNetwork.load(directory);
+  } else {
+    await neuralNetwork.build();
+  }
+}
+
 function getTrainingDataDirectory(iteration) {
   const iterationString = padStart(iteration, 3, '0');
   const directory = `pandemic-light/v${packageJson.version}_iteration_${iterationString}_training_data`;
