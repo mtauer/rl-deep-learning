@@ -1,5 +1,4 @@
 import defaultsDeep from 'lodash/defaultsDeep';
-import shuffle from 'lodash/shuffle';
 import ProgressBar from 'progress';
 
 import game from './pandemic-web/src/pandemic-shared/game';
@@ -7,7 +6,6 @@ import PandemicNeuronalNetwork from './pandemic-light/neuralNetwork';
 import MonteCarloTreeSearchNN from './MonteCarloTreeSearchNN';
 import { getTrainingEpisodesStats, getEpisodeStats,
   savePlayingStats, loadPlayingStats } from './pandemic-light/stats';
-import { getSavedTrainingExamples, summarizeSavedEpisodes } from './pandemic-light/trainingData';
 import { writeTrainingEpisode, readTrainingEpisodes } from './pandemic-light/storage';
 import { getTestExamples } from './pandemic-light/testData';
 
@@ -78,8 +76,8 @@ export default class Coach {
   async train() {
     this.neuralNetwork = new PandemicNeuronalNetwork(this.config.neuralNetwork);
     await this.neuralNetwork.init();
-    summarizeSavedEpisodes();
-    const trainingExamples = shuffle(getSavedTrainingExamples());
+    // TODO get shuffled training examples
+    const trainingExamples = [];
     console.log('Training examples', trainingExamples.length);
     await this.neuralNetwork.train(trainingExamples);
     console.log('Training complete');
