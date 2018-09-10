@@ -25,8 +25,8 @@ const config = {
 
 const coach = new Coach(config);
 // coach.play(monitor);
-coach.generateTrainingData(monitor);
-// coach.train(monitor);
+// coach.generateTrainingData(monitor, 0);
+coach.train(monitor, 0);
 // coach.evaluate(monitor);
 // coach.initNN(monitor);
 

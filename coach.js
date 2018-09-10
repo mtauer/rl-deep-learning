@@ -1,12 +1,15 @@
 import ProgressBar from 'progress';
+import shuffle from 'lodash/shuffle';
+import flatten from 'lodash/flatten';
 
 import game from './pandemic-web/src/pandemic-shared/game';
 import PandemicNeuronalNetwork from './pandemic-light/neuralNetwork';
 import MonteCarloTreeSearchNN from './MonteCarloTreeSearchNN';
 import { getTrainingEpisodesStats, getEpisodeStats,
   savePlayingStats, loadPlayingStats } from './pandemic-light/stats';
-import { readModel, readTrainingEpisodes, writeTrainingEpisode } from './pandemic-light/storage';
+import { readModel, writeModel, readTrainingEpisodes, writeTrainingEpisode } from './pandemic-light/storage';
 import { getTestExamples } from './pandemic-light/testData';
+import { toNNProbabilities } from './utils';
 
 export default class Coach {
   constructor(config) {
@@ -32,7 +35,7 @@ export default class Coach {
 
   async generateTrainingData(monitor, iteration = 0) {
     this.neuralNetwork = this.neuralNetwork || await this.getNeuralNetwork(iteration);
-    const trainingEpisodes = readTrainingEpisodes(0);
+    const trainingEpisodes = readTrainingEpisodes(iteration);
     const mcts = new MonteCarloTreeSearchNN(this.config.mcts, game, this.neuralNetwork, monitor);
     for (let j = trainingEpisodes.length; j < this.config.trainingEpisodes; j += 1) {
       mcts.reset();
@@ -50,14 +53,27 @@ export default class Coach {
     console.log('Stats', getTrainingEpisodesStats(trainingEpisodes));
   }
 
-  async train() {
-    this.neuralNetwork = new PandemicNeuronalNetwork(this.config.neuralNetwork);
-    await this.neuralNetwork.init();
-    // TODO get shuffled training examples
-    const trainingExamples = [];
+  async train(monitor, iteration = 0) {
+    this.neuralNetwork = this.neuralNetwork || await this.getNeuralNetwork(iteration);
+    console.log('Preparing training data');
+    const trainingEpisodes = readTrainingEpisodes(iteration);
+    const trainingExamples = shuffle(
+      flatten(
+        trainingEpisodes.map((trainingEpisode) => {
+          const { steps, vValue } = trainingEpisode.episodeResults;
+          const examples = steps.map((step) => {
+            const s = game.toNNState(step.state);
+            const pValues = toNNProbabilities(game, step.pValues, game.getValidActions(step.state));
+            return { s, pValues, vValue };
+          });
+          return examples;
+        }),
+      ),
+    );
     console.log('Training examples', trainingExamples.length);
     await this.neuralNetwork.train(trainingExamples);
     console.log('Training complete');
+    writeModel(this.neuralNetwork, iteration + 1);
   }
 
   async evaluate() {
