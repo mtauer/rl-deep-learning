@@ -107,20 +107,18 @@ export default class PandemicNeuronalNetwork {
       epochs: this.config.trainingEpochs,
       callbacks: {
         onEpochEnd: (epoch, logs) => {
-          console.log('pModel onEpochEnd', epoch + 1, logs);
+          console.log('pModel Training Epoch', epoch + 1, logs);
         },
       },
     });
-    await this.pModel.save(`file://${this.config.modelPath}pModel-${packageJson.version}-rules-0`);
     await this.vModel.fit(trainingStates, trainingV, {
       epochs: this.config.trainingEpochs,
       callbacks: {
         onEpochEnd: (epoch, logs) => {
-          console.log('vModel onEpochEnd', epoch + 1, logs);
+          console.log('vModel Training Epoch', epoch + 1, logs);
         },
       },
     });
-    await this.vModel.save(`file://${this.config.modelPath}vModel-${packageJson.version}-rules-0`);
   }
 
   build() {
