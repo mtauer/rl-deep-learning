@@ -9,24 +9,9 @@ import { getTrainingEpisodesStats, getEpisodeStats,
 import { writeTrainingEpisode, readTrainingEpisodes } from './pandemic-light/storage';
 import { getTestExamples } from './pandemic-light/testData';
 
-const defaultConfig = {
-  iterations: 1,
-  trainingEpisodes: 20,
-  mcts: {
-    simulations: 400,
-    cPuct: 1,
-    temperature: 1,
-    rolloutThreshold: 0,
-  },
-  neuralNetwork: {
-    modelPath: 'pandemic-light/nn-models/',
-    trainingEpochs: 40,
-  },
-};
-
 export default class Coach {
-  constructor(config = {}) {
-    this.config = defaultsDeep(config, defaultConfig);
+  constructor(config) {
+    this.config = config;
   }
 
   async initNN() {
