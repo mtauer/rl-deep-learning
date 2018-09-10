@@ -17,6 +17,7 @@ const config = {
     rolloutThreshold: 0,
   },
   neuralNetwork: {
+    tag: '',
     modelPath: 'pandemic-light/nn-models/',
     trainingEpochs: 16,
   },

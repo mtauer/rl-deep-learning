@@ -161,7 +161,6 @@ export default class PandemicNeuronalNetwork {
       metrics: ['accuracy'],
     });
     this.pModel.summary();
-
     this.vModel.compile({
       optimizer: 'sgd',
       loss: 'meanSquaredError',

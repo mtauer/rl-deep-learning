@@ -1,4 +1,3 @@
-import defaultsDeep from 'lodash/defaultsDeep';
 import ProgressBar from 'progress';
 
 import game from './pandemic-web/src/pandemic-shared/game';
@@ -6,18 +5,12 @@ import PandemicNeuronalNetwork from './pandemic-light/neuralNetwork';
 import MonteCarloTreeSearchNN from './MonteCarloTreeSearchNN';
 import { getTrainingEpisodesStats, getEpisodeStats,
   savePlayingStats, loadPlayingStats } from './pandemic-light/stats';
-import { writeTrainingEpisode, readTrainingEpisodes } from './pandemic-light/storage';
+import { readModel, readTrainingEpisodes, writeTrainingEpisode } from './pandemic-light/storage';
 import { getTestExamples } from './pandemic-light/testData';
 
 export default class Coach {
   constructor(config) {
     this.config = config;
-  }
-
-  async initNN() {
-    this.neuralNetwork = new PandemicNeuronalNetwork(this.config.neuralNetwork);
-    await this.neuralNetwork.init();
-    await this.neuralNetwork.save();
   }
 
   async play(monitor) {
@@ -37,9 +30,8 @@ export default class Coach {
     }
   }
 
-  async generateTrainingData(monitor) {
-    this.neuralNetwork = new PandemicNeuronalNetwork(this.config.neuralNetwork);
-    await this.neuralNetwork.init();
+  async generateTrainingData(monitor, iteration = 0) {
+    this.neuralNetwork = this.neuralNetwork || await this.getNeuralNetwork(iteration);
     const trainingEpisodes = readTrainingEpisodes(0);
     const mcts = new MonteCarloTreeSearchNN(this.config.mcts, game, this.neuralNetwork, monitor);
     for (let j = trainingEpisodes.length; j < this.config.trainingEpisodes; j += 1) {
@@ -103,5 +95,11 @@ export default class Coach {
       }
       step += 1;
     }
+  }
+
+  async getNeuralNetwork(iteration) {
+    const neuralNetwork = new PandemicNeuronalNetwork(this.config.neuralNetwork);
+    await readModel(neuralNetwork, iteration, this.config.neuralNetwork.tag);
+    return neuralNetwork;
   }
 }
