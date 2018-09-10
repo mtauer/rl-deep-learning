@@ -7,6 +7,7 @@ import packageJson from '../package.json';
 // eslint-disable-next-line import/prefer-default-export
 export function writeTrainingEpisode(trainingEpisode, iteration) {
   const directory = getTrainingDataDirectory(iteration);
+  console.log('Saving training data to', directory);
   if (!fs.existsSync(directory)) {
     fs.mkdirSync(directory);
   }
@@ -16,6 +17,7 @@ export function writeTrainingEpisode(trainingEpisode, iteration) {
 
 export function readTrainingEpisodes(iteration) {
   const directory = getTrainingDataDirectory(iteration);
+  console.log('Loading training data from', directory);
   const episodes = [];
   if (fs.existsSync(directory)) {
     fs.readdirSync(directory).forEach((episodeFilename) => {
@@ -28,6 +30,7 @@ export function readTrainingEpisodes(iteration) {
 
 export async function writeModel(neuralNetwork, iteration, tag) {
   const directory = getModelDirectory(iteration, tag);
+  console.log('Saving model to', directory);
   if (!fs.existsSync(directory)) {
     fs.mkdirSync(directory);
   }
@@ -36,6 +39,7 @@ export async function writeModel(neuralNetwork, iteration, tag) {
 
 export async function readModel(neuralNetwork, iteration, tag) {
   const directory = getModelDirectory(iteration, tag);
+  console.log('Loading model from', directory);
   if (fs.existsSync(directory)) {
     await neuralNetwork.load(directory);
   } else {
