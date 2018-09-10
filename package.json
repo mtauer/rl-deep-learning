@@ -5,7 +5,6 @@
   "main": "main.js",
   "scripts": {
     "start": "babel-node --expose-gc --inspect main.js",
-    "migrate:training_data": "babel-node migrateTrainingData.js",
     "server": "babel-node server.js",
     "test": "jest"
   },
