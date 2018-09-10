@@ -5,7 +5,7 @@ function migrate() {
   const episodes = readEpisodes();
   episodes.forEach((episode) => {
     const { episodeStats, episodeResults } = episode;
-    writeTrainingEpisode(episodeStats, episodeResults, 0);
+    writeTrainingEpisode({ episodeStats, episodeResults }, 0);
   });
 }
 

@@ -5,16 +5,13 @@ import uuidv4 from 'uuid/v4';
 import packageJson from '../package.json';
 
 // eslint-disable-next-line import/prefer-default-export
-export function writeTrainingEpisode(episodeStats, episodeResults, iteration) {
+export function writeTrainingEpisode(trainingEpisode, iteration) {
   const directory = getTrainingDataDirectory(iteration);
   if (!fs.existsSync(directory)) {
     fs.mkdirSync(directory);
   }
   const episodeFilename = `${uuidv4()}.json`;
-  fs.writeFileSync(`${directory}/${episodeFilename}`, JSON.stringify({
-    episodeStats,
-    episodeResults,
-  }));
+  fs.writeFileSync(`${directory}/${episodeFilename}`, JSON.stringify(trainingEpisode));
 }
 
 export function readTrainingEpisodes(iteration) {

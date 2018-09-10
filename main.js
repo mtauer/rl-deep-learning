@@ -5,7 +5,7 @@ import Monitor from './monitor';
 const monitor = new Monitor();
 const config = {
   iterations: 2,
-  trainingEpisodes: 300,
+  trainingEpisodes: 500,
   playingEpisodes: 50,
   mcts: {
     playingSimulations: 400,
