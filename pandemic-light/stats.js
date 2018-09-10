@@ -9,6 +9,26 @@ import sortBy from 'lodash/sortBy';
 
 const playingEpisodesFile = './pandemic-light/stats/iteration_000_playingEpisodes.json';
 
+export function getTrainingEpisodesStats(trainingEpisodes) {
+  const episodesStats = trainingEpisodes.map(e => e.episodeStats);
+  const episodesWon = episodesStats.filter(stats => stats.won).length;
+  const episodesLost = episodesStats.filter(stats => !stats.won).length;
+  const actionCounts = episodesStats.map(stats => stats.actionCounts);
+  const actionCountsSum = reduce(actionCounts, (acc, counts) => {
+    keys(counts).forEach((actionType) => {
+      acc[actionType] = (acc[actionType] || 0) + counts[actionType];
+    });
+    return acc;
+  }, {});
+  return {
+    episodesCount: trainingEpisodes.length,
+    episodesWon,
+    episodesLost,
+    winRate: episodesWon / episodesLost,
+    actionCounts: actionCountsSum,
+  };
+}
+
 export function getEpisodeStats(episodeResults) {
   const actionGroups = groupBy(episodeResults.steps, s => s.action.type);
   const actionCounts = transform(actionGroups, (acc, actions, actionType) => {
