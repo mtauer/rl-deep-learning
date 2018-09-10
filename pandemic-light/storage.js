@@ -26,8 +26,22 @@ export function readTrainingEpisodes(iteration) {
   return episodes;
 }
 
+export async function writeModel(neuralNetwork, iteration, tag) {
+  const directory = getModelDirectory(iteration, tag);
+  if (!fs.existsSync(directory)) {
+    fs.mkdirSync(directory);
+  }
+  await neuralNetwork.save(directory);
+}
+
 function getTrainingDataDirectory(iteration) {
   const iterationString = padStart(iteration, 3, '0');
   const directory = `pandemic-light/v${packageJson.version}_iteration_${iterationString}_training_data`;
+  return directory;
+}
+
+function getModelDirectory(iteration, tag = '') {
+  const iterationString = padStart(iteration, 3, '0');
+  const directory = `pandemic-light/v${packageJson.version}${tag}_iteration_${iterationString}_model`;
   return directory;
 }
