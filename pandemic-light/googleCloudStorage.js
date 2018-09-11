@@ -3,30 +3,35 @@ import uuidv4 from 'uuid/v4';
 
 import datastoreConfig from './datastoreConfig.json';
 import packageJson from '../package.json';
-import trainingEpisode from './v0.1.0_iteration_001_training_data/0a33abd9-094b-4a34-be44-7711adddd9a7.json';
+
+const TRAINING_EPISODE = 'TrainingEpisode';
 
 export default class GoogleCloudStorage {
   constructor() {
     this.datastore = new Datastore(datastoreConfig);
+  }
 
-    const kind = 'TrainingEpisode';
+  async readTrainingEpisodes(iteration) {
+    const query = this.datastore.createQuery(TRAINING_EPISODE)
+      .filter('version', '=', packageJson.version)
+      .filter('iteration', '=', iteration);
+    return this.datastore
+      .runQuery(query)
+      .then(results => results[0].map(entity => entity.trainingEpisode));
+  }
+
+  async writeTrainingEpisode(trainingEpisode, iteration) {
     const name = uuidv4();
-    const key = this.datastore.key([kind, name]);
+    const key = this.datastore.key([TRAINING_EPISODE, name]);
     const trainingEpisodeEntity = {
       key,
       data: {
+        createdAt: new Date().toISOString(),
         version: packageJson.version,
-        iteration: 0,
+        iteration,
         trainingEpisode,
       },
     };
-    this.datastore
-      .save(trainingEpisodeEntity)
-      .then(() => {
-        console.log('Saved entity');
-      })
-      .catch((err) => {
-        console.error('ERROR:', err);
-      });
+    return this.datastore.save(trainingEpisodeEntity);
   }
 }
