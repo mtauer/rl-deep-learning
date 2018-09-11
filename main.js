@@ -1,5 +1,5 @@
 import Coach from './coach';
-import Monitor from './monitor';
+// import Monitor from './monitor';
 import FileStorage from './pandemic-light/fileStorage';
 // import runExperiment4 from './experiment4';
 
@@ -23,12 +23,12 @@ const config = {
   },
 };
 
-const monitor = new Monitor();
+// const monitor = new Monitor();
 const storage = new FileStorage();
 const coach = new Coach(config);
 
 // coach.play(storage, monitor);
-coach.generateTrainingData(storage, monitor, 1);
+coach.generateTrainingData(storage, undefined, 1);
 // coach.train(storage, monitor, 1);
 // coach.evaluate(storage, monitor);
 
