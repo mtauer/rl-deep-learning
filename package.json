@@ -6,7 +6,7 @@
   "scripts": {
     "start": "babel-node --expose-gc main.js",
     "start:inspect": "babel-node --expose-gc --inspect main.js",
-    "migrate:model": "babel-node migrateModel.js",
+    "migrate:trainingEpisodes": "babel-node migrateTrainingEpisodes.js",
     "server": "babel-node server.js",
     "test": "jest"
   },
