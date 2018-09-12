@@ -12,6 +12,7 @@ export default class GoogleCloudStorage {
   }
 
   async readTrainingEpisodes(iteration) {
+    console.log('Loading training episodes from Datastore');
     const query = this.datastore.createQuery(TRAINING_EPISODE)
       .filter('version', '=', packageJson.version)
       .filter('iteration', '=', iteration);
@@ -21,6 +22,7 @@ export default class GoogleCloudStorage {
   }
 
   async writeTrainingEpisode(trainingEpisode, iteration) {
+    console.log('Writing training episode to Datastore');
     const name = uuidv4();
     const key = this.datastore.key([TRAINING_EPISODE, name]);
     const trainingEpisodeEntity = {

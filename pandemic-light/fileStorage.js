@@ -7,7 +7,7 @@ import packageJson from '../package.json';
 export default class FileStorage {
   readTrainingEpisodes(iteration) {
     const directory = this.getTrainingDataDirectory(iteration);
-    console.log('Loading training data from', directory);
+    console.log('Loading training episodes from', directory);
     const episodes = [];
     if (fs.existsSync(directory)) {
       fs.readdirSync(directory).forEach((episodeFilename) => {
