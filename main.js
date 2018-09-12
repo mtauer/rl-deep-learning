@@ -24,14 +24,14 @@ const config = {
   },
 };
 
-// const monitor = new Monitor();
+const monitor = undefined; // new Monitor();
 const trainingEpisodesStorage = new GoogleCloudStorage();
 const modelStorage = new FileStorage();
 const coach = new Coach(config, trainingEpisodesStorage, modelStorage);
 
 // coach.play(monitor);
-coach.generateTrainingData(undefined, 1);
-// coach.train(monitor, 1);
+// coach.generateTrainingData(monitor, 1);
+coach.train(monitor, 1);
 // coach.evaluate(monitor);
 
 // runExperiment4(config);
