@@ -5,7 +5,7 @@ import GoogleCloudStorage from './pandemic-light/googleCloudStorage';
 
 const fileStorage = new FileStorage();
 const googleCloudStorage = new GoogleCloudStorage();
-const iteration = 1;
+const iteration = 0;
 
 async function migrateTrainingEpisodes() {
   const trainingEpisodesFromFile = fileStorage.readTrainingEpisodes(iteration);
@@ -20,6 +20,7 @@ async function migrateTrainingEpisodes() {
       await googleCloudStorage.writeTrainingEpisode(trainingEpisodeFromFile, iteration);
     }
   }
+  console.log('migration finished');
 }
 
 migrateTrainingEpisodes();
