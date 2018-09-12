@@ -1,8 +1,9 @@
 import Coach from './coach';
-import Monitor from './monitor';
+// import Monitor from './monitor';
+import FileStorage from './pandemic-light/fileStorage';
+import GoogleCloudStorage from './pandemic-light/googleCloudStorage';
 // import runExperiment4 from './experiment4';
 
-const monitor = new Monitor();
 const config = {
   iterations: 2,
   trainingEpisodes: 500,
@@ -23,11 +24,14 @@ const config = {
   },
 };
 
-const coach = new Coach(config);
+const monitor = undefined; // new Monitor();
+const trainingEpisodesStorage = new GoogleCloudStorage();
+const modelStorage = new FileStorage();
+const coach = new Coach(config, trainingEpisodesStorage, modelStorage);
+
 // coach.play(monitor);
-coach.generateTrainingData(monitor, 1);
-// coach.train(monitor, 1);
+// coach.generateTrainingData(monitor, 1);
+coach.train(monitor, 1);
 // coach.evaluate(monitor);
-// coach.initNN(monitor);
 
 // runExperiment4(config);
