@@ -29,8 +29,10 @@ const trainingEpisodesStorage = new GoogleCloudStorage();
 const modelStorage = new FileStorage();
 const coach = new Coach(config, trainingEpisodesStorage, modelStorage);
 
+trainingEpisodesStorage.experiment();
+
 // coach.play(monitor);
-coach.generateTrainingData(monitor, 2);
+// coach.generateTrainingData(monitor, 2);
 // coach.train(monitor, 1);
 // coach.evaluate(monitor);
 
