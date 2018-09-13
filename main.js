@@ -30,8 +30,8 @@ const modelStorage = new FileStorage();
 const coach = new Coach(config, trainingEpisodesStorage, modelStorage);
 
 // coach.play(monitor);
-coach.generateTrainingData(monitor, 2);
-// coach.train(monitor, 1);
+coach.generateTrainingData(monitor, 3);
+// coach.train(monitor, 2);
 // coach.evaluate(monitor);
 
 // runExperiment4(config);
