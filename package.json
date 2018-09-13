@@ -34,6 +34,7 @@
   },
   "dependencies": {
     "@google-cloud/datastore": "^1.4.2",
+    "@google-cloud/storage": "^2.0.3",
     "@tensorflow/tfjs": "^0.12.6",
     "@tensorflow/tfjs-node": "^0.1.14",
     "express": "^4.16.3",
