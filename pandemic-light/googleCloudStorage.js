@@ -1,7 +1,7 @@
 import Datastore from '@google-cloud/datastore';
 import uuidv4 from 'uuid/v4';
 
-import datastoreConfig from './datastoreConfig.json';
+import googleCloudConfig from './googleCloudConfig.json';
 import packageJson from '../package.json';
 
 const TRAINING_EPISODE = 'TrainingEpisode';
@@ -9,7 +9,7 @@ const ITERATION_SUMMARY = 'IterationSummary';
 
 export default class GoogleCloudStorage {
   constructor() {
-    this.datastore = new Datastore(datastoreConfig);
+    this.datastore = new Datastore(googleCloudConfig);
   }
 
   async readTrainingEpisodes(iteration) {
