@@ -2,6 +2,7 @@ import Coach from './coach';
 // import Monitor from './monitor';
 import FileStorage from './pandemic-light/fileStorage';
 import GoogleCloudStorage from './pandemic-light/googleCloudStorage';
+import PandemicNeuronalNetwork from './pandemic-light/neuralNetwork';
 // import runExperiment4 from './experiment4';
 
 const config = {
@@ -29,7 +30,15 @@ const trainingEpisodesStorage = new GoogleCloudStorage();
 const modelStorage = new FileStorage();
 const coach = new Coach(config, trainingEpisodesStorage, modelStorage);
 
-trainingEpisodesStorage.experiment();
+async function experiment() {
+  const neuralNetwork = new PandemicNeuronalNetwork(config.neuralNetwork);
+  await modelStorage.readModel(neuralNetwork, 0, config.neuralNetwork.tag);
+  trainingEpisodesStorage.writeModel(neuralNetwork, 0, config.neuralNetwork.ta);
+}
+
+experiment();
+
+// trainingEpisodesStorage.experiment();
 
 // coach.play(monitor);
 // coach.generateTrainingData(monitor, 2);

@@ -1,6 +1,8 @@
 import Datastore from '@google-cloud/datastore';
 import { Storage } from '@google-cloud/storage';
 import uuidv4 from 'uuid/v4';
+import fs from 'fs-extra';
+import padStart from 'lodash/padStart';
 
 import googleCloudConfig from './googleCloudConfig.json';
 import packageJson from '../package.json';
@@ -77,5 +79,46 @@ export default class GoogleCloudStorage {
       },
     };
     return this.datastore.save(iterationSummaryEntity);
+  }
+
+  async writeModel(neuralNetwork, iteration, tag) {
+    const bucketDirectory = this.getModelBucketDirectory(iteration, tag);
+    console.log('Uploading model to', bucketDirectory);
+    const tempDirectory = this.getModelTempDirectory();
+    fs.ensureDirSync(tempDirectory);
+    await neuralNetwork.save(tempDirectory);
+    await Promise.all([
+      this.uploadFile(tempDirectory, bucketDirectory, 'pModel', 'model.json'),
+      this.uploadFile(tempDirectory, bucketDirectory, 'pModel', 'weights.bin'),
+      this.uploadFile(tempDirectory, bucketDirectory, 'vModel', 'model.json'),
+      this.uploadFile(tempDirectory, bucketDirectory, 'vModel', 'weights.bin'),
+    ]);
+    fs.removeSync(tempDirectory);
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  getModelBucketDirectory(iteration, tag = '') {
+    const iterationString = padStart(iteration, 3, '0');
+    const directory = `model_v${packageJson.version}${tag}_iteration_${iterationString}`;
+    return directory;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  getModelTempDirectory() {
+    return `./temp_model_${uuidv4()}`;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  async uploadFile(localDirectory, bucketDirectory, sharedDirectory, filename) {
+    return this.storage
+      .bucket('pandemic-models')
+      .upload(`${localDirectory}/${sharedDirectory}/${filename}`, {
+        destination: `${bucketDirectory}/${sharedDirectory}/${filename}`,
+        gzip: true,
+        metadata: {
+          // Enable long-lived HTTP caching headers
+          cacheControl: 'public, max-age=31536000',
+        },
+      });
   }
 }
