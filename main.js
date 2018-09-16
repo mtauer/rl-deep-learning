@@ -32,8 +32,7 @@ const coach = new Coach(config, trainingEpisodesStorage, modelStorage);
 
 async function experiment() {
   const neuralNetwork = new PandemicNeuronalNetwork(config.neuralNetwork);
-  await modelStorage.readModel(neuralNetwork, 0, config.neuralNetwork.tag);
-  trainingEpisodesStorage.writeModel(neuralNetwork, 0, config.neuralNetwork.ta);
+  trainingEpisodesStorage.readModel(neuralNetwork, 0, config.neuralNetwork.tag);
 }
 
 experiment();

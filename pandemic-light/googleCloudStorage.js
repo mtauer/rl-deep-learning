@@ -81,6 +81,22 @@ export default class GoogleCloudStorage {
     return this.datastore.save(iterationSummaryEntity);
   }
 
+  async readModel(neuralNetwork, iteration, tag) {
+    const bucketDirectory = this.getModelBucketDirectory(iteration, tag);
+    console.log('Downloading model from', bucketDirectory);
+    const tempDirectory = this.getModelTempDirectory();
+    fs.ensureDirSync(`${tempDirectory}/pModel`);
+    fs.ensureDirSync(`${tempDirectory}/vModel`);
+    await Promise.all([
+      this.downloadFile(tempDirectory, bucketDirectory, 'pModel', 'model.json'),
+      this.downloadFile(tempDirectory, bucketDirectory, 'pModel', 'weights.bin'),
+      this.downloadFile(tempDirectory, bucketDirectory, 'vModel', 'model.json'),
+      this.downloadFile(tempDirectory, bucketDirectory, 'vModel', 'weights.bin'),
+    ]);
+    await neuralNetwork.load(tempDirectory);
+    fs.removeSync(tempDirectory);
+  }
+
   async writeModel(neuralNetwork, iteration, tag) {
     const bucketDirectory = this.getModelBucketDirectory(iteration, tag);
     console.log('Uploading model to', bucketDirectory);
@@ -108,7 +124,15 @@ export default class GoogleCloudStorage {
     return `./temp_model_${uuidv4()}`;
   }
 
-  // eslint-disable-next-line class-methods-use-this
+  async downloadFile(localDirectory, bucketDirectory, sharedDirectory, filename) {
+    return this.storage
+      .bucket('pandemic-models')
+      .file(`${bucketDirectory}/${sharedDirectory}/${filename}`)
+      .download({
+        destination: `${localDirectory}/${sharedDirectory}/${filename}`,
+      });
+  }
+
   async uploadFile(localDirectory, bucketDirectory, sharedDirectory, filename) {
     return this.storage
       .bucket('pandemic-models')
