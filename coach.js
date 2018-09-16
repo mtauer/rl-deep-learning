@@ -5,7 +5,7 @@ import flatten from 'lodash/flatten';
 import game from './pandemic-web/src/pandemic-shared/game';
 import PandemicNeuronalNetwork from './pandemic-light/neuralNetwork';
 import MonteCarloTreeSearchNN from './MonteCarloTreeSearchNN';
-import { getTrainingEpisodesStats, getEpisodeStats,
+import { getTrainingEpisodesStats, getIterationSummary, getEpisodeStats,
   savePlayingStats, loadPlayingStats } from './pandemic-light/stats';
 import { getTestExamples } from './pandemic-light/testData';
 import { toNNProbabilities } from './utils';
@@ -47,11 +47,18 @@ export default class Coach {
       const episodeResults = await this.executeEpisode(mcts);
       const episodeStats = getEpisodeStats(episodeResults);
       const trainingEpisode = { episodeStats, episodeResults };
-      this.trainingEpisodesStorage.writeTrainingEpisode(trainingEpisode, iteration);
+      // eslint-disable-next-line no-await-in-loop
+      await this.trainingEpisodesStorage.writeTrainingEpisode(trainingEpisode, iteration);
       trainingEpisodes.push(trainingEpisode);
     }
     console.log('Training finished');
     console.log('Stats', getTrainingEpisodesStats(trainingEpisodes));
+  }
+
+  async summarizeIteration(monitor, iteration = 0) {
+    const trainingEpisodes = await this.trainingEpisodesStorage.readTrainingEpisodes(iteration);
+    const iterationSummary = getIterationSummary(trainingEpisodes);
+    await this.trainingEpisodesStorage.writeIterationSummary(iterationSummary, iteration);
   }
 
   async train(monitor, iteration = 0) {
