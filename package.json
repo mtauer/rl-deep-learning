@@ -38,6 +38,7 @@
     "@tensorflow/tfjs": "^0.12.6",
     "@tensorflow/tfjs-node": "^0.1.14",
     "express": "^4.16.3",
+    "fs-extra": "^7.0.0",
     "lodash": "^4.17.10",
     "pngjs": "^3.3.3",
     "progress": "^1.1.8",
