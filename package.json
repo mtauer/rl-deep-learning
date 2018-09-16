@@ -6,7 +6,7 @@
   "scripts": {
     "start": "babel-node --expose-gc main.js",
     "start:inspect": "babel-node --expose-gc --inspect main.js",
-    "migrate:trainingEpisodes": "babel-node migrateTrainingEpisodes.js",
+    "migrate:models": "babel-node migrateModels.js",
     "server": "babel-node server.js",
     "test": "jest"
   },
@@ -34,9 +34,11 @@
   },
   "dependencies": {
     "@google-cloud/datastore": "^1.4.2",
+    "@google-cloud/storage": "^2.0.3",
     "@tensorflow/tfjs": "^0.12.6",
     "@tensorflow/tfjs-node": "^0.1.14",
     "express": "^4.16.3",
+    "fs-extra": "^7.0.0",
     "lodash": "^4.17.10",
     "pngjs": "^3.3.3",
     "progress": "^1.1.8",

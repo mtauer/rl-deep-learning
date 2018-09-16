@@ -1,5 +1,8 @@
 import Datastore from '@google-cloud/datastore';
+import { Storage } from '@google-cloud/storage';
 import uuidv4 from 'uuid/v4';
+import fs from 'fs-extra';
+import padStart from 'lodash/padStart';
 
 import googleCloudConfig from './googleCloudConfig.json';
 import packageJson from '../package.json';
@@ -10,9 +13,11 @@ const ITERATION_SUMMARY = 'IterationSummary';
 export default class GoogleCloudStorage {
   constructor() {
     this.datastore = new Datastore(googleCloudConfig);
+    this.storage = new Storage(googleCloudConfig);
   }
 
   async readTrainingEpisodes(iteration) {
+    // eslint-disable-next-line no-console
     console.log('Loading training episodes from Datastore');
     const query = this.datastore.createQuery(TRAINING_EPISODE)
       .filter('version', '=', packageJson.version)
@@ -23,6 +28,7 @@ export default class GoogleCloudStorage {
   }
 
   async writeTrainingEpisode(trainingEpisode, iteration) {
+    // eslint-disable-next-line no-console
     console.log('Writing training episode to Datastore');
     const name = uuidv4();
     const key = this.datastore.key([TRAINING_EPISODE, name]);
@@ -39,6 +45,7 @@ export default class GoogleCloudStorage {
   }
 
   async writeIterationSummary(iterationSummary, iteration) {
+    // eslint-disable-next-line no-console
     console.log('Writing iteration summary to Datastore');
     const name = uuidv4();
     const key = this.datastore.key([ITERATION_SUMMARY, name]);
@@ -52,5 +59,89 @@ export default class GoogleCloudStorage {
       },
     };
     return this.datastore.save(iterationSummaryEntity);
+  }
+
+  async readModel(neuralNetwork, iteration, tag) {
+    const bucketDirectory = this.getModelBucketDirectory(iteration, tag);
+    // eslint-disable-next-line no-console
+    console.log('Downloading model from', bucketDirectory);
+    const tempDirectory = this.getModelTempDirectory();
+    fs.ensureDirSync(`${tempDirectory}/pModel`);
+    fs.ensureDirSync(`${tempDirectory}/vModel`);
+    try {
+      await Promise.all([
+        this.downloadFile(tempDirectory, bucketDirectory, 'pModel', 'model.json'),
+        this.downloadFile(tempDirectory, bucketDirectory, 'pModel', 'weights.bin'),
+        this.downloadFile(tempDirectory, bucketDirectory, 'vModel', 'model.json'),
+        this.downloadFile(tempDirectory, bucketDirectory, 'vModel', 'weights.bin'),
+      ]);
+      await neuralNetwork.load(tempDirectory);
+    } catch (err) {
+      if (err.code === 404) {
+        // If the model does not exist initialize it with random weights and
+        // upload it.
+        await neuralNetwork.build();
+        await this.writeModel(neuralNetwork, iteration, tag);
+      } else {
+        // eslint-disable-next-line no-console
+        console.log('Could not download the model', err.code);
+      }
+    }
+    fs.removeSync(tempDirectory);
+  }
+
+  async writeModel(neuralNetwork, iteration, tag) {
+    const bucketDirectory = this.getModelBucketDirectory(iteration, tag);
+    // eslint-disable-next-line no-console
+    console.log('Uploading model to', bucketDirectory);
+    const tempDirectory = this.getModelTempDirectory();
+    fs.ensureDirSync(tempDirectory);
+    await neuralNetwork.save(tempDirectory);
+    try {
+      await Promise.all([
+        this.uploadFile(tempDirectory, bucketDirectory, 'pModel', 'model.json'),
+        this.uploadFile(tempDirectory, bucketDirectory, 'pModel', 'weights.bin'),
+        this.uploadFile(tempDirectory, bucketDirectory, 'vModel', 'model.json'),
+        this.uploadFile(tempDirectory, bucketDirectory, 'vModel', 'weights.bin'),
+      ]);
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.log('Could not upload the model', err.code);
+    }
+    fs.removeSync(tempDirectory);
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  getModelBucketDirectory(iteration, tag = '') {
+    const iterationString = padStart(iteration, 3, '0');
+    const directory = `model_v${packageJson.version}${tag}_iteration_${iterationString}`;
+    return directory;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  getModelTempDirectory() {
+    return `./temp_model_${uuidv4()}`;
+  }
+
+  async downloadFile(localDirectory, bucketDirectory, sharedDirectory, filename) {
+    return this.storage
+      .bucket('pandemic-models')
+      .file(`${bucketDirectory}/${sharedDirectory}/${filename}`)
+      .download({
+        destination: `${localDirectory}/${sharedDirectory}/${filename}`,
+      });
+  }
+
+  async uploadFile(localDirectory, bucketDirectory, sharedDirectory, filename) {
+    return this.storage
+      .bucket('pandemic-models')
+      .upload(`${localDirectory}/${sharedDirectory}/${filename}`, {
+        destination: `${bucketDirectory}/${sharedDirectory}/${filename}`,
+        gzip: true,
+        metadata: {
+          // Enable long-lived HTTP caching headers
+          cacheControl: 'public, max-age=31536000',
+        },
+      });
   }
 }
