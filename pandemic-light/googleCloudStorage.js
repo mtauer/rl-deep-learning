@@ -87,13 +87,25 @@ export default class GoogleCloudStorage {
     const tempDirectory = this.getModelTempDirectory();
     fs.ensureDirSync(`${tempDirectory}/pModel`);
     fs.ensureDirSync(`${tempDirectory}/vModel`);
-    await Promise.all([
-      this.downloadFile(tempDirectory, bucketDirectory, 'pModel', 'model.json'),
-      this.downloadFile(tempDirectory, bucketDirectory, 'pModel', 'weights.bin'),
-      this.downloadFile(tempDirectory, bucketDirectory, 'vModel', 'model.json'),
-      this.downloadFile(tempDirectory, bucketDirectory, 'vModel', 'weights.bin'),
-    ]);
-    await neuralNetwork.load(tempDirectory);
+    try {
+      await Promise.all([
+        this.downloadFile(tempDirectory, bucketDirectory, 'pModel', 'model.json'),
+        this.downloadFile(tempDirectory, bucketDirectory, 'pModel', 'weights.bin'),
+        this.downloadFile(tempDirectory, bucketDirectory, 'vModel', 'model.json'),
+        this.downloadFile(tempDirectory, bucketDirectory, 'vModel', 'weights.bin'),
+      ]);
+      await neuralNetwork.load(tempDirectory);
+    } catch (err) {
+      if (err.code === 404) {
+        // If the model does not exist initialize it with random weights and
+        // upload it.
+        await neuralNetwork.build();
+        await this.writeModel(neuralNetwork, iteration, tag);
+      } else {
+        // eslint-disable-next-line no-console
+        console.log('Could not download the model', err.code);
+      }
+    }
     fs.removeSync(tempDirectory);
   }
 
