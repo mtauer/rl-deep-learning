@@ -40,6 +40,7 @@ export default class GoogleCloudStorage {
   }
 
   async readTrainingEpisodes(iteration) {
+    // eslint-disable-next-line no-console
     console.log('Loading training episodes from Datastore');
     const query = this.datastore.createQuery(TRAINING_EPISODE)
       .filter('version', '=', packageJson.version)
@@ -50,6 +51,7 @@ export default class GoogleCloudStorage {
   }
 
   async writeTrainingEpisode(trainingEpisode, iteration) {
+    // eslint-disable-next-line no-console
     console.log('Writing training episode to Datastore');
     const name = uuidv4();
     const key = this.datastore.key([TRAINING_EPISODE, name]);
@@ -66,6 +68,7 @@ export default class GoogleCloudStorage {
   }
 
   async writeIterationSummary(iterationSummary, iteration) {
+    // eslint-disable-next-line no-console
     console.log('Writing iteration summary to Datastore');
     const name = uuidv4();
     const key = this.datastore.key([ITERATION_SUMMARY, name]);
@@ -83,6 +86,7 @@ export default class GoogleCloudStorage {
 
   async readModel(neuralNetwork, iteration, tag) {
     const bucketDirectory = this.getModelBucketDirectory(iteration, tag);
+    // eslint-disable-next-line no-console
     console.log('Downloading model from', bucketDirectory);
     const tempDirectory = this.getModelTempDirectory();
     fs.ensureDirSync(`${tempDirectory}/pModel`);
@@ -111,6 +115,7 @@ export default class GoogleCloudStorage {
 
   async writeModel(neuralNetwork, iteration, tag) {
     const bucketDirectory = this.getModelBucketDirectory(iteration, tag);
+    // eslint-disable-next-line no-console
     console.log('Uploading model to', bucketDirectory);
     const tempDirectory = this.getModelTempDirectory();
     fs.ensureDirSync(tempDirectory);
