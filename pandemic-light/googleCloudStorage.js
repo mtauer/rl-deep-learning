@@ -16,29 +16,6 @@ export default class GoogleCloudStorage {
     this.storage = new Storage(googleCloudConfig);
   }
 
-  async experiment() {
-    const filename = './pandemic-light/v0.1.0_iteration_000_model/pModel/weights.bin';
-    return this.storage
-      .bucket('pandemic-models')
-      .upload(filename, {
-        destination: 'v0.1.0_iteration_000_model/pModel/weights.bin',
-        // Support for HTTP requests made with `Accept-Encoding: gzip`
-        gzip: true,
-        metadata: {
-          // Enable long-lived HTTP caching headers
-          // Use only if the contents of the file will never change
-          // (If the contents will change, use cacheControl: 'no-cache')
-          cacheControl: 'public, max-age=31536000',
-        },
-      })
-      .then(() => {
-        console.log('File uploaded');
-      })
-      .catch((err) => {
-        console.error('ERROR:', err);
-      });
-  }
-
   async readTrainingEpisodes(iteration) {
     // eslint-disable-next-line no-console
     console.log('Loading training episodes from Datastore');
