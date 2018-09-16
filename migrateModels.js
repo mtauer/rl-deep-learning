@@ -26,9 +26,6 @@ const googleCloudStorage = new GoogleCloudStorage();
 
 async function migrateModels() {
   await migrateModel(0);
-  await migrateModel(1);
-  await migrateModel(2);
-  await migrateModel(3);
 }
 
 async function migrateModel(iteration) {
