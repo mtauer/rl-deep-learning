@@ -7,6 +7,8 @@ import keys from 'lodash/keys';
 import sum from 'lodash/sum';
 import sortBy from 'lodash/sortBy';
 
+import game from '../pandemic-web/src/pandemic-shared/game';
+
 const playingEpisodesFile = './pandemic-light/stats/iteration_000_playingEpisodes.json';
 
 export function getTrainingEpisodesStats(trainingEpisodes) {
@@ -40,20 +42,11 @@ export function getEpisodeStats(episodeResults) {
   };
 }
 
-export function getIterationStats(episodesStats) {
-  const episodesWon = episodesStats.filter(stats => stats.won).length;
-  const episodesLost = episodesStats.filter(stats => !stats.won).length;
-  const actionCounts = episodesStats.map(stats => stats.actionCounts);
-  const actionCountsSum = reduce(actionCounts, (acc, counts) => {
-    keys(counts).forEach((actionType) => {
-      acc[actionType] = (acc[actionType] || 0) + counts[actionType];
-    });
-    return acc;
-  }, {});
+export function getIterationSummary(trainingEpisodes) {
+  const trainingEpisodesStats = getTrainingEpisodesStats(trainingEpisodes);
   return {
-    episodesWon,
-    episodesLost,
-    actionCounts: actionCountsSum,
+    trainingEpisodesStats,
+    gameDescription: game.getDescription(),
   };
 }
 
