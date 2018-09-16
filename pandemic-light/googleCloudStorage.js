@@ -115,12 +115,17 @@ export default class GoogleCloudStorage {
     const tempDirectory = this.getModelTempDirectory();
     fs.ensureDirSync(tempDirectory);
     await neuralNetwork.save(tempDirectory);
-    await Promise.all([
-      this.uploadFile(tempDirectory, bucketDirectory, 'pModel', 'model.json'),
-      this.uploadFile(tempDirectory, bucketDirectory, 'pModel', 'weights.bin'),
-      this.uploadFile(tempDirectory, bucketDirectory, 'vModel', 'model.json'),
-      this.uploadFile(tempDirectory, bucketDirectory, 'vModel', 'weights.bin'),
-    ]);
+    try {
+      await Promise.all([
+        this.uploadFile(tempDirectory, bucketDirectory, 'pModel', 'model.json'),
+        this.uploadFile(tempDirectory, bucketDirectory, 'pModel', 'weights.bin'),
+        this.uploadFile(tempDirectory, bucketDirectory, 'vModel', 'model.json'),
+        this.uploadFile(tempDirectory, bucketDirectory, 'vModel', 'weights.bin'),
+      ]);
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.log('Could not upload the model', err.code);
+    }
     fs.removeSync(tempDirectory);
   }
 
