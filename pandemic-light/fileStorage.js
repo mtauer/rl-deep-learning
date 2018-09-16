@@ -35,6 +35,7 @@ export default class FileStorage {
       await neuralNetwork.load(directory);
     } else {
       await neuralNetwork.build();
+      await this.writeModel(neuralNetwork, iteration, tag);
     }
   }
 
