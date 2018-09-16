@@ -6,6 +6,7 @@ import googleCloudConfig from './googleCloudConfig.json';
 import packageJson from '../package.json';
 
 const TRAINING_EPISODE = 'TrainingEpisode';
+const ITERATION_SUMMARY = 'IterationSummary';
 
 export default class GoogleCloudStorage {
   constructor() {
@@ -60,5 +61,21 @@ export default class GoogleCloudStorage {
       },
     };
     return this.datastore.save(trainingEpisodeEntity);
+  }
+
+  async writeIterationSummary(iterationSummary, iteration) {
+    console.log('Writing iteration summary to Datastore');
+    const name = uuidv4();
+    const key = this.datastore.key([ITERATION_SUMMARY, name]);
+    const iterationSummaryEntity = {
+      key,
+      data: {
+        createdAt: new Date().toISOString(),
+        version: packageJson.version,
+        iteration,
+        iterationSummary,
+      },
+    };
+    return this.datastore.save(iterationSummaryEntity);
   }
 }

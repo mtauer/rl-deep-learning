@@ -33,6 +33,7 @@ trainingEpisodesStorage.experiment();
 
 // coach.play(monitor);
 // coach.generateTrainingData(monitor, 2);
+// coach.summarizeIteration(monitor, 0);
 // coach.train(monitor, 1);
 // coach.evaluate(monitor);
 

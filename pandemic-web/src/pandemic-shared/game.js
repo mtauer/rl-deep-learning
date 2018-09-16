@@ -49,7 +49,13 @@ export default {
   getInitialState,
   getActionsOrder,
   getActionsMaxCount,
+  getDescription,
 };
+
+
+function getDescription() {
+  return 'This game is a simplified version of the board game Pandemic. It focuses on the discovery of a cure and leaves out the aspect of infected cities completely. It\'s played by two players without a role. The goal is to discover one cure by handing in five cards of the same color. The cure can be discovered in any city';
+}
 
 function getValidActions(state = initialState) {
   const { currentPlayer, playerPosition, playerCards, researchCenters } = state;
