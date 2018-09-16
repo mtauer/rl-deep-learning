@@ -135,12 +135,13 @@ function getValidActions(state = initialState) {
   }
   // DISCOVER_CURE
   const cardsByDisease = groupBy(cards, (c => locationsMap[c].disease));
+  const cardsNeeded = 4;
   // if (includes(researchCenters, location.id)) {
   actions.push(
     toPairs(cardsByDisease)
-      .filter(pair => pair[1].length >= 5)
+      .filter(pair => pair[1].length >= cardsNeeded)
       .map((pair) => {
-        const usedCards = take(pair[1], 5);
+        const usedCards = take(pair[1], cardsNeeded);
         return {
           type: DISCOVER_CURE,
           player: currentPlayer,
