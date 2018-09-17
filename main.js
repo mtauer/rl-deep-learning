@@ -19,7 +19,7 @@ const config = {
   neuralNetwork: {
     tag: '',
     modelPath: 'pandemic-light/nn-models/',
-    trainingEpochs: 16,
+    trainingEpochs: 12,
   },
 };
 
