@@ -26,7 +26,7 @@ export function getTrainingEpisodesStats(trainingEpisodes) {
     episodesCount: trainingEpisodes.length,
     episodesWon,
     episodesLost,
-    winRate: episodesWon / episodesLost,
+    winRate: episodesWon / trainingEpisodes.length,
     actionCounts: actionCountsSum,
   };
 }
