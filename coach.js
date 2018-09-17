@@ -34,9 +34,10 @@ export default class Coach {
     }
   }
 
-  async generateTrainingData(monitor, iteration = 0) {
-    this.neuralNetwork = this.neuralNetwork || await this.getNeuralNetwork(iteration);
-    const trainingEpisodes = await this.trainingEpisodesStorage.readTrainingEpisodes(iteration);
+  async generateTrainingData(monitor, iteration, version) {
+    this.neuralNetwork = this.neuralNetwork || await this.getNeuralNetwork(iteration, version);
+    const trainingEpisodes = await this.trainingEpisodesStorage
+      .readTrainingEpisodes(iteration, version);
     const mcts = new MonteCarloTreeSearchNN(this.config.mcts, game, this.neuralNetwork, monitor);
     for (let j = trainingEpisodes.length; j < this.config.trainingEpisodes; j += 1) {
       mcts.reset();
@@ -48,23 +49,27 @@ export default class Coach {
       const episodeStats = getEpisodeStats(episodeResults);
       const trainingEpisode = { episodeStats, episodeResults };
       // eslint-disable-next-line no-await-in-loop
-      await this.trainingEpisodesStorage.writeTrainingEpisode(trainingEpisode, iteration);
+      await this.trainingEpisodesStorage
+        .writeTrainingEpisode(trainingEpisode, iteration, version);
       trainingEpisodes.push(trainingEpisode);
     }
     console.log('Training finished');
     console.log('Stats', getTrainingEpisodesStats(trainingEpisodes));
   }
 
-  async summarizeIteration(monitor, iteration = 0) {
-    const trainingEpisodes = await this.trainingEpisodesStorage.readTrainingEpisodes(iteration);
+  async summarizeIteration(monitor, iteration, version) {
+    const trainingEpisodes = await this.trainingEpisodesStorage
+      .readTrainingEpisodes(iteration, version);
     const iterationSummary = getIterationSummary(trainingEpisodes);
-    await this.trainingEpisodesStorage.writeIterationSummary(iterationSummary, iteration);
+    await this.trainingEpisodesStorage
+      .writeIterationSummary(iterationSummary, iteration, version);
   }
 
-  async train(monitor, iteration = 0) {
-    this.neuralNetwork = this.neuralNetwork || await this.getNeuralNetwork(iteration);
+  async train(monitor, iteration, version) {
+    this.neuralNetwork = this.neuralNetwork || await this.getNeuralNetwork(iteration, version);
     console.log('Preparing training data');
-    const trainingEpisodes = await this.trainingEpisodesStorage.readTrainingEpisodes(iteration);
+    const trainingEpisodes = await this.trainingEpisodesStorage
+      .readTrainingEpisodes(iteration, version);
     const trainingExamples = shuffle(
       flatten(
         trainingEpisodes.map((trainingEpisode) => {
@@ -81,7 +86,7 @@ export default class Coach {
     console.log('Training examples', trainingExamples.length);
     await this.neuralNetwork.train(trainingExamples);
     console.log('Training complete');
-    this.modelStorage.writeModel(this.neuralNetwork, iteration + 1);
+    this.modelStorage.writeModel(this.neuralNetwork, iteration + 1, version);
   }
 
   async evaluate() {
@@ -121,9 +126,9 @@ export default class Coach {
     }
   }
 
-  async getNeuralNetwork(iteration) {
+  async getNeuralNetwork(iteration, version) {
     const neuralNetwork = new PandemicNeuronalNetwork(this.config.neuralNetwork);
-    await this.modelStorage.readModel(neuralNetwork, iteration, this.config.neuralNetwork.tag);
+    await this.modelStorage.readModel(neuralNetwork, iteration, version);
     return neuralNetwork;
   }
 }

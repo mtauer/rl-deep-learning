@@ -16,27 +16,27 @@ export default class GoogleCloudStorage {
     this.storage = new Storage(googleCloudConfig);
   }
 
-  async readTrainingEpisodes(iteration) {
+  async readTrainingEpisodes(iteration, version = packageJson.version) {
     // eslint-disable-next-line no-console
-    console.log('Loading training episodes from Datastore');
+    console.log('Loading training episodes from Datastore', version, iteration);
     const query = this.datastore.createQuery(TRAINING_EPISODE)
-      .filter('version', '=', packageJson.version)
+      .filter('version', '=', version)
       .filter('iteration', '=', iteration);
     return this.datastore
       .runQuery(query)
       .then(results => results[0].map(entity => entity.trainingEpisode));
   }
 
-  async writeTrainingEpisode(trainingEpisode, iteration) {
+  async writeTrainingEpisode(trainingEpisode, iteration, version = packageJson.version) {
     // eslint-disable-next-line no-console
-    console.log('Writing training episode to Datastore');
+    console.log('Writing training episode to Datastore', version, iteration);
     const name = uuidv4();
     const key = this.datastore.key([TRAINING_EPISODE, name]);
     const trainingEpisodeEntity = {
       key,
       data: {
         createdAt: new Date().toISOString(),
-        version: packageJson.version,
+        version,
         iteration,
         trainingEpisode,
       },
@@ -44,16 +44,16 @@ export default class GoogleCloudStorage {
     return this.datastore.save(trainingEpisodeEntity);
   }
 
-  async writeIterationSummary(iterationSummary, iteration) {
+  async writeIterationSummary(iterationSummary, iteration, version = packageJson.version) {
     // eslint-disable-next-line no-console
-    console.log('Writing iteration summary to Datastore');
+    console.log('Writing iteration summary to Datastore', version, iteration);
     const name = uuidv4();
     const key = this.datastore.key([ITERATION_SUMMARY, name]);
     const iterationSummaryEntity = {
       key,
       data: {
         createdAt: new Date().toISOString(),
-        version: packageJson.version,
+        version,
         iteration,
         iterationSummary,
       },
@@ -61,8 +61,8 @@ export default class GoogleCloudStorage {
     return this.datastore.save(iterationSummaryEntity);
   }
 
-  async readModel(neuralNetwork, iteration, tag) {
-    const bucketDirectory = this.getModelBucketDirectory(iteration, tag);
+  async readModel(neuralNetwork, iteration, version = packageJson.version) {
+    const bucketDirectory = this.getModelBucketDirectory(iteration, version);
     // eslint-disable-next-line no-console
     console.log('Downloading model from', bucketDirectory);
     const tempDirectory = this.getModelTempDirectory();
@@ -81,7 +81,7 @@ export default class GoogleCloudStorage {
         // If the model does not exist initialize it with random weights and
         // upload it.
         await neuralNetwork.build();
-        await this.writeModel(neuralNetwork, iteration, tag);
+        await this.writeModel(neuralNetwork, iteration, version);
       } else {
         // eslint-disable-next-line no-console
         console.log('Could not download the model', err.code);
@@ -90,8 +90,8 @@ export default class GoogleCloudStorage {
     fs.removeSync(tempDirectory);
   }
 
-  async writeModel(neuralNetwork, iteration, tag) {
-    const bucketDirectory = this.getModelBucketDirectory(iteration, tag);
+  async writeModel(neuralNetwork, iteration, version = packageJson.version) {
+    const bucketDirectory = this.getModelBucketDirectory(iteration, version);
     // eslint-disable-next-line no-console
     console.log('Uploading model to', bucketDirectory);
     const tempDirectory = this.getModelTempDirectory();
@@ -112,9 +112,9 @@ export default class GoogleCloudStorage {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  getModelBucketDirectory(iteration, tag = '') {
+  getModelBucketDirectory(iteration, version) {
     const iterationString = padStart(iteration, 3, '0');
-    const directory = `model_v${packageJson.version}${tag}_iteration_${iterationString}`;
+    const directory = `model_v${version}_iteration_${iterationString}`;
     return directory;
   }
 
