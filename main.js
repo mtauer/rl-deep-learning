@@ -27,7 +27,7 @@ const googleCloudStorage = new GoogleCloudStorage();
 const coach = new Coach(config, googleCloudStorage, googleCloudStorage);
 
 // coach.play(monitor);
-coach.generateTrainingData(monitor, 2);
+coach.generateTrainingData(monitor, 0);
 // coach.summarizeIteration(monitor, 1);
 // coach.train(monitor, 1);
 // coach.evaluate(monitor);
