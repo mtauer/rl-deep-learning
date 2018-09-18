@@ -53,9 +53,9 @@ export default class MonteCarloTreeSearchNN {
     }
     const temperature = isTraining && (step < this.config.explorationSteps)
       ? this.config.temperature
-      : 0.01;
+      : 0.1;
     const nValues = this.getNsaValues()
-      .map(n => n ** temperature);
+      .map(n => n ** (1 / temperature));
     const nSum = sum(nValues);
     const probabilities = nValues.map(v => v / nSum);
     const nextActionIndex = randomChoice(probabilities);
@@ -166,7 +166,7 @@ export default class MonteCarloTreeSearchNN {
     stateNode.actionNodes.forEach((actionNode) => {
       const { q, p, n } = actionNode;
       const ucb1 = !n
-        ? q + cUcb1 * 1
+        ? q + cUcb1 * 1000
         : q + cUcb1 * Math.sqrt(Math.log(this.root.n) / n);
       const puct = cPuct * p * Math.sqrt(N) / (1 + n);
       actionNode.ucb = ucb1 + puct;
@@ -228,7 +228,7 @@ export class ActionNode {
     this.w = 0;
     this.q = 0;
     this.p = 0;
-    this.ucb = Number.POSITIVE_INFINITY;
+    this.ucb = 0;
     this.action = action;
   }
 
