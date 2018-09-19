@@ -6,6 +6,7 @@ import padStart from 'lodash/padStart';
 
 import googleCloudConfig from './googleCloudConfig.json';
 import packageJson from '../package.json';
+import { retry } from '../utils';
 
 const TRAINING_EPISODE = 'TrainingEpisode';
 const ITERATION_SUMMARY = 'IterationSummary';
@@ -22,9 +23,12 @@ export default class GoogleCloudStorage {
     const query = this.datastore.createQuery(TRAINING_EPISODE)
       .filter('version', '=', version)
       .filter('iteration', '=', iteration);
-    return this.datastore
-      .runQuery(query)
-      .then(results => results[0].map(entity => entity.trainingEpisode));
+    return retry(
+      10,
+      () => this.datastore
+        .runQuery(query)
+        .then(results => results[0].map(entity => entity.trainingEpisode)),
+    );
   }
 
   async writeTrainingEpisode(trainingEpisode, iteration, version = packageJson.version) {
@@ -41,7 +45,7 @@ export default class GoogleCloudStorage {
         trainingEpisode,
       },
     };
-    return this.datastore.save(trainingEpisodeEntity);
+    return retry(10, () => this.datastore.save(trainingEpisodeEntity));
   }
 
   async writeIterationSummary(iterationSummary, iteration, version = packageJson.version) {
@@ -58,7 +62,7 @@ export default class GoogleCloudStorage {
         iterationSummary,
       },
     };
-    return this.datastore.save(iterationSummaryEntity);
+    return retry(10, () => this.datastore.save(iterationSummaryEntity));
   }
 
   async readModel(neuralNetwork, iteration, version = packageJson.version) {
@@ -124,24 +128,31 @@ export default class GoogleCloudStorage {
   }
 
   async downloadFile(localDirectory, bucketDirectory, sharedDirectory, filename) {
-    return this.storage
-      .bucket('pandemic-models')
-      .file(`${bucketDirectory}/${sharedDirectory}/${filename}`)
-      .download({
-        destination: `${localDirectory}/${sharedDirectory}/${filename}`,
-      });
+    return retry(
+      10,
+      () => this.storage
+        .bucket('pandemic-models')
+        .file(`${bucketDirectory}/${sharedDirectory}/${filename}`)
+        .download({
+          destination: `${localDirectory}/${sharedDirectory}/${filename}`,
+        }),
+      err => err.code === 404,
+    );
   }
 
   async uploadFile(localDirectory, bucketDirectory, sharedDirectory, filename) {
-    return this.storage
-      .bucket('pandemic-models')
-      .upload(`${localDirectory}/${sharedDirectory}/${filename}`, {
-        destination: `${bucketDirectory}/${sharedDirectory}/${filename}`,
-        gzip: true,
-        metadata: {
-          // Enable long-lived HTTP caching headers
-          cacheControl: 'public, max-age=31536000',
-        },
-      });
+    return retry(
+      10,
+      () => this.storage
+        .bucket('pandemic-models')
+        .upload(`${localDirectory}/${sharedDirectory}/${filename}`, {
+          destination: `${bucketDirectory}/${sharedDirectory}/${filename}`,
+          gzip: true,
+          metadata: {
+            // Enable long-lived HTTP caching headers
+            cacheControl: 'public, max-age=31536000',
+          },
+        }),
+    );
   }
 }
