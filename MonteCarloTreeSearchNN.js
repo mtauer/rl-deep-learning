@@ -48,21 +48,30 @@ export default class MonteCarloTreeSearchNN {
       // Do not block the Node.js event loop
       await sleep(0);
     }
-    if (this.monitor) {
-      this.monitor.updateSimulation(this, this.root.state);
-    }
+
+    const nValues = this.getNsaValues();
+    const nSum = sum(nValues);
+    const probabilities = nValues.map(v => v / nSum);
+
     const temperature = isTraining && (step < this.config.explorationSteps)
       ? this.config.temperature
       : 0.1;
-    const nValues = this.getNsaValues()
-      .map(n => n ** (1 / temperature));
-    const nSum = sum(nValues);
-    const probabilities = nValues.map(v => v / nSum);
-    const nextActionIndex = randomChoice(probabilities);
+    const tempNValues = nValues.map(n => n ** (1 / temperature));
+    const tempNSum = sum(tempNValues);
+    const tempProbabilities = tempNValues.map(v => v / tempNSum);
+    const nextActionIndex = randomChoice(tempProbabilities);
     const validActions = this.game.getValidActions(this.root.state);
+    const nextAction = validActions[nextActionIndex];
+
+    if (this.monitor) {
+      this.monitor.updateSimulation(
+        this, this.root.state, probabilities, tempProbabilities, nextAction,
+      );
+    }
+
     return {
       probabilities,
-      nextAction: validActions[nextActionIndex],
+      nextAction,
       stats: { simulationsEnded: this.simulationsEnded },
     };
   }
