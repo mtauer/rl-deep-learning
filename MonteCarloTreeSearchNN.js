@@ -10,8 +10,10 @@ import sum from 'lodash/sum';
 import find from 'lodash/find';
 import isEqual from 'lodash/isEqual';
 import remove from 'lodash/remove';
+import some from 'lodash/some';
 
 import { sleep, randomChoice, forceGC, fromNNProbabilities } from './utils';
+import { DISCOVER_CURE } from './pandemic-web/src/pandemic-shared/game';
 
 const defaultConfig = {
   playingSimulations: 400,
@@ -62,6 +64,11 @@ export default class MonteCarloTreeSearchNN {
     const nextActionIndex = randomChoice(tempProbabilities);
     const validActions = this.game.getValidActions(this.root.state);
     const nextAction = validActions[nextActionIndex];
+
+    if (some(validActions, a => a.type === DISCOVER_CURE) && nextAction.type !== DISCOVER_CURE) {
+      // eslint-disable-next-line no-console
+      console.log('### DISCOVER_CURE was not selected');
+    }
 
     if (this.monitor) {
       this.monitor.updateSimulation(
