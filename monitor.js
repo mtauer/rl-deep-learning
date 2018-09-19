@@ -26,7 +26,7 @@ export default class Monitor {
     });
   }
 
-  updateSimulation(mcts, state) {
+  updateSimulation(mcts, state, probabilities, tempProbabilities, nextAction) {
     const now = Date.now();
     if (mcts && this.connectedSocket && now - this.lastUpdate > 5000) {
       this.lastUpdate = now;
@@ -39,6 +39,9 @@ export default class Monitor {
         paValues: mcts.getPsaValues(state),
         qaValues: mcts.getQsaValues(state),
         ucbSumValues: mcts.getUcbSumValues(state),
+        probabilities,
+        tempProbabilities,
+        nextAction,
       });
     }
   }

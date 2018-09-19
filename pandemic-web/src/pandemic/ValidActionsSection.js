@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import styled from 'styled-components';
 
 import { getGameState, getValidActions, getPredictedPValues,
-  getPredictedVValues, getNaValues, getQaValues, getPaValues } from './redux';
+  getPredictedVValues, getNaValues, getQaValues, getTempProbabilities } from './redux';
 import { Section, Label, SectionTitle, Row } from '../components/Page';
 import BarChart from './BarChart';
 import ValidActions from './ValidActions';
@@ -23,7 +23,7 @@ const NextActionsSection = ({
   predictedVValues,
   naValues,
   qaValues,
-  paValues,
+  tempProbabilities,
 }) => {
   console.log(JSON.stringify(gameState, null, 2));
   return (
@@ -59,7 +59,7 @@ const NextActionsSection = ({
         </BarChartContainer>
         <BarChartContainer>
           <BarChart
-            values={paValues}
+            values={tempProbabilities}
             color="#fca982"
             formatFunc={f => f.toFixed(3)}
           />
@@ -88,7 +88,7 @@ NextActionsSection.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   qaValues: PropTypes.array.isRequired,
   // eslint-disable-next-line react/forbid-prop-types
-  paValues: PropTypes.array.isRequired,
+  tempProbabilities: PropTypes.array.isRequired,
 };
 
 const mapStateToProps = state => ({
@@ -98,6 +98,6 @@ const mapStateToProps = state => ({
   predictedPValues: getPredictedPValues(state),
   naValues: getNaValues(state),
   qaValues: getQaValues(state),
-  paValues: getPaValues(state),
+  tempProbabilities: getTempProbabilities(state),
 });
 export default connect(mapStateToProps)(NextActionsSection);

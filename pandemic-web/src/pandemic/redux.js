@@ -11,6 +11,9 @@ const initialState = {
   paValues: [],
   qaValues: [],
   ucbSumValues: [],
+  probabilities: [],
+  tempProbabilities: [],
+  nextAction: {},
 };
 
 const PREFIX = 'pandemic/';
@@ -32,6 +35,9 @@ export default function pandemicReducer(state = initialState, action) {
         paValues,
         qaValues,
         ucbSumValues,
+        probabilities,
+        tempProbabilities,
+        nextAction,
       } = action.data;
       return {
         ...state,
@@ -43,6 +49,9 @@ export default function pandemicReducer(state = initialState, action) {
         paValues,
         qaValues,
         ucbSumValues,
+        probabilities,
+        tempProbabilities,
+        nextAction,
       };
     }
     default: return state;
@@ -79,6 +88,18 @@ export function getQaValues(state) {
 
 export function getUcbSumValues(state) {
   return state.pandemic.ucbSumValues;
+}
+
+export function getProbabilities(state) {
+  return state.pandemic.probabilities;
+}
+
+export function getTempProbabilities(state) {
+  return state.pandemic.tempProbabilities;
+}
+
+export function getNextAction(state) {
+  return state.pandemic.nextAction;
 }
 
 export function serverEpic() {
