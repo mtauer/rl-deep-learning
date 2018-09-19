@@ -10,8 +10,24 @@ export function randomChoice(p) {
   });
 }
 
-export function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+export function sleep(timeInMs) {
+  return new Promise(resolve => setTimeout(resolve, timeInMs));
+}
+
+export async function repeat(times, func) {
+  const waitingTime = 30 * 1000;
+  for (let i = 0; i < (times - 1); i += 1) {
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      return await func();
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.log(`Operation failed. Retry in ${waitingTime / 1000} s`);
+      // eslint-disable-next-line no-await-in-loop
+      await sleep(waitingTime);
+    }
+  }
+  return func();
 }
 
 export function forceGC() {
