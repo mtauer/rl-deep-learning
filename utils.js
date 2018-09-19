@@ -14,15 +14,18 @@ export function sleep(timeInMs) {
   return new Promise(resolve => setTimeout(resolve, timeInMs));
 }
 
-export async function repeat(times, func) {
+export async function retry(times, func, ignoreErrorFunc = () => false) {
   const waitingTime = 30 * 1000;
   for (let i = 0; i < (times - 1); i += 1) {
     try {
       // eslint-disable-next-line no-await-in-loop
       return await func();
     } catch (err) {
+      if (ignoreErrorFunc(err)) {
+        return new Promise((resolve, reject) => reject(err));
+      }
       // eslint-disable-next-line no-console
-      console.log(`Operation failed. Retry in ${waitingTime / 1000} s`);
+      console.log(`# Operation failed. Retry in ${waitingTime / 1000} s`);
       // eslint-disable-next-line no-await-in-loop
       await sleep(waitingTime);
     }
