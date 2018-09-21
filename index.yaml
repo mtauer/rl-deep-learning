@@ -1,0 +1,7 @@
+indexes:
+
+- kind: TrainingEpisode
+  properties:
+  - name: version
+  - name: createdAt
+    direction: desc

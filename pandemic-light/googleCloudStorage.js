@@ -31,6 +31,21 @@ export default class GoogleCloudStorage {
     );
   }
 
+  async readLastTrainingEpisodes(limit, version = packageJson.version) {
+    // eslint-disable-next-line no-console
+    console.log('Loading last training episodes from Datastore', version, limit);
+    const query = this.datastore.createQuery(TRAINING_EPISODE)
+      .filter('version', '=', version)
+      .order('createdAt', { descending: true })
+      .limit(limit);
+    return retry(
+      10,
+      () => this.datastore
+        .runQuery(query)
+        .then(results => results[0].map(entity => entity.trainingEpisode)),
+    );
+  }
+
   async writeTrainingEpisode(trainingEpisode, iteration, version = packageJson.version) {
     // eslint-disable-next-line no-console
     console.log('Writing training episode to Datastore', version, iteration);
