@@ -59,7 +59,7 @@ async function showVersionSummary(actionArgs) {
   });
   /* eslint-disable no-console */
   console.log();
-  console.log(`Win rate (version ${version})`);
+  console.log(`Win rate (version ${version || 'default'})`);
   console.log('------------------------');
   console.log(winRates.join(' -> '));
   console.log();
