@@ -80,6 +80,18 @@ export default class GoogleCloudStorage {
     return retry(10, () => this.datastore.save(iterationSummaryEntity));
   }
 
+  async writeDebugLog(debug, version = packageJson.version) {
+    const bucketDirectory = this.getDebugBucketDirectory(version);
+    // eslint-disable-next-line no-console
+    console.log('Uploading debug to', bucketDirectory);
+    const tempDirectory = this.getDebugTempDirectory();
+    const filename = `debug_${uuidv4()}.json`;
+    fs.ensureDirSync(tempDirectory);
+    fs.writeFileSync(`${tempDirectory}/${filename}`, JSON.stringify(debug));
+    await this.uploadFile(tempDirectory, bucketDirectory, '', filename);
+    fs.removeSync(tempDirectory);
+  }
+
   async readModel(neuralNetwork, iteration, version = packageJson.version) {
     const bucketDirectory = this.getModelBucketDirectory(iteration, version);
     // eslint-disable-next-line no-console
@@ -89,10 +101,10 @@ export default class GoogleCloudStorage {
     fs.ensureDirSync(`${tempDirectory}/vModel`);
     try {
       await Promise.all([
-        this.downloadFile(tempDirectory, bucketDirectory, 'pModel', 'model.json'),
-        this.downloadFile(tempDirectory, bucketDirectory, 'pModel', 'weights.bin'),
-        this.downloadFile(tempDirectory, bucketDirectory, 'vModel', 'model.json'),
-        this.downloadFile(tempDirectory, bucketDirectory, 'vModel', 'weights.bin'),
+        this.downloadFile(tempDirectory, bucketDirectory, 'pModel/', 'model.json'),
+        this.downloadFile(tempDirectory, bucketDirectory, 'pModel/', 'weights.bin'),
+        this.downloadFile(tempDirectory, bucketDirectory, 'vModel/', 'model.json'),
+        this.downloadFile(tempDirectory, bucketDirectory, 'vModel/', 'weights.bin'),
       ]);
       await neuralNetwork.load(tempDirectory);
     } catch (err) {
@@ -118,10 +130,10 @@ export default class GoogleCloudStorage {
     await neuralNetwork.save(tempDirectory);
     try {
       await Promise.all([
-        this.uploadFile(tempDirectory, bucketDirectory, 'pModel', 'model.json'),
-        this.uploadFile(tempDirectory, bucketDirectory, 'pModel', 'weights.bin'),
-        this.uploadFile(tempDirectory, bucketDirectory, 'vModel', 'model.json'),
-        this.uploadFile(tempDirectory, bucketDirectory, 'vModel', 'weights.bin'),
+        this.uploadFile(tempDirectory, bucketDirectory, 'pModel/', 'model.json'),
+        this.uploadFile(tempDirectory, bucketDirectory, 'pModel/', 'weights.bin'),
+        this.uploadFile(tempDirectory, bucketDirectory, 'vModel/', 'model.json'),
+        this.uploadFile(tempDirectory, bucketDirectory, 'vModel/', 'weights.bin'),
       ]);
     } catch (err) {
       // eslint-disable-next-line no-console
@@ -142,14 +154,24 @@ export default class GoogleCloudStorage {
     return `./temp_model_${uuidv4()}`;
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  getDebugBucketDirectory(version) {
+    return `debug_v${version}`;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  getDebugTempDirectory() {
+    return `./temp_debug_${uuidv4()}`;
+  }
+
   async downloadFile(localDirectory, bucketDirectory, sharedDirectory, filename) {
     return retry(
       10,
       () => this.storage
         .bucket('pandemic-models')
-        .file(`${bucketDirectory}/${sharedDirectory}/${filename}`)
+        .file(`${bucketDirectory}/${sharedDirectory}${filename}`)
         .download({
-          destination: `${localDirectory}/${sharedDirectory}/${filename}`,
+          destination: `${localDirectory}/${sharedDirectory}${filename}`,
         }),
       err => err.code === 404,
     );
@@ -160,8 +182,8 @@ export default class GoogleCloudStorage {
       10,
       () => this.storage
         .bucket('pandemic-models')
-        .upload(`${localDirectory}/${sharedDirectory}/${filename}`, {
-          destination: `${bucketDirectory}/${sharedDirectory}/${filename}`,
+        .upload(`${localDirectory}/${sharedDirectory}${filename}`, {
+          destination: `${bucketDirectory}/${sharedDirectory}${filename}`,
           gzip: true,
           metadata: {
             // Enable long-lived HTTP caching headers
