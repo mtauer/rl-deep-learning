@@ -23,4 +23,4 @@ WORKDIR /rl-deep-learning
 RUN npm install -s
 
 # Run the application
-CMD npm run helloWorld
+ENTRYPOINT npm run showVersionSummary
