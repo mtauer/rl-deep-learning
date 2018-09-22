@@ -1,12 +1,24 @@
-# Use a Node.js docker image based on Alpine Linux
-FROM node:8.11-alpine
+# Use the TensorFlow (CPU only) Docker image based on Ubuntu 16.04
+FROM tensorflow/tensorflow
 
 # Install updates and dependencies
-RUN apk add --no-cache \
+RUN apt-get update && apt-get install -y \
+  sudo \
+#  build-essential \
+  curl \
   git
 
-# Download and install the Pandemic project
-RUN git clone https://github.com/mtauer/rl-deep-learning.git && \
-  cd rl-deep-learning
+# Install node and npm
+RUN curl -sL https://deb.nodesource.com/setup_8.x | sudo bash -
+RUN apt-get install -y \
+  nodejs
 
-RUN ls -l
+# Download the Pandemic project
+RUN git clone https://github.com/mtauer/rl-deep-learning.git -b feature/dockerize
+WORKDIR rl-deep-learning
+
+# Install npm packages
+RUN npm install
+
+# Run the application
+CMD npm run helloWorld
