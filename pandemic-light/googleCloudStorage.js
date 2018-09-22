@@ -4,7 +4,6 @@ import uuidv4 from 'uuid/v4';
 import fs from 'fs-extra';
 import padStart from 'lodash/padStart';
 
-import googleCloudConfig from './googleCloudConfig.json';
 import packageJson from '../package.json';
 import { retry } from '../utils';
 
@@ -13,6 +12,9 @@ const ITERATION_SUMMARY = 'IterationSummary';
 
 export default class GoogleCloudStorage {
   constructor() {
+    const googleCloudConfig = {
+      projectId: process.env.GCP_PROJECT_ID,
+    };
     this.datastore = new Datastore(googleCloudConfig);
     this.storage = new Storage(googleCloudConfig);
   }
@@ -61,6 +63,20 @@ export default class GoogleCloudStorage {
       },
     };
     return retry(10, () => this.datastore.save(trainingEpisodeEntity));
+  }
+
+  async readIterationSummaries(version = packageJson.version) {
+    // eslint-disable-next-line no-console
+    console.log('Reading iteration summary from Datastore', version);
+    const query = this.datastore.createQuery(ITERATION_SUMMARY)
+      .filter('version', '=', version)
+      .order('createdAt', { descending: false });
+    return retry(
+      10,
+      () => this.datastore
+        .runQuery(query)
+        .then(results => results[0].map(entity => entity.iterationSummary)),
+    );
   }
 
   async writeIterationSummary(iterationSummary, iteration, version = packageJson.version) {
