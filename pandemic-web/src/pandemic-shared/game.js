@@ -221,7 +221,7 @@ function performAction(state = initialState, action) {
     }
     case BUILD_RESEARCH_CENTER: {
       const { at, card } = action;
-      newState.currentMovesCount -= 1;
+      newState.currentMovesLeft -= 1;
       newState.researchCenters = sortBy([...newState.researchCenters, at]);
       newState.playerCards[player] = newState.playerCards[player].filter(id => id !== card);
       newState.playedPlayerCards = sortBy([...newState.playedPlayerCards, card]);
@@ -229,7 +229,7 @@ function performAction(state = initialState, action) {
     }
     case DISCOVER_CURE: {
       const { disease, usedCards } = action;
-      newState.currentMovesCount -= 1;
+      newState.currentMovesLeft -= 1;
       newState.curedDiseases = sortBy([...newState.curedDiseases, disease]);
       newState.playerCards[player] = difference(newState.playerCards[player], usedCards);
       newState.playedPlayerCards = sortBy([...newState.playedPlayerCards, ...usedCards]);
@@ -237,7 +237,7 @@ function performAction(state = initialState, action) {
     }
     case SHARE_KNOWLEDGE: {
       const { card, from, to } = action;
-      newState.currentMovesCount -= 1;
+      newState.currentMovesLeft -= 1;
       newState.playerCards[from] = newState.playerCards[from].filter(id => id !== card);
       newState.playerCards[to] = sortBy([...newState.playerCards[to], card]);
       break;
