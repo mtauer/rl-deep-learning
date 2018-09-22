@@ -4,7 +4,6 @@ FROM tensorflow/tensorflow
 # Install updates and dependencies
 RUN apt-get update && apt-get install -y \
   sudo \
-#  build-essential \
   curl \
   git
 
@@ -14,11 +13,14 @@ RUN apt-get install -y \
   nodejs
 
 # Download the Pandemic project
-RUN git clone https://github.com/mtauer/rl-deep-learning.git -b feature/dockerize
-WORKDIR rl-deep-learning
+WORKDIR /
+RUN git clone --quiet https://github.com/mtauer/rl-deep-learning.git -b feature/dockerize
+
+# Set working directory to project folder
+WORKDIR /rl-deep-learning
 
 # Install npm packages
-RUN npm install
+RUN npm install -s
 
 # Run the application
 CMD npm run helloWorld
