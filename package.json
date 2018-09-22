@@ -7,6 +7,7 @@
     "start": "babel-node --expose-gc main.js",
     "start:inspect": "babel-node --expose-gc --inspect main.js",
     "migrate:models": "babel-node migrateModels.js",
+    "helloWorld": "babel-node helloWorld.js",
     "server": "babel-node server.js",
     "test": "jest"
   },
