@@ -275,7 +275,10 @@ function performAction(state = initialState, action) {
 function getValue(state = initialState, timePenalty = 0) {
   const winner = getWinner(state);
   switch (winner) {
-    case PLAYERS: return 1;
+    case PLAYERS: {
+      const negativReward = 0.9 * (getStepsLeft(state) / getMaxSteps());
+      return 1 - negativReward;
+    }
     case BOARD: return -1;
     default: return timePenalty;
   }
@@ -297,6 +300,19 @@ function getWinner(state = initialState) {
     return BOARD;
   }
   return null;
+}
+
+function getMaxSteps() {
+  return 80 + 4;
+}
+
+function getStepsLeft(state = initialState) {
+  const cardsLeft = locations.length
+    - state.playerCards[0].length
+    - state.playerCards[1].length
+    - state.playedPlayerCards.length;
+  const movesLeft = state.currentMovesLeft;
+  return cardsLeft / 2 * 4 + movesLeft;
 }
 
 export function printState(state) {
