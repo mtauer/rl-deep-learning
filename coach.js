@@ -115,6 +115,15 @@ export default class Coach {
       // Perform action and get new state
       const nextState = game.performAction(mcts.root.state, nextAction);
       mcts.performAction(nextAction, nextState);
+
+      // The step count should never ever be greater than 120
+      if (step > 120 && step <= 130) {
+        this.trainingEpisodesStorage.writeDebugLog({
+          state: mcts.root.state,
+          hasEnded: game.hasEnded(mcts.root.state),
+        });
+      }
+
       if (game.hasEnded(mcts.root.state)) {
         const vValue = game.getValue(mcts.root.state);
         return {
