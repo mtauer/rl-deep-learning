@@ -98,6 +98,7 @@ export default class Coach {
 
   // eslint-disable-next-line class-methods-use-this
   async executeEpisode(mcts, isTraining = true) {
+    const startTime = Date.now();
     let step = 0;
     const steps = [];
     const bar = new ProgressBar('[:bar] :elapsed :ended', { total: 100, head: '>', incomplete: ' ' });
@@ -129,6 +130,7 @@ export default class Coach {
         return {
           steps,
           vValue,
+          time: Date.now() - startTime,
         };
       }
       step += 1;

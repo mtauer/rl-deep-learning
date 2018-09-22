@@ -32,13 +32,18 @@ export function getTrainingEpisodesStats(trainingEpisodes) {
 }
 
 export function getEpisodeStats(episodeResults) {
-  const actionGroups = groupBy(episodeResults.steps, s => s.action.type);
+  const { steps, time } = episodeResults;
+  const actionGroups = groupBy(steps, s => s.action.type);
   const actionCounts = transform(actionGroups, (acc, actions, actionType) => {
     acc[actionType] = actions.length;
   }, {});
+  const stepsCount = steps.length;
   return {
     won: episodeResults.vValue === 1,
     actionCounts,
+    stepsCount,
+    time,
+    timePerStep: time / stepsCount,
   };
 }
 
