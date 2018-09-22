@@ -25,7 +25,8 @@ export async function retry(times, func, ignoreErrorFunc = () => false) {
         return new Promise((resolve, reject) => reject(err));
       }
       // eslint-disable-next-line no-console
-      console.log(`# Operation failed. Retry in ${waitingTime / 1000} s`);
+      console.log(`# Operation failed. ${err}`);
+      console.log(`-> Retry in ${waitingTime / 1000} s`);
       // eslint-disable-next-line no-await-in-loop
       await sleep(waitingTime);
     }
