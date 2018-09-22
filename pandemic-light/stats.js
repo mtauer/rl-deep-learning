@@ -37,7 +37,7 @@ export function getEpisodeStats(episodeResults) {
     acc[actionType] = actions.length;
   }, {});
   return {
-    won: episodeResults.vValue === 1,
+    won: episodeResults.vValue > 0,
     actionCounts,
   };
 }
@@ -68,7 +68,7 @@ export function savePlayingStats(steps, vValue) {
     acc[actionType] = actions.length;
   }, {});
   const stats = {
-    won: vValue === 1,
+    won: vValue > 0,
     matchLength: steps.length,
     actionCounts,
   };
