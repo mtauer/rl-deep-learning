@@ -4,7 +4,6 @@ import uuidv4 from 'uuid/v4';
 import fs from 'fs-extra';
 import padStart from 'lodash/padStart';
 
-import googleCloudConfig from './googleCloudConfig.json';
 import packageJson from '../package.json';
 import { retry } from '../utils';
 
@@ -13,6 +12,9 @@ const ITERATION_SUMMARY = 'IterationSummary';
 
 export default class GoogleCloudStorage {
   constructor() {
+    const googleCloudConfig = {
+      projectId: process.env.GCP_PROJECT_ID,
+    };
     this.datastore = new Datastore(googleCloudConfig);
     this.storage = new Storage(googleCloudConfig);
   }
