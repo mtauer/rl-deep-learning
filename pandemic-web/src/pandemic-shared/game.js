@@ -286,7 +286,7 @@ function getValue(state = initialState, timePenalty = 0) {
   const winner = getWinner(state);
   switch (winner) {
     case PLAYERS: {
-      const negativReward = 0.9 * (getStepsLeft(state) / getMaxSteps());
+      const negativReward = 0.9 * ((getMaxSteps() - getStepsLeft(state)) / getMaxSteps());
       return 1 - negativReward;
     }
     case BOARD: return -1;
