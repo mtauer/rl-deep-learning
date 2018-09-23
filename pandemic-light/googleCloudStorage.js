@@ -127,6 +127,8 @@ export default class GoogleCloudStorage {
       if (err.code === 404) {
         // If the model does not exist initialize it with random weights and
         // upload it.
+        // eslint-disable-next-line no-console
+        console.log('### Initialize models with random weights ###');
         await neuralNetwork.build();
         await this.writeModel(neuralNetwork, iteration, version);
       } else {
