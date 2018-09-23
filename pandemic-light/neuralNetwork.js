@@ -19,6 +19,8 @@ export default class PandemicNeuronalNetwork {
     this.config = defaultsDeep(config, defaultConfig);
   }
 
+  // Deprecated
+  // TODO: delete this method
   async init() {
     try {
       const pModelPath = `file://${this.config.modelPath}pModel-${packageJson.version}-rules-0/model.json`;
@@ -124,16 +126,16 @@ export default class PandemicNeuronalNetwork {
   build() {
     this.pModel = tf.sequential({
       layers: [
-        tf.layers.dense({ units: HIDDEN_LAYER_UNITS, inputShape: [INPUT_UNITS], activation: 'relu' }),
-        tf.layers.dropout({ rate: 0.2 }),
+        tf.layers.dense({ units: HIDDEN_LAYER_UNITS, activation: 'relu', inputShape: [INPUT_UNITS] }),
+        tf.layers.dense({ units: HIDDEN_LAYER_UNITS, activation: 'relu' }),
         tf.layers.dense({ units: HIDDEN_LAYER_UNITS, activation: 'relu' }),
         tf.layers.dense({ units: P_OUTPUT_UNITS, activation: 'softmax' }),
       ],
     });
     this.vModel = tf.sequential({
       layers: [
-        tf.layers.dense({ units: HIDDEN_LAYER_UNITS, inputShape: [INPUT_UNITS], activation: 'relu' }),
-        tf.layers.dropout({ rate: 0.2 }),
+        tf.layers.dense({ units: HIDDEN_LAYER_UNITS, activation: 'relu', inputShape: [INPUT_UNITS] }),
+        tf.layers.dense({ units: HIDDEN_LAYER_UNITS, activation: 'relu' }),
         tf.layers.dense({ units: HIDDEN_LAYER_UNITS, activation: 'relu' }),
         tf.layers.dense({ units: V_OUTPUT_UNITS, activation: 'tanh' }),
       ],
