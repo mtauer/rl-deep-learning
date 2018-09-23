@@ -1,5 +1,6 @@
 import GoogleCloudStorage from './pandemic-light/googleCloudStorage';
 import Coach from './coach';
+import packageJson from './package.json';
 
 const googleCloudStorage = new GoogleCloudStorage();
 const config = {
@@ -24,6 +25,11 @@ const config = {
 const coach = new Coach(config, googleCloudStorage, googleCloudStorage);
 
 function start() {
+  /* eslint-disable no-console */
+  console.log('-----------------------------');
+  console.log('App version', packageJson.version);
+  console.log('-----------------------------');
+  /* eslint-enable no-console */
   // eslint-disable-next-line no-unused-vars
   const [arg1, arg2, action, ...actionArgs] = process.argv;
   switch (action) {
