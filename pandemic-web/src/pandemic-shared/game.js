@@ -52,9 +52,16 @@ export default {
   getDescription,
 };
 
+const gameConfig = {
+  discoverCure: {
+    cardsNeeded: 5,
+    researchCenterNeeded: true,
+  },
+  description: 'Discover a cure with 5 cards in a research center. No diseases, no roles, no special cards.',
+};
 
 function getDescription() {
-  return 'This game is a simplified version of the board game Pandemic. It focuses on the discovery of a cure and leaves out the aspect of infected cities completely. It\'s played by two players without a role. The goal is to discover one cure by handing in four cards of the same color. The cure can be discovered in any city';
+  return gameConfig.description;
 }
 
 function getValidActions(state = initialState) {
@@ -135,22 +142,25 @@ function getValidActions(state = initialState) {
   }
   // DISCOVER_CURE
   const cardsByDisease = groupBy(cards, (c => locationsMap[c].disease));
-  const cardsNeeded = 4;
-  // if (includes(researchCenters, location.id)) {
-  actions.push(
-    toPairs(cardsByDisease)
-      .filter(pair => pair[1].length >= cardsNeeded)
-      .map((pair) => {
-        const usedCards = take(pair[1], cardsNeeded);
-        return {
-          type: DISCOVER_CURE,
-          player: currentPlayer,
-          disease: pair[0],
-          usedCards,
-        };
-      }),
-  );
-  // }
+  const { cardsNeeded, researchCenterNeeded } = gameConfig.discoverCure;
+  const islocationValid = researchCenterNeeded
+    ? includes(researchCenters, location.id)
+    : true;
+  if (islocationValid) {
+    actions.push(
+      toPairs(cardsByDisease)
+        .filter(pair => pair[1].length >= cardsNeeded)
+        .map((pair) => {
+          const usedCards = take(pair[1], cardsNeeded);
+          return {
+            type: DISCOVER_CURE,
+            player: currentPlayer,
+            disease: pair[0],
+            usedCards,
+          };
+        }),
+    );
+  }
   // SHARE_KNOWLEDGE
   const playersOnLocation = toPairs(playerPosition)
     .filter(pair => pair[1] === location.id)
