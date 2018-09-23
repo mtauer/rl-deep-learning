@@ -5,3 +5,7 @@ indexes:
   - name: version
   - name: createdAt
     direction: desc
+- kind: IterationSummary
+  properties:
+  - name: version
+  - name: createdAt

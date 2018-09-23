@@ -4,7 +4,6 @@ import uuidv4 from 'uuid/v4';
 import fs from 'fs-extra';
 import padStart from 'lodash/padStart';
 
-import googleCloudConfig from './googleCloudConfig.json';
 import packageJson from '../package.json';
 import { retry } from '../utils';
 
@@ -13,6 +12,9 @@ const ITERATION_SUMMARY = 'IterationSummary';
 
 export default class GoogleCloudStorage {
   constructor() {
+    const googleCloudConfig = {
+      projectId: process.env.GCP_PROJECT_ID,
+    };
     this.datastore = new Datastore(googleCloudConfig);
     this.storage = new Storage(googleCloudConfig);
   }
@@ -63,6 +65,20 @@ export default class GoogleCloudStorage {
     return retry(10, () => this.datastore.save(trainingEpisodeEntity));
   }
 
+  async readIterationSummaries(version = packageJson.version) {
+    // eslint-disable-next-line no-console
+    console.log('Reading iteration summary from Datastore', version);
+    const query = this.datastore.createQuery(ITERATION_SUMMARY)
+      .filter('version', '=', version)
+      .order('createdAt', { descending: false });
+    return retry(
+      10,
+      () => this.datastore
+        .runQuery(query)
+        .then(results => results[0].map(entity => entity.iterationSummary)),
+    );
+  }
+
   async writeIterationSummary(iterationSummary, iteration, version = packageJson.version) {
     // eslint-disable-next-line no-console
     console.log('Writing iteration summary to Datastore', version, iteration);
@@ -80,6 +96,18 @@ export default class GoogleCloudStorage {
     return retry(10, () => this.datastore.save(iterationSummaryEntity));
   }
 
+  async writeDebugLog(debug, version = packageJson.version) {
+    const bucketDirectory = this.getDebugBucketDirectory(version);
+    // eslint-disable-next-line no-console
+    console.log('Uploading debug to', bucketDirectory);
+    const tempDirectory = this.getDebugTempDirectory();
+    const filename = `debug_${uuidv4()}.json`;
+    fs.ensureDirSync(tempDirectory);
+    fs.writeFileSync(`${tempDirectory}/${filename}`, JSON.stringify(debug));
+    await this.uploadFile(tempDirectory, bucketDirectory, '', filename);
+    fs.removeSync(tempDirectory);
+  }
+
   async readModel(neuralNetwork, iteration, version = packageJson.version) {
     const bucketDirectory = this.getModelBucketDirectory(iteration, version);
     // eslint-disable-next-line no-console
@@ -89,16 +117,18 @@ export default class GoogleCloudStorage {
     fs.ensureDirSync(`${tempDirectory}/vModel`);
     try {
       await Promise.all([
-        this.downloadFile(tempDirectory, bucketDirectory, 'pModel', 'model.json'),
-        this.downloadFile(tempDirectory, bucketDirectory, 'pModel', 'weights.bin'),
-        this.downloadFile(tempDirectory, bucketDirectory, 'vModel', 'model.json'),
-        this.downloadFile(tempDirectory, bucketDirectory, 'vModel', 'weights.bin'),
+        this.downloadFile(tempDirectory, bucketDirectory, 'pModel/', 'model.json'),
+        this.downloadFile(tempDirectory, bucketDirectory, 'pModel/', 'weights.bin'),
+        this.downloadFile(tempDirectory, bucketDirectory, 'vModel/', 'model.json'),
+        this.downloadFile(tempDirectory, bucketDirectory, 'vModel/', 'weights.bin'),
       ]);
       await neuralNetwork.load(tempDirectory);
     } catch (err) {
       if (err.code === 404) {
         // If the model does not exist initialize it with random weights and
         // upload it.
+        // eslint-disable-next-line no-console
+        console.log('### Initialize models with random weights ###');
         await neuralNetwork.build();
         await this.writeModel(neuralNetwork, iteration, version);
       } else {
@@ -118,10 +148,10 @@ export default class GoogleCloudStorage {
     await neuralNetwork.save(tempDirectory);
     try {
       await Promise.all([
-        this.uploadFile(tempDirectory, bucketDirectory, 'pModel', 'model.json'),
-        this.uploadFile(tempDirectory, bucketDirectory, 'pModel', 'weights.bin'),
-        this.uploadFile(tempDirectory, bucketDirectory, 'vModel', 'model.json'),
-        this.uploadFile(tempDirectory, bucketDirectory, 'vModel', 'weights.bin'),
+        this.uploadFile(tempDirectory, bucketDirectory, 'pModel/', 'model.json'),
+        this.uploadFile(tempDirectory, bucketDirectory, 'pModel/', 'weights.bin'),
+        this.uploadFile(tempDirectory, bucketDirectory, 'vModel/', 'model.json'),
+        this.uploadFile(tempDirectory, bucketDirectory, 'vModel/', 'weights.bin'),
       ]);
     } catch (err) {
       // eslint-disable-next-line no-console
@@ -142,14 +172,24 @@ export default class GoogleCloudStorage {
     return `./temp_model_${uuidv4()}`;
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  getDebugBucketDirectory(version) {
+    return `debug_v${version}`;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  getDebugTempDirectory() {
+    return `./temp_debug_${uuidv4()}`;
+  }
+
   async downloadFile(localDirectory, bucketDirectory, sharedDirectory, filename) {
     return retry(
       10,
       () => this.storage
         .bucket('pandemic-models')
-        .file(`${bucketDirectory}/${sharedDirectory}/${filename}`)
+        .file(`${bucketDirectory}/${sharedDirectory}${filename}`)
         .download({
-          destination: `${localDirectory}/${sharedDirectory}/${filename}`,
+          destination: `${localDirectory}/${sharedDirectory}${filename}`,
         }),
       err => err.code === 404,
     );
@@ -160,8 +200,8 @@ export default class GoogleCloudStorage {
       10,
       () => this.storage
         .bucket('pandemic-models')
-        .upload(`${localDirectory}/${sharedDirectory}/${filename}`, {
-          destination: `${bucketDirectory}/${sharedDirectory}/${filename}`,
+        .upload(`${localDirectory}/${sharedDirectory}${filename}`, {
+          destination: `${bucketDirectory}/${sharedDirectory}${filename}`,
           gzip: true,
           metadata: {
             // Enable long-lived HTTP caching headers

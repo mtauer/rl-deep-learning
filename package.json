@@ -7,8 +7,15 @@
     "start": "babel-node --expose-gc main.js",
     "start:inspect": "babel-node --expose-gc --inspect main.js",
     "migrate:models": "babel-node migrateModels.js",
+    "helloWorld": "babel-node helloWorld.js",
     "server": "babel-node server.js",
-    "test": "jest"
+    "test": "jest",
+    "showVersionSummary": "babel-node --expose-gc start showVersionSummary",
+    "generateTrainingData": "babel-node --expose-gc start generateTrainingData",
+    "summarizeIteration": "babel-node --expose-gc start summarizeIteration",
+    "train": "babel-node --expose-gc start train",
+    "datastoreUpdateIndexes": "gcloud datastore create-indexes index.yaml",
+    "docker:removeAllContainers": "docker stop $(docker ps -a -q) && docker rm $(docker ps -a -q)"
   },
   "repository": {
     "type": "git",

@@ -69,7 +69,7 @@ export default class Coach {
     this.neuralNetwork = this.neuralNetwork || await this.getNeuralNetwork(iteration, version);
     console.log('Preparing training data');
     const trainingEpisodes = await this.trainingEpisodesStorage
-      .readLastTrainingEpisodes(1500, version);
+      .readLastTrainingEpisodes(this.config.trainWithLatest, version);
     const trainingExamples = shuffle(
       flatten(
         trainingEpisodes.map((trainingEpisode) => {
@@ -98,6 +98,7 @@ export default class Coach {
 
   // eslint-disable-next-line class-methods-use-this
   async executeEpisode(mcts, isTraining = true) {
+    const startTime = Date.now();
     let step = 0;
     const steps = [];
     const bar = new ProgressBar('[:bar] :elapsed :ended', { total: 100, head: '>', incomplete: ' ' });
@@ -115,11 +116,21 @@ export default class Coach {
       // Perform action and get new state
       const nextState = game.performAction(mcts.root.state, nextAction);
       mcts.performAction(nextAction, nextState);
+
+      // The step count should never ever be greater than 120
+      if (step > 120 && step <= 130) {
+        this.trainingEpisodesStorage.writeDebugLog({
+          state: mcts.root.state,
+          hasEnded: game.hasEnded(mcts.root.state),
+        });
+      }
+
       if (game.hasEnded(mcts.root.state)) {
         const vValue = game.getValue(mcts.root.state);
         return {
           steps,
           vValue,
+          time: Date.now() - startTime,
         };
       }
       step += 1;
