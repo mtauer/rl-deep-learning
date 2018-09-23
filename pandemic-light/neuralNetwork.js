@@ -31,7 +31,7 @@ export default class PandemicNeuronalNetwork {
       this.pModel = tf.sequential({
         layers: [
           tf.layers.dense({ units: HIDDEN_LAYER_UNITS, inputShape: [INPUT_UNITS], activation: 'relu' }),
-          tf.layers.dropout({ rate: 0.2 }),
+          tf.layers.dense({ units: HIDDEN_LAYER_UNITS, activation: 'relu' }),
           tf.layers.dense({ units: HIDDEN_LAYER_UNITS, activation: 'relu' }),
           tf.layers.dense({ units: P_OUTPUT_UNITS, activation: 'softmax' }),
         ],
@@ -54,7 +54,7 @@ export default class PandemicNeuronalNetwork {
       this.vModel = tf.sequential({
         layers: [
           tf.layers.dense({ units: HIDDEN_LAYER_UNITS, inputShape: [INPUT_UNITS], activation: 'relu' }),
-          tf.layers.dropout({ rate: 0.2 }),
+          tf.layers.dense({ units: HIDDEN_LAYER_UNITS, activation: 'relu' }),
           tf.layers.dense({ units: HIDDEN_LAYER_UNITS, activation: 'relu' }),
           tf.layers.dense({ units: V_OUTPUT_UNITS, activation: 'tanh' }),
         ],
