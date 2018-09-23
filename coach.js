@@ -69,7 +69,7 @@ export default class Coach {
     this.neuralNetwork = this.neuralNetwork || await this.getNeuralNetwork(iteration, version);
     console.log('Preparing training data');
     const trainingEpisodes = await this.trainingEpisodesStorage
-      .readLastTrainingEpisodes(1500, version);
+      .readLastTrainingEpisodes(this.config.trainWithLatest, version);
     const trainingExamples = shuffle(
       flatten(
         trainingEpisodes.map((trainingEpisode) => {
