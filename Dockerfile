@@ -14,7 +14,7 @@ RUN apt-get install -y \
 
 # Download the Pandemic project
 WORKDIR /
-RUN git clone --quiet https://github.com/mtauer/rl-deep-learning.git -b feature/dockerize
+RUN git clone --quiet https://github.com/mtauer/rl-deep-learning.git
 
 # Set working directory to project folder
 WORKDIR /rl-deep-learning
