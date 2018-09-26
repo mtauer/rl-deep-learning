@@ -21,10 +21,10 @@ class WeightsChart extends Component {
   }
 
   createChart() {
-    console.log('createChart');
     const { svgRef } = this;
     const { data, shape } = this.props;
     const size = 2;
+    const lineLength = shape[1] || 1;
     select(svgRef)
       .selectAll('rect')
       .data(data)
@@ -34,8 +34,8 @@ class WeightsChart extends Component {
       .selectAll('rect')
       .data(data)
       .style('fill', d => getCellBgColor(d))
-      .attr('x', (d, i) => (i % shape[0]) * size)
-      .attr('y', (d, i) => (Math.floor(i / shape[0])) * size)
+      .attr('x', (d, i) => (Math.floor(i / lineLength)) * size)
+      .attr('y', (d, i) => (i % lineLength) * size)
       .attr('height', size)
       .attr('width', size);
   }
@@ -44,8 +44,8 @@ class WeightsChart extends Component {
     return (
       <svg
         ref={(ref) => { this.svgRef = ref; }}
-        width={500}
-        height={500}
+        width={820}
+        height={820}
       />
     );
   }
