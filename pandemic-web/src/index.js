@@ -5,13 +5,13 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 
 import store from './configureStore';
-import PandemicPage from './pandemic/PandemicPage';
+import NeuralNetworkPage from './neuralNetwork/NeuralNetworkPage';
 import registerServiceWorker from './registerServiceWorker';
 import './index.css';
 
 ReactDOM.render(
   <Provider store={store}>
-    <PandemicPage />
+    <NeuralNetworkPage />
   </Provider>,
   document.getElementById('root'),
 );
