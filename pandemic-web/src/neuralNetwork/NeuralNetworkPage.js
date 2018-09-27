@@ -2,8 +2,8 @@ import React from 'react';
 
 import { Container, Title } from '../components/Page';
 import WeightsChart from './WeightsChart';
-import weightsA from './weights_0_3_2__9__layer_0.json';
-import weightsB from './weights_0_3_2__10__layer_0.json';
+import weightsA from './weights_0_3_2__10__layer_0.json';
+import weightsB from './weights_0_3_2__11__layer_0.json';
 
 const weightsShape = weightsA[0].shape;
 const weightsData = weightsA[0].data.map((w, i) => weightsB[0].data[i] - w);
