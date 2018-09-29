@@ -1,6 +1,8 @@
 import ProgressBar from 'progress';
 import shuffle from 'lodash/shuffle';
 import flatten from 'lodash/flatten';
+import every from 'lodash/every';
+import isFinite from 'lodash/isFinite';
 
 import game from './pandemic-web/src/pandemic-shared/game';
 import PandemicNeuronalNetwork from './pandemic-light/neuralNetwork';
@@ -70,7 +72,7 @@ export default class Coach {
     console.log('Preparing training data');
     const trainingEpisodes = await this.trainingEpisodesStorage
       .readLastTrainingEpisodes(this.config.trainWithLatest, version);
-    const trainingExamples = shuffle(
+    const allTrainingExamples = shuffle(
       flatten(
         trainingEpisodes.map((trainingEpisode) => {
           const { steps, vValue } = trainingEpisode.episodeResults;
@@ -83,6 +85,14 @@ export default class Coach {
         }),
       ),
     );
+    const trainingExamples = allTrainingExamples
+      .filter((example) => {
+        const validPValues = every(example.pValues, p => isFinite(p));
+        if (!validPValues) {
+          console.log('Invalid example detected');
+        }
+        return validPValues;
+      });
     console.log('Training examples', trainingExamples.length);
     await this.neuralNetwork.train(trainingExamples);
     console.log('Training complete');

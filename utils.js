@@ -45,7 +45,7 @@ export function toNNProbabilities(game, p, actions) {
   const probabilities = range(0, length, 0);
   actions.forEach((a, i) => {
     const offset = pOffset[a.type];
-    probabilities[offset] = p[i];
+    probabilities[offset] = p[i] || 0;
     pOffset[a.type] += 1;
   });
   return probabilities;
