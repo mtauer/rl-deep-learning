@@ -1,24 +1,27 @@
+/* eslint-disable class-methods-use-this */
 import http from 'http';
 import express from 'express';
-import SocketIo from 'socket.io';
 
-import runExperiment1 from './experiment1';
+import GoogleCloudStorage from './pandemic-light/googleCloudStorage';
 
+const googleCloudStorage = new GoogleCloudStorage();
 const app = express();
 const server = http.Server(app);
-const io = new SocketIo(server);
-const port = process.env.PORT || 3001;
+const port = 8080 || process.env.PORT;
 
-let connectedSocket = null;
+class IterationController {
+  async getAllIterations(req, res) {
+    const { versionId } = req.params;
+    const iterations = await googleCloudStorage.readIterationSummaries(versionId)
+      .map(iteration => ({ ...iteration }));
+    res.json(iterations);
+  }
+}
+const iterationController = new IterationController();
 
-io.on('connection', (socket) => {
-  connectedSocket = socket;
-  runExperiment1(connectedSocket);
-  // socket.emit('simulation_start', { test: 'TEST' });
-  socket.on('disconnect', () => {
-    connectedSocket = null;
-  });
-});
+// todoList Routes
+app.route('/versions/:versionId/iterations')
+  .get(iterationController.getAllIterations);
 
 server.listen(port, () => {
   console.log('[INFO] Listening on *:', port);
