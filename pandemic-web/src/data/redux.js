@@ -8,7 +8,6 @@ import { mergeArrayIntoObject } from '../utils/reduxHelpers';
 const initialState = {
   iterations: {},
   isInitialized: {},
-  hasErrors: {},
 };
 
 // Action Types
@@ -45,6 +44,16 @@ export default function dataReducer(state = initialState, action) {
       return state;
     }
   }
+}
+
+// Selectors
+
+export function getIterations(state) {
+  return state.data.iterations;
+}
+
+export function getIsInitialized(state) {
+  return state.data.isInitialized;
 }
 
 // Epics
