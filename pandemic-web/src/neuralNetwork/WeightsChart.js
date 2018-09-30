@@ -17,7 +17,7 @@ class WeightsChart extends Component {
     this.getCellBgColor = this.getCellBgColor.bind(this);
     this.valueColor = scaleLinear().domain([-clampValue, 0.0, clampValue])
       .interpolate(interpolateHcl)
-      .range([rgb('#a50026'), rgb('#ffffff'), rgb('#1a9850')]);
+      .range([rgb('#a50026'), rgb('#ffffff'), rgb('#1a9850')]); // #2166ac, #ffffff, #d73027
   }
 
   componentDidMount() {
