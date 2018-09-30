@@ -3,7 +3,7 @@ import { createEpicMiddleware, combineEpics } from 'redux-observable';
 
 import dataReducer, { fetchIterationsEpic } from './data/redux';
 import pandemicReducer from './pandemic/redux';
-import ApiClient from './apiClient';
+import ApiClient from './utils/apiClient';
 
 const rootReducer = combineReducers({
   data: dataReducer,
