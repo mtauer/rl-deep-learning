@@ -1,15 +1,24 @@
 import { createStore, applyMiddleware, combineReducers, compose } from 'redux';
 import { createEpicMiddleware, combineEpics } from 'redux-observable';
 
+import dataReducer, { fetchIterationsEpic } from './data/redux';
 import pandemicReducer from './pandemic/redux';
+import ApiClient from './apiClient';
 
 const rootReducer = combineReducers({
+  data: dataReducer,
   pandemic: pandemicReducer,
 });
 const rootEpic = combineEpics(
+  fetchIterationsEpic,
 );
 
-const epicMiddleware = createEpicMiddleware();
+const apiClient = new ApiClient();
+const epicMiddleware = createEpicMiddleware({
+  dependencies: {
+    apiClient,
+  },
+});
 const middleware = [epicMiddleware];
 const enhancers = [];
 
