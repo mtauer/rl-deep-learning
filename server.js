@@ -7,22 +7,21 @@ import GoogleCloudStorage from './pandemic-light/googleCloudStorage';
 const googleCloudStorage = new GoogleCloudStorage();
 const app = express();
 const server = http.Server(app);
-const port = 8080 || process.env.PORT;
+const port = process.env.PORT || 8080;
 
 class IterationController {
   async getAllIterations(req, res) {
     const { versionId } = req.params;
-    const iterations = await googleCloudStorage.readIterationSummaries(versionId)
-      .map(iteration => ({ ...iteration }));
+    const iterations = await googleCloudStorage.readIterationSummaries(versionId);
     res.json(iterations);
   }
 }
 const iterationController = new IterationController();
 
-// todoList Routes
 app.route('/versions/:versionId/iterations')
   .get(iterationController.getAllIterations);
 
 server.listen(port, () => {
+  // eslint-disable-next-line no-console
   console.log('[INFO] Listening on *:', port);
 });
