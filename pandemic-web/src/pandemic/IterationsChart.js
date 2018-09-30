@@ -1,7 +1,10 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable react/sort-comp */
+/* eslint-disable react/forbid-prop-types */
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { select } from 'd3-selection';
+import { line, scaleLinear } from 'd3';
 import range from 'lodash/range';
 
 import './IterationsChart.css';
@@ -32,6 +35,7 @@ class IterationsChart extends Component {
 
   createChart() {
     const { svgRef } = this;
+    const { data, dataColor } = this.props;
     const { height, width, padding } = this.styles;
     const contentHeight = height - padding.top - padding.bottom;
     const contentWidth = width - padding.left - padding.right;
@@ -40,17 +44,9 @@ class IterationsChart extends Component {
 
     renderHorizontalGrid();
     renderVerticalGrid();
+    renderData();
     renderHorizontalAxis();
     renderVerticalAxis();
-    // renderVerticalGrid();
-    // range(0, 6).forEach()
-
-    // select(svgRef)
-    //   .append('rect')
-    //   .attr('x', padding.left)
-    //   .attr('y', padding.top)
-    //   .attr('height', contentHeight)
-    //   .attr('width', contentWidth);
 
     function renderHorizontalGrid() {
       const steps = 5;
@@ -110,6 +106,24 @@ class IterationsChart extends Component {
       });
     }
 
+    function renderData() {
+      const dataGroup = select(svgRef).append('g');
+      const xScale = scaleLinear()
+        .domain([0, 20])
+        .range([contentX, contentX + contentWidth]);
+      const yScale = scaleLinear()
+        .domain([0, 100])
+        .range([contentY + contentHeight, contentY]);
+      const lineFunction = line()
+        .x(d => xScale(d.x))
+        .y(d => yScale(d.y));
+      dataGroup.append('path')
+        .data([data])
+        .attr('class', 'p-chart__data-line')
+        .attr('d', lineFunction(data))
+        .attr('style', `stroke: ${dataColor};`);
+    }
+
     function renderHorizontalAxis() {
       const axisGroup = select(svgRef).append('g');
       axisGroup.append('line')
@@ -142,5 +156,12 @@ class IterationsChart extends Component {
     );
   }
 }
+IterationsChart.propTypes = {
+  data: PropTypes.array.isRequired,
+  dataColor: PropTypes.string,
+};
+IterationsChart.defaultProps = {
+  dataColor: '#4393c3',
+};
 
 export default IterationsChart;
