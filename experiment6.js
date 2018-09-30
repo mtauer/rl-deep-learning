@@ -11,7 +11,7 @@ async function e6(version, iteration) {
   const weights = neuralNetwork.pModel.layers[0].getWeights()
     .map(w => ({ ...w, data: Array.from(w.dataSync()) }));
 
-  fs.writeFileSync('pandemic-web/src/neuralNetwork/weights_0_3_2__16__layer_0.json', JSON.stringify(weights));
+  fs.writeFileSync('pandemic-web/src/neuralNetwork/weights_0_3_2__17__layer_0.json', JSON.stringify(weights));
 }
 
-e6('0.3.2', 16);
+e6('0.3.2', 17);
