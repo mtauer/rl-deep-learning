@@ -1,6 +1,7 @@
 /* eslint-disable class-methods-use-this */
 import http from 'http';
 import express from 'express';
+import cors from 'cors';
 
 import GoogleCloudStorage from './pandemic-light/googleCloudStorage';
 
@@ -17,6 +18,9 @@ class IterationController {
   }
 }
 const iterationController = new IterationController();
+
+app.options('*', cors());
+app.use(cors());
 
 app.route('/versions/:versionId/iterations')
   .get(iterationController.getAllIterations);
