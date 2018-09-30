@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "react-scripts start",
-    "deploy": "npm run build && gsutil -m rsync -r ./build gs://pandemic-web/v0",
+    "deployWeb": "npm run build && gsutil -m rsync -r ./build gs://pandemic-web/v1",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
