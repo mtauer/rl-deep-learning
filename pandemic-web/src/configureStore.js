@@ -1,7 +1,7 @@
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import { createEpicMiddleware, combineEpics } from 'redux-observable';
 
-import pandemicReducer, { serverEpic } from './pandemic/redux';
+import pandemicReducer from './pandemic/redux';
 
 const rootReducer = combineReducers({
   pandemic: pandemicReducer,
@@ -14,7 +14,6 @@ const store = createStore(
 );
 
 epicMiddleware.run(combineEpics(
-  serverEpic,
 ));
 
 export default store;

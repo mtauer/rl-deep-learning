@@ -1,7 +1,3 @@
-import io from 'socket.io-client';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-
 const initialState = {
   gameState: {},
   validActions: [],
@@ -100,30 +96,4 @@ export function getTempProbabilities(state) {
 
 export function getNextAction(state) {
   return state.pandemic.nextAction;
-}
-
-export function serverEpic() {
-  const socketEvents$ = new Observable((observer) => {
-    const socket = io('http://localhost:3001');
-    socket.on('simulation_update', (data) => {
-      console.log('data', data);
-      observer.next({ on: 'simulation_update', data });
-    });
-    socket.on('connect_error', () => {
-      socket.close();
-      observer.error();
-    });
-    socket.on('disconnect', () => {
-      socket.close();
-      observer.complete();
-    });
-  });
-  return socketEvents$.pipe(
-    map((event) => {
-      switch (event.on) {
-        case 'simulation_update': return simulationUpdateAction(event.data);
-        default: return { type: 'DO_NOTHING' };
-      }
-    }),
-  );
 }
