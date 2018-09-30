@@ -7,9 +7,16 @@ import sum from 'lodash/sum';
 import { VictoryChart, VictoryTheme, VictoryLine } from 'victory';
 
 import { getIterations } from '../data/redux';
+import IterationsChart from './IterationsChart';
 
 const IterationsStats = ({ iterations }) => (
   <div>
+    <IterationsChart
+      data={iterations.map(i => ({
+        x: i.iteration,
+        y: i.iterationSummary.trainingEpisodesStats.winRate * 100,
+      }))}
+    />
     <VictoryChart theme={VictoryTheme.material} height={300} width={928} minDomain={{ x: 0, y: 0 }} maxDomain={{ x: 20, y: 100 }}>
       <VictoryLine
         data={iterations.map(i => ({

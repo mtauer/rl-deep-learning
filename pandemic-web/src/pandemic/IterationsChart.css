@@ -1,0 +1,19 @@
+.p-chart__grid-line {
+  shape-rendering: crispEdges;
+  stroke: #eaeaea;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.p-chart__grid-label {
+  fill: #767676;
+  font-family: 'IBM Plex Sans', monospace;
+  font-size: 10px;
+}
+
+.p-chart__axis-line {
+  shape-rendering: crispEdges;
+  stroke: #9b9b9b;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
