@@ -75,7 +75,7 @@ export default class GoogleCloudStorage {
       10,
       () => this.datastore
         .runQuery(query)
-        .then(results => results[0].map(entity => entity.iterationSummary)),
+        .then(results => results[0]),
     );
   }
 

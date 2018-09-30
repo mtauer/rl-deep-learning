@@ -1,5 +1,5 @@
 import { map } from 'rxjs/operators';
-import uuidv4 from 'uuid/v4';
+import padStart from 'lodash/padStart';
 
 import { mergeArrayIntoObject } from '../utils/reduxHelpers';
 
@@ -32,7 +32,7 @@ export default function dataReducer(state = initialState, action) {
         iterations: mergeArrayIntoObject(
           state.iterations,
           action.iterations,
-          () => uuidv4(),
+          i => `${i.version}-${padStart(i.iteration, 3, '0')}`,
         ),
         isInitialized: mergeArrayIntoObject(
           state.isInitialized,
