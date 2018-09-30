@@ -4,6 +4,7 @@ import express from 'express';
 import cors from 'cors';
 
 import GoogleCloudStorage from './pandemic-light/googleCloudStorage';
+import { forceGC } from './utils';
 
 const googleCloudStorage = new GoogleCloudStorage();
 const app = express();
@@ -15,6 +16,7 @@ class IterationController {
     const { versionId } = req.params;
     const iterations = await googleCloudStorage.readIterationSummaries(versionId);
     res.json(iterations);
+    forceGC();
   }
 }
 const iterationController = new IterationController();
