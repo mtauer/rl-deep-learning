@@ -12,7 +12,7 @@ export const PageContent = styled.div`
 export const PageContentWrapper = styled.div`
   margin: 0 auto;
   max-width: 800px;
-  padding: 32px 24px;
+  padding: 32px 32px;
 `;
 export const PageSide = styled.div`
   background-color: #f7f7f7;
