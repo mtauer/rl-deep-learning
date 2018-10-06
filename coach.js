@@ -1,14 +1,16 @@
+/* eslint-disable no-console */
 import ProgressBar from 'progress';
 import shuffle from 'lodash/shuffle';
 import flatten from 'lodash/flatten';
 import every from 'lodash/every';
 import isFinite from 'lodash/isFinite';
+import uuidv4 from 'uuid/v4';
 
 import game from './pandemic-web/src/pandemic-shared/game';
 import PandemicNeuronalNetwork from './pandemic-light/neuralNetwork';
 import MonteCarloTreeSearchNN from './MonteCarloTreeSearchNN';
-import { getTrainingEpisodesStats, getIterationSummary, getEpisodeStats,
-  savePlayingStats, loadPlayingStats } from './pandemic-light/stats';
+import { getTrainingEpisodesStats, getIterationSummary, savePlayingStats,
+  loadPlayingStats } from './pandemic-light/stats';
 import { getTestExamples } from './pandemic-light/testData';
 import { toNNProbabilities } from './utils';
 
@@ -36,10 +38,11 @@ export default class Coach {
     }
   }
 
-  async generateTrainingData(monitor, iteration, version) {
-    this.neuralNetwork = this.neuralNetwork || await this.getNeuralNetwork(iteration, version);
+  async generateTrainingData(monitor, iterationIndex, versionNumber) {
+    this.neuralNetwork = this.neuralNetwork
+      || await this.getNeuralNetwork(iterationIndex, versionNumber);
     const trainingEpisodes = await this.trainingEpisodesStorage
-      .readTrainingEpisodes(iteration, version);
+      .readTrainingEpisodes(iterationIndex, versionNumber);
     const mcts = new MonteCarloTreeSearchNN(this.config.mcts, game, this.neuralNetwork, monitor);
     for (let j = trainingEpisodes.length; j < this.config.trainingEpisodes; j += 1) {
       mcts.reset();
@@ -48,23 +51,24 @@ export default class Coach {
       console.log('Stats', getTrainingEpisodesStats(trainingEpisodes));
       // eslint-disable-next-line no-await-in-loop
       const episodeResults = await this.executeEpisode(mcts);
-      const episodeStats = getEpisodeStats(episodeResults);
-      const trainingEpisode = { episodeStats, episodeResults };
+      const matchId = uuidv4();
       // eslint-disable-next-line no-await-in-loop
       await this.trainingEpisodesStorage
-        .writeTrainingEpisode(trainingEpisode, iteration, version);
-      trainingEpisodes.push(trainingEpisode);
+        .writeMatch(matchId, episodeResults.match, iterationIndex, versionNumber);
+      // eslint-disable-next-line no-await-in-loop
+      await this.trainingEpisodesStorage
+        .writeMatchDetails(matchId, episodeResults.matchDetails, iterationIndex, versionNumber);
     }
     console.log('Training finished');
     console.log('Stats', getTrainingEpisodesStats(trainingEpisodes));
   }
 
-  async summarizeIteration(monitor, iteration, version) {
+  async summarizeIteration(monitor, iterationIndex, versionNumber) {
     const trainingEpisodes = await this.trainingEpisodesStorage
-      .readTrainingEpisodes(iteration, version);
-    const iterationSummary = getIterationSummary(trainingEpisodes);
+      .readTrainingEpisodes(iterationIndex, versionNumber);
+    const iteration = getIterationSummary(trainingEpisodes);
     await this.trainingEpisodesStorage
-      .writeIterationSummary(iterationSummary, iteration, version);
+      .writeIteration(iteration, iterationIndex, versionNumber);
   }
 
   async train(monitor, iteration, version) {
@@ -110,18 +114,19 @@ export default class Coach {
   async executeEpisode(mcts, isTraining = true) {
     const startTime = Date.now();
     let step = 0;
-    const steps = [];
+    // const steps = [];
+    const actions = [];
+    const states = [];
+    const simulations = [];
     const bar = new ProgressBar('[:bar] :elapsed :ended', { total: 100, head: '>', incomplete: ' ' });
     // eslint-disable-next-line no-constant-condition
     while (true) {
       // eslint-disable-next-line no-await-in-loop
-      const { probabilities, nextAction, stats } = await mcts
+      const { state, nextAction, simulation, stats } = await mcts
         .getActionProbabilities(step, isTraining);
-      steps.push({
-        state: mcts.root.state,
-        pValues: probabilities,
-        action: nextAction,
-      });
+      actions.push(nextAction);
+      states.push(state);
+      simulations.push(simulation);
       bar.tick({ ended: stats.simulationsEnded });
       // Perform action and get new state
       const nextState = game.performAction(mcts.root.state, nextAction);
@@ -136,11 +141,19 @@ export default class Coach {
       }
 
       if (game.hasEnded(mcts.root.state)) {
-        const vValue = game.getValue(mcts.root.state);
+        const resultValue = game.getValue(mcts.root.state);
         return {
-          steps,
-          vValue,
-          time: Date.now() - startTime,
+          match: {
+            resultValue,
+            won: resultValue > 0,
+          },
+          matchDetails: {
+            actions,
+            states,
+            simulations,
+            time: Date.now() - startTime,
+          },
+          steps: [],
         };
       }
       step += 1;

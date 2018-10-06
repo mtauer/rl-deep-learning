@@ -8,7 +8,10 @@ import packageJson from '../package.json';
 import { retry } from '../utils';
 
 const TRAINING_EPISODE = 'TrainingEpisode';
+const ITERATION = 'Iteration';
 const ITERATION_SUMMARY = 'IterationSummary';
+const MATCH = 'Match';
+const MATCH_DETAILS = 'MatchDetails';
 
 export default class GoogleCloudStorage {
   constructor() {
@@ -79,21 +82,54 @@ export default class GoogleCloudStorage {
     );
   }
 
-  async writeIterationSummary(iterationSummary, iteration, version = packageJson.version) {
+  async writeIteration(iteration, iterationIndex, versionNumber = packageJson.version) {
     // eslint-disable-next-line no-console
-    console.log('Writing iteration summary to Datastore', version, iteration);
-    const name = uuidv4();
-    const key = this.datastore.key([ITERATION_SUMMARY, name]);
-    const iterationSummaryEntity = {
+    console.log('Writing iteration to Datastore', versionNumber, iterationIndex);
+    const iterationId = `${versionNumber}-${iterationIndex}`;
+    const iterationData = {
+      ...iteration,
+      iterationId,
+      versionId: versionNumber,
+    };
+    return this.writeEntity(ITERATION, iterationId, iterationData);
+  }
+
+  async writeMatch(matchId = uuidv4(), match, iterationIndex,
+    versionNumber = packageJson.version) {
+    // eslint-disable-next-line no-console
+    console.log('Writing match to Datastore', versionNumber, iterationIndex);
+    const matchData = {
+      ...match,
+      matchId,
+      iterationId: `${versionNumber}-${iterationIndex}`,
+      versionId: versionNumber,
+    };
+    return this.writeEntity(MATCH, matchId, matchData);
+  }
+
+  async writeMatchDetails(matchId = uuidv4(), matchDetails, iterationIndex,
+    versionNumber = packageJson.version) {
+    // eslint-disable-next-line no-console
+    console.log('Writing match details to Datastore', versionNumber, iterationIndex);
+    const matchDetailsData = {
+      ...matchDetails,
+      matchId,
+      iterationId: `${versionNumber}-${iterationIndex}`,
+      versionId: versionNumber,
+    };
+    return this.writeEntity(MATCH_DETAILS, matchId, matchDetailsData);
+  }
+
+  async writeEntity(entityKey, id, data) {
+    const key = this.datastore.key([entityKey, id]);
+    const entity = {
       key,
       data: {
+        ...data,
         createdAt: new Date().toISOString(),
-        version,
-        iteration,
-        iterationSummary,
       },
     };
-    return retry(10, () => this.datastore.save(iterationSummaryEntity));
+    return retry(10, () => this.datastore.save(entity));
   }
 
   async writeDebugLog(debug, version = packageJson.version) {

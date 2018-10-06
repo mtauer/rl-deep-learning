@@ -77,8 +77,16 @@ export default class MonteCarloTreeSearchNN {
     }
 
     return {
-      probabilities,
+      state: this.root.state,
       nextAction,
+      simulation: {
+        validActions,
+        p1: this.getPredictedPValues(),
+        n: this.getNsaValues(),
+        ucb: this.getUcbSumValues(),
+        q: this.getQsaValues(),
+        p2: tempProbabilities,
+      },
       stats: { simulationsEnded: this.simulationsEnded },
     };
   }
