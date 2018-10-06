@@ -13,7 +13,7 @@ const MatchSelection = () => (
   <div>
     <Grid container spacing={24}>
       <Grid item xs={4}>
-        <FormControl fullWidth>
+        <FormControl fullWidth disabled>
           <InputLabel htmlFor="version">Version</InputLabel>
           <Select
             value=""
@@ -27,7 +27,7 @@ const MatchSelection = () => (
         </FormControl>
       </Grid>
       <Grid item xs={4}>
-        <FormControl fullWidth>
+        <FormControl fullWidth disabled>
           <InputLabel htmlFor="iteration">Iteration</InputLabel>
           <Select
             value=""
@@ -41,7 +41,7 @@ const MatchSelection = () => (
         </FormControl>
       </Grid>
       <Grid item xs={4}>
-        <FormControl fullWidth>
+        <FormControl fullWidth disabled>
           <InputLabel htmlFor="iteration">Match</InputLabel>
           <Select
             value=""

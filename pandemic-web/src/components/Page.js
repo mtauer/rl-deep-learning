@@ -4,16 +4,6 @@ export const Page = styled.div`
   display: flex;
   min-height: 100vh;
 `;
-export const PageContent = styled.div`
-  background-color: #ffffff;
-  flex: 1;
-  margin: 0 290px 0 220px;
-`;
-export const PageContentWrapper = styled.div`
-  margin: 0 auto;
-  max-width: 800px;
-  padding: 32px 32px;
-`;
 export const PageSide = styled.div`
   background-color: #f7f7f7;
   bottom: 0;
@@ -30,6 +20,19 @@ export const PageSide = styled.div`
     position: relative;
     width: 320px;
   }
+`;
+export const PageContent = styled.div`
+  background-color: #ffffff;
+  flex: 1;
+  margin: 0 290px 0 220px;
+`;
+export const PageContentWrapper = styled.div`
+  margin: 0 auto;
+  max-width: 800px;
+  padding: 32px 32px;
+`;
+export const PageSection = styled.section`
+  margin: 0 0 32px 0;
 `;
 
 export const Container = styled.div`

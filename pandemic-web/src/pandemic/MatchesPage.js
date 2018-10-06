@@ -1,7 +1,8 @@
 import React from 'react';
 
-import { Page, PageSide, PageContent, PageContentWrapper, Title } from '../components/Page';
+import { Page, PageSide, PageContent, PageContentWrapper, PageSection, Title } from '../components/Page';
 import MatchSelection from './MatchSelection';
+import MatchTabs from './MatchTabs';
 
 const MatchesPage = () => (
   <Page>
@@ -9,7 +10,12 @@ const MatchesPage = () => (
     <PageContent>
       <PageContentWrapper>
         <Title>Pandemic Matches</Title>
-        <MatchSelection />
+        <PageSection>
+          <MatchSelection />
+        </PageSection>
+        <PageSection>
+          <MatchTabs />
+        </PageSection>
       </PageContentWrapper>
     </PageContent>
     <PageSide right />
