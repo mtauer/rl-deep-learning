@@ -38,11 +38,11 @@ export default class Coach {
     }
   }
 
-  async generateTrainingData(monitor, iterationIndex, versionNumber) {
+  async generateTrainingData(monitor, iterationIndex, version) {
     this.neuralNetwork = this.neuralNetwork
-      || await this.getNeuralNetwork(iterationIndex, versionNumber);
+      || await this.getNeuralNetwork(iterationIndex, version);
     const trainingEpisodes = await this.trainingEpisodesStorage
-      .readTrainingEpisodes(iterationIndex, versionNumber);
+      .readTrainingEpisodes(iterationIndex, version);
     const mcts = new MonteCarloTreeSearchNN(this.config.mcts, game, this.neuralNetwork, monitor);
     for (let j = trainingEpisodes.length; j < this.config.trainingEpisodes; j += 1) {
       mcts.reset();
@@ -54,21 +54,21 @@ export default class Coach {
       const matchId = uuidv4();
       // eslint-disable-next-line no-await-in-loop
       await this.trainingEpisodesStorage
-        .writeMatch(matchId, episodeResults.match, iterationIndex, versionNumber);
+        .writeMatch(matchId, episodeResults.match, iterationIndex, version);
       // eslint-disable-next-line no-await-in-loop
       await this.trainingEpisodesStorage
-        .writeMatchDetails(matchId, episodeResults.matchDetails, iterationIndex, versionNumber);
+        .writeMatchDetails(matchId, episodeResults.matchDetails, iterationIndex, version);
     }
     console.log('Training finished');
     console.log('Stats', getTrainingEpisodesStats(trainingEpisodes));
   }
 
-  async summarizeIteration(monitor, iterationIndex, versionNumber) {
+  async summarizeIteration(monitor, iterationIndex, version) {
     const trainingEpisodes = await this.trainingEpisodesStorage
-      .readTrainingEpisodes(iterationIndex, versionNumber);
+      .readTrainingEpisodes(iterationIndex, version);
     const iteration = getIterationSummary(trainingEpisodes);
     await this.trainingEpisodesStorage
-      .writeIteration(iteration, iterationIndex, versionNumber);
+      .writeIteration(iteration, iterationIndex, version);
   }
 
   async train(monitor, iteration, version) {

@@ -7,8 +7,6 @@ import keys from 'lodash/keys';
 import sum from 'lodash/sum';
 import sortBy from 'lodash/sortBy';
 
-import game from '../pandemic-web/src/pandemic-shared/game';
-
 const playingEpisodesFile = './pandemic-light/stats/iteration_000_playingEpisodes.json';
 
 export function getTrainingEpisodesStats(trainingEpisodes) {
@@ -50,8 +48,7 @@ export function getEpisodeStats(episodeResults) {
 export function getIterationSummary(trainingEpisodes) {
   const trainingEpisodesStats = getTrainingEpisodesStats(trainingEpisodes);
   return {
-    trainingEpisodesStats,
-    gameDescription: game.getDescription(),
+    ...trainingEpisodesStats,
   };
 }
 

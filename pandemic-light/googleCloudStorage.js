@@ -82,40 +82,41 @@ export default class GoogleCloudStorage {
     );
   }
 
-  async writeIteration(iteration, iterationIndex, versionNumber = packageJson.version) {
+  async writeIteration(iteration, iterationIndex, version = packageJson.version) {
     // eslint-disable-next-line no-console
-    console.log('Writing iteration to Datastore', versionNumber, iterationIndex);
-    const iterationId = `${versionNumber}-${iterationIndex}`;
+    console.log('Writing iteration to Datastore', version, iterationIndex);
+    const iterationId = `${version}-${iterationIndex}`;
     const iterationData = {
       ...iteration,
+      name: `Iteration ${iterationIndex}`,
       iterationId,
-      versionId: versionNumber,
+      versionId: version,
     };
     return this.writeEntity(ITERATION, iterationId, iterationData);
   }
 
   async writeMatch(matchId = uuidv4(), match, iterationIndex,
-    versionNumber = packageJson.version) {
+    version = packageJson.version) {
     // eslint-disable-next-line no-console
-    console.log('Writing match to Datastore', versionNumber, iterationIndex);
+    console.log('Writing match to Datastore', version, iterationIndex);
     const matchData = {
       ...match,
       matchId,
-      iterationId: `${versionNumber}-${iterationIndex}`,
-      versionId: versionNumber,
+      iterationId: `${version}-${iterationIndex}`,
+      versionId: version,
     };
     return this.writeEntity(MATCH, matchId, matchData);
   }
 
   async writeMatchDetails(matchId = uuidv4(), matchDetails, iterationIndex,
-    versionNumber = packageJson.version) {
+    version = packageJson.version) {
     // eslint-disable-next-line no-console
-    console.log('Writing match details to Datastore', versionNumber, iterationIndex);
+    console.log('Writing match details to Datastore', version, iterationIndex);
     const matchDetailsData = {
       ...matchDetails,
       matchId,
-      iterationId: `${versionNumber}-${iterationIndex}`,
-      versionId: versionNumber,
+      iterationId: `${version}-${iterationIndex}`,
+      versionId: version,
     };
     return this.writeEntity(MATCH_DETAILS, matchId, matchDetailsData);
   }
