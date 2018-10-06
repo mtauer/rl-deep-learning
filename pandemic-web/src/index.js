@@ -5,13 +5,13 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 
 import store from './configureStore';
-import PandemicPage from './pandemic/PandemicPage';
+import MatchesPage from './pandemic/MatchesPage';
 import registerServiceWorker from './registerServiceWorker';
 import './index.css';
 
 ReactDOM.render(
   <Provider store={store}>
-    <PandemicPage />
+    <MatchesPage />
   </Provider>,
   document.getElementById('root'),
 );

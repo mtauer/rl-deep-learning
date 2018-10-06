@@ -1,5 +1,37 @@
 import styled from 'styled-components';
 
+export const Page = styled.div`
+  display: flex;
+  min-height: 100vh;
+`;
+export const PageContent = styled.div`
+  background-color: #ffffff;
+  flex: 1;
+  margin: 0 290px 0 220px;
+`;
+export const PageContentWrapper = styled.div`
+  margin: 0 auto;
+  max-width: 800px;
+  padding: 32px 24px;
+`;
+export const PageSide = styled.div`
+  background-color: #f7f7f7;
+  bottom: 0;
+  left: ${({ left }) => (left ? '0' : 'auto')};
+  top: 0;
+  position: fixed;
+  right: ${({ right }) => (right ? '0' : 'auto')};
+  width: ${({ left }) => (left ? '220px' : '290px')};
+
+  &:after {
+    content: " ";
+    display: block;
+    height: 1px;
+    position: relative;
+    width: 320px;
+  }
+`;
+
 export const Container = styled.div`
   background-color: #ffffff;
   margin: 0 auto;
@@ -12,7 +44,8 @@ export const Section = styled.div`
 `;
 export const Title = styled.h1`
   font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 33px;
+  font-size: 27px;
+  font-weight: 400;
   margin: 0;
   padding: 0 0 16px 0;
 `;
