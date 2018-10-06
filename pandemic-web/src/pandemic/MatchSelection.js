@@ -1,16 +1,14 @@
 import React from 'react';
-import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 
-const styles = () => ({
-});
+import { PageSection } from '../components/Page';
 
 const MatchSelection = () => (
-  <div>
+  <PageSection>
     <Grid container spacing={24}>
       <Grid item xs={4}>
         <FormControl fullWidth disabled>
@@ -55,7 +53,7 @@ const MatchSelection = () => (
         </FormControl>
       </Grid>
     </Grid>
-  </div>
+  </PageSection>
 );
 
-export default withStyles(styles)(MatchSelection);
+export default MatchSelection;
