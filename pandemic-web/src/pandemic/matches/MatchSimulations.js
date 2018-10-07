@@ -1,5 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { compose } from 'redux';
+import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -8,6 +10,8 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import styled from 'styled-components';
 
+import { getMatches } from '../../data/redux';
+import { getCurrentStep } from './redux';
 import { PageSection } from '../../components/Page';
 import ValueBar from './ValueBar';
 import PandemicAction from './PandemicAction';
@@ -38,78 +42,102 @@ const styles = () => ({
   },
 });
 
-const MatchSimulations = ({ classes }) => (
-  <PageSection>
-    <Container>
-      <Table>
-        <TableHead>
-          <TableRow className={classes.headRow}>
-            <TableCell className={classes.barHeadCell}>P1</TableCell>
-            <TableCell className={classes.barHeadCell}>N</TableCell>
-            <TableCell className={classes.barHeadCell}>UCB</TableCell>
-            <TableCell className={classes.barHeadCell}>Q</TableCell>
-            <TableCell className={classes.barHeadCell}>P2</TableCell>
-            <TableCell className={classes.barHeadCell}>Pt</TableCell>
-            <TableCell style={{ width: 160 }}>Action</TableCell>
-            <TableCell>Cards</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          <TableRow className={classes.bodyRow}>
-            <TableCell padding="none">
-              <ValueBarContainer>
-                <ValueBar value={0.125} color="#82AD4A" />
-              </ValueBarContainer>
-            </TableCell>
-            <TableCell padding="none">
-              <ValueBarContainer>
-                <ValueBar value={0.425} />
-              </ValueBarContainer>
-            </TableCell>
-            <TableCell padding="none">
-              <ValueBarContainer>
-                <ValueBar value={0.425} />
-              </ValueBarContainer>
-            </TableCell>
-            <TableCell padding="none">
-              <ValueBarContainer>
-                <ValueBar value={0.425} />
-              </ValueBarContainer>
-            </TableCell>
-            <TableCell padding="none">
-              <ValueBarContainer>
-                <ValueBar value={0.425} color="#82AD4A" />
-              </ValueBarContainer>
-            </TableCell>
-            <TableCell padding="none">
-              <ValueBarContainer>
-                <ValueBar value={0.425} />
-              </ValueBarContainer>
-            </TableCell>
-            <TableCell>
-              <PandemicAction action={{ type: 'DIRECT_FLIGHT', to: 3 }} />
-            </TableCell>
-            <TableCell>
-              <PandemicCards cardIds={[23, 24, 56]} />
-            </TableCell>
-          </TableRow>
-          <TableRow className={classes.bodyRow}>
-            <TableCell padding="none">.</TableCell>
-            <TableCell padding="none">.</TableCell>
-            <TableCell padding="none">.</TableCell>
-            <TableCell padding="none">.</TableCell>
-            <TableCell padding="none">.</TableCell>
-            <TableCell padding="none">.</TableCell>
-            <TableCell>DRIVE_FERRY</TableCell>
-            <TableCell>LA_KH_LA_KH_LA</TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
-    </Container>
-  </PageSection>
-);
+const MatchSimulations = ({ currentSimulation, classes }) => {
+  const {
+    p1,
+    n,
+    ucb,
+    q,
+    p2,
+    pt,
+    validActions,
+  } = currentSimulation;
+  return (
+    <PageSection>
+      <Container>
+        <Table>
+          <TableHead>
+            <TableRow className={classes.headRow}>
+              <TableCell className={classes.barHeadCell}>P1</TableCell>
+              <TableCell className={classes.barHeadCell}>N</TableCell>
+              <TableCell className={classes.barHeadCell}>UCB</TableCell>
+              <TableCell className={classes.barHeadCell}>Q</TableCell>
+              <TableCell className={classes.barHeadCell}>P2</TableCell>
+              <TableCell className={classes.barHeadCell}>Pt</TableCell>
+              <TableCell style={{ width: 160 }}>Action</TableCell>
+              <TableCell>Cards</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {validActions.map((a, i) => renderSimulationRow(i))}
+          </TableBody>
+        </Table>
+      </Container>
+    </PageSection>
+  );
+
+  function renderSimulationRow(index) {
+    return (
+      <TableRow key={`action-${index}`} className={classes.bodyRow}>
+        <TableCell padding="none">
+          <ValueBarContainer>
+            <ValueBar value={p1[index]} color="#82AD4A" formatFunc={f => f.toFixed(3)} />
+          </ValueBarContainer>
+        </TableCell>
+        <TableCell padding="none">
+          <ValueBarContainer>
+            <ValueBar value={n[index]} />
+          </ValueBarContainer>
+        </TableCell>
+        <TableCell padding="none">
+          <ValueBarContainer>
+            <ValueBar value={ucb[index]} formatFunc={f => f.toFixed(3)} />
+          </ValueBarContainer>
+        </TableCell>
+        <TableCell padding="none">
+          <ValueBarContainer>
+            <ValueBar value={q[index]} formatFunc={f => f.toFixed(3)} />
+          </ValueBarContainer>
+        </TableCell>
+        <TableCell padding="none">
+          <ValueBarContainer>
+            <ValueBar value={p2[index]} color="#82AD4A" formatFunc={f => f.toFixed(3)} />
+          </ValueBarContainer>
+        </TableCell>
+        <TableCell padding="none">
+          <ValueBarContainer>
+            <ValueBar value={pt[index]} formatFunc={f => f.toFixed(3)} />
+          </ValueBarContainer>
+        </TableCell>
+        <TableCell>
+          <PandemicAction action={validActions[index]} />
+        </TableCell>
+        <TableCell>
+          <PandemicCards cardIds={validActions[index].card || validActions[index].cards} />
+        </TableCell>
+      </TableRow>
+    );
+  }
+};
 MatchSimulations.propTypes = {
+  currentSimulation: PropTypes.shape().isRequired,
   classes: PropTypes.shape().isRequired,
 };
 
-export default withStyles(styles)(MatchSimulations);
+const mapStateToProps = (state) => {
+  const matches = getMatches(state);
+  const matchId = 'a09c3e2c-65fa-47b4-9110-6d9ef04207d6';
+  const simulations = matches[matchId] ? matches[matchId].simulations : null;
+  const currentStep = getCurrentStep(state);
+  const currentSimulation = simulations ? simulations[currentStep - 1] : {
+    p1: [],
+    validActions: [],
+  };
+  return {
+    currentSimulation,
+  };
+};
+export default compose(
+  withStyles(styles),
+  connect(mapStateToProps),
+)(MatchSimulations);

@@ -23,7 +23,7 @@ const Label = styled.span`
   transform: translateY(-50%);
 `;
 
-const ValueBar = ({ value, minValue, maxValue, color }) => {
+const ValueBar = ({ value, minValue, maxValue, color, formatFunc }) => {
   const maxBarWidth = 48;
   let barWidth;
   if (value <= minValue) {
@@ -36,7 +36,7 @@ const ValueBar = ({ value, minValue, maxValue, color }) => {
   return (
     <Container>
       <Bar style={{ width: barWidth }} color={color} />
-      <Label>{value}</Label>
+      <Label>{formatFunc(value)}</Label>
     </Container>
   );
 };
@@ -45,11 +45,13 @@ ValueBar.propTypes = {
   minValue: PropTypes.number,
   maxValue: PropTypes.number,
   color: PropTypes.string,
+  formatFunc: PropTypes.func,
 };
 ValueBar.defaultProps = {
   minValue: 0,
   maxValue: 1,
   color: '#C4C4C4',
+  formatFunc: x => x,
 };
 
 export default ValueBar;
