@@ -16,6 +16,11 @@ import LabeledValue from '../../components/LabeledValue';
 const Container = styled.div`
   align-items: center;
   display: flex;
+
+  &:focus {
+    background-color: #f7f7f7;
+    outline: 0;
+  }
 `;
 const NavItem = styled.div`
   padding: 0 32px 0 0;
@@ -27,9 +32,23 @@ const StepNavigation = ({
   stepsCount,
   onPreviousStepClick,
   onNextStepClick,
+  onLeftKeyDown,
+  onRightKeyDown,
 }) => (
   <PageSection>
-    <Container>
+    <Container
+      onKeyDown={(event) => {
+        const { keyCode } = event;
+        if (keyCode === 37 && currentStep > 1) {
+          onLeftKeyDown();
+        }
+        if (keyCode === 39 && currentStep < stepsCount) {
+          onRightKeyDown();
+        }
+      }}
+      role="navigation"
+      tabIndex="0"
+    >
       <NavItem>
         <IconButton
           color="primary"
@@ -82,6 +101,8 @@ StepNavigation.propTypes = {
   stepsCount: PropTypes.number.isRequired,
   onPreviousStepClick: PropTypes.func.isRequired,
   onNextStepClick: PropTypes.func.isRequired,
+  onLeftKeyDown: PropTypes.func.isRequired,
+  onRightKeyDown: PropTypes.func.isRequired,
 };
 StepNavigation.defaultProps = {
   currentState: null,
@@ -106,6 +127,12 @@ const mapDispatchToProps = dispatch => ({
     dispatch(previousStepAction());
   },
   onNextStepClick: () => {
+    dispatch(nextStepAction());
+  },
+  onLeftKeyDown: () => {
+    dispatch(previousStepAction());
+  },
+  onRightKeyDown: () => {
     dispatch(nextStepAction());
   },
 });
