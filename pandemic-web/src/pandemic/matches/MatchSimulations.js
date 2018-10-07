@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import max from 'lodash/max';
+import mean from 'lodash/mean';
 import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -53,12 +54,12 @@ const MatchSimulations = ({ currentSimulation, classes }) => {
     pt,
     validActions,
   } = currentSimulation;
-  const p1Max = max(p1);
+  const p1Max = mean([max(p1), 1]);
   const nMax = max(n);
   const ucbMax = max(ucb);
-  const qMax = max(q);
-  const p2Max = max(p2);
-  const ptMax = max(pt);
+  const qMax = mean([max(q), 1]);
+  const p2Max = mean([max(p2), 1]);
+  const ptMax = mean([max(pt), 1]);
   return (
     <PageSection>
       <Container>

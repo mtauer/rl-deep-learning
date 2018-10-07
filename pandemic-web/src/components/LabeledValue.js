@@ -29,10 +29,11 @@ const LabeledValue = ({ label, value }) => (
 );
 LabeledValue.propTypes = {
   label: PropTypes.node,
-  value: PropTypes.node.isRequired,
+  value: PropTypes.node,
 };
 LabeledValue.defaultProps = {
   label: null,
+  value: null,
 };
 
 export default LabeledValue;

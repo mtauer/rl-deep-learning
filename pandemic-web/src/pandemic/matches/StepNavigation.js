@@ -21,6 +21,7 @@ const NavItem = styled.div`
 `;
 
 const StepNavigation = ({
+  currentState,
   currentStep,
   stepsCount,
   onPreviousStepClick,
@@ -54,25 +55,29 @@ const StepNavigation = ({
         </IconButton>
       </NavItem>
       <NavItem>
-        <LabeledValue label="Step" value={`${currentStep} / ${stepsCount}`} />
+        <LabeledValue label="Step" value={currentState ? `${currentStep} / ${stepsCount}` : null} />
       </NavItem>
       <NavItem>
-        <LabeledValue label="Player" value="1" />
+        <LabeledValue label="Player" value={currentState ? currentState.currentPlayer + 1 : null} />
       </NavItem>
       <NavItem>
-        <LabeledValue label="Moves Left" value="4" />
+        <LabeledValue label="Moves Left" value={currentState ? currentState.currentMovesLeft : null} />
       </NavItem>
       <NavItem>
-        <LabeledValue label="Location" value="Atlanta" />
+        <LabeledValue label="Location" value={currentState ? currentState.playerPosition[currentState.currentPlayer] : null} />
       </NavItem>
     </Container>
   </PageSection>
 );
 StepNavigation.propTypes = {
+  currentState: PropTypes.shape(),
   currentStep: PropTypes.number.isRequired,
   stepsCount: PropTypes.number.isRequired,
   onPreviousStepClick: PropTypes.func.isRequired,
   onNextStepClick: PropTypes.func.isRequired,
+};
+StepNavigation.defaultProps = {
+  currentState: null,
 };
 
 const mapStateToProps = (state) => {
@@ -80,8 +85,11 @@ const mapStateToProps = (state) => {
   const matches = getMatches(state);
   const matchId = 'a09c3e2c-65fa-47b4-9110-6d9ef04207d6';
   const simulations = matches[matchId] ? matches[matchId].simulations : [];
+  const states = matches[matchId] ? matches[matchId].states : [];
+  const currentState = states[currentStep - 1];
   const stepsCount = simulations.length;
   return {
+    currentState,
     currentStep,
     stepsCount,
   };
