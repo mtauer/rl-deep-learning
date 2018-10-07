@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
+import max from 'lodash/max';
 import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -52,6 +53,12 @@ const MatchSimulations = ({ currentSimulation, classes }) => {
     pt,
     validActions,
   } = currentSimulation;
+  const p1Max = max(p1);
+  const nMax = max(n);
+  const ucbMax = max(ucb);
+  const qMax = max(q);
+  const p2Max = max(p2);
+  const ptMax = max(pt);
   return (
     <PageSection>
       <Container>
@@ -81,39 +88,50 @@ const MatchSimulations = ({ currentSimulation, classes }) => {
       <TableRow key={`action-${index}`} className={classes.bodyRow}>
         <TableCell padding="none">
           <ValueBarContainer>
-            <ValueBar value={p1[index]} color="#82AD4A" formatFunc={f => f.toFixed(3)} />
+            <ValueBar value={p1[index]} color="#82AD4A" formatFunc={f => f.toFixed(3)} maxValue={p1Max} />
           </ValueBarContainer>
         </TableCell>
         <TableCell padding="none">
           <ValueBarContainer>
-            <ValueBar value={n[index]} />
+            <ValueBar value={n[index]} maxValue={nMax} />
           </ValueBarContainer>
         </TableCell>
         <TableCell padding="none">
           <ValueBarContainer>
-            <ValueBar value={ucb[index]} minValue={-1} formatFunc={f => f.toFixed(3)} />
+            <ValueBar
+              value={ucb[index]}
+              minValue={-1}
+              formatFunc={f => f.toFixed(3)}
+              maxValue={ucbMax}
+            />
           </ValueBarContainer>
         </TableCell>
         <TableCell padding="none">
           <ValueBarContainer>
-            <ValueBar value={q[index]} formatFunc={f => f.toFixed(3)} />
+            <ValueBar value={q[index]} formatFunc={f => f.toFixed(3)} maxValue={qMax} />
           </ValueBarContainer>
         </TableCell>
         <TableCell padding="none">
           <ValueBarContainer>
-            <ValueBar value={p2[index]} color="#82AD4A" formatFunc={f => f.toFixed(3)} />
+            <ValueBar value={p2[index]} color="#82AD4A" formatFunc={f => f.toFixed(3)} maxValue={p2Max} />
           </ValueBarContainer>
         </TableCell>
         <TableCell padding="none">
           <ValueBarContainer>
-            <ValueBar value={pt[index]} formatFunc={f => f.toFixed(3)} />
+            <ValueBar value={pt[index]} formatFunc={f => f.toFixed(3)} maxValue={ptMax} />
           </ValueBarContainer>
         </TableCell>
         <TableCell>
           <PandemicAction action={validActions[index]} />
         </TableCell>
         <TableCell>
-          <PandemicCards cardIds={validActions[index].card || validActions[index].cards} />
+          <PandemicCards
+            cardIds={
+              validActions[index].card
+              || validActions[index].cards
+              || validActions[index].usedCards
+            }
+          />
         </TableCell>
       </TableRow>
     );
