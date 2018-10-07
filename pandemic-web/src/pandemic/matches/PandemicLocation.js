@@ -2,6 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
+import { getLocationColor, getLocationAbbreviation } from '../../utils/formatHelpers';
+
 const Container = styled.div`
   align-items: center;
   display: flex;
@@ -19,19 +21,11 @@ const Circle = styled.span`
 const PandemicLocation = ({ locationId }) => (
   <Container>
     <Circle color={getLocationColor(locationId)} />
-    <span>{getLocationAbbreviation()}</span>
+    <span>{getLocationAbbreviation(locationId)}</span>
   </Container>
 );
 PandemicLocation.propTypes = {
   locationId: PropTypes.number.isRequired,
 };
-
-function getLocationColor() {
-  return '#DA1C49';
-}
-
-function getLocationAbbreviation() {
-  return 'AT';
-}
 
 export default PandemicLocation;

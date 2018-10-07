@@ -12,6 +12,7 @@ import Opacity from '@material-ui/icons/Opacity';
 import People from '@material-ui/icons/People';
 import Delete from '@material-ui/icons/Delete';
 
+import { getLocationName } from '../../utils/formatHelpers';
 import PandemicLocation from './PandemicLocation';
 
 const Container = styled.div`
@@ -39,11 +40,11 @@ PandemicAction.propTypes = {
 function getActionTooltip(action) {
   switch (action.type) {
     case 'DO_NOTHING': return 'Do nothing';
-    case 'DRIVE_FERRY': return `Drive/ferry to ${action.to}`;
-    case 'DIRECT_FLIGHT': return `Direct flight to ${action.to}`;
-    case 'CHARTER_FLIGHT': return `Charter flight to ${action.to}`;
-    case 'SHUTTLE_FLIGHT': return `Shuttle flight to ${action.to}`;
-    case 'BUILD_RESEARCH_CENTER': return `Build research center at ${action.at}`;
+    case 'DRIVE_FERRY': return `Drive/ferry to ${getLocationName(action.to)}`;
+    case 'DIRECT_FLIGHT': return `Direct flight to ${getLocationName(action.to)}`;
+    case 'CHARTER_FLIGHT': return `Charter flight to ${getLocationName(action.to)}`;
+    case 'SHUTTLE_FLIGHT': return `Shuttle flight to ${getLocationName(action.to)}`;
+    case 'BUILD_RESEARCH_CENTER': return `Build research center at ${getLocationName(action.at)}`;
     case 'DISCOVER_CURE': return 'Discuver cure for ...';
     case 'SHARE_KNOWLEDGE': return 'Share knowledre';
     case 'DISCARD_CARD': return 'Discard card';

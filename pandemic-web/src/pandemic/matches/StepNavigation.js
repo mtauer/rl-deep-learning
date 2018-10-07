@@ -7,8 +7,9 @@ import PlayArrow from '@material-ui/icons/PlayArrow';
 import SkipNext from '@material-ui/icons/SkipNext';
 import SkipPrevious from '@material-ui/icons/SkipPrevious';
 
-import { getCurrentStep, previousStepAction, nextStepAction } from './redux';
 import { getMatches } from '../../data/redux';
+import { getCurrentStep, previousStepAction, nextStepAction } from './redux';
+import { getLocationName } from '../../utils/formatHelpers';
 import { PageSection } from '../../components/Page';
 import LabeledValue from '../../components/LabeledValue';
 
@@ -64,7 +65,13 @@ const StepNavigation = ({
         <LabeledValue label="Moves Left" value={currentState ? currentState.currentMovesLeft : null} />
       </NavItem>
       <NavItem>
-        <LabeledValue label="Location" value={currentState ? currentState.playerPosition[currentState.currentPlayer] : null} />
+        <LabeledValue
+          label="Location"
+          value={currentState
+            ? getLocationName(currentState.playerPosition[currentState.currentPlayer])
+            : null
+          }
+        />
       </NavItem>
     </Container>
   </PageSection>
