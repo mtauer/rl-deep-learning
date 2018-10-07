@@ -29,7 +29,7 @@ const StepNavigation = () => (
       </IconButton>
     </NavItem>
     <NavItem>
-      <LabeledValue label="Steps" value="1 / 61" />
+      <LabeledValue label="Step" value="1 / 61" />
     </NavItem>
     <NavItem>
       <LabeledValue label="Player" value="1" />
