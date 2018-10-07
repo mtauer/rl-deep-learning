@@ -91,7 +91,7 @@ const MatchSimulations = ({ currentSimulation, classes }) => {
         </TableCell>
         <TableCell padding="none">
           <ValueBarContainer>
-            <ValueBar value={ucb[index]} formatFunc={f => f.toFixed(3)} />
+            <ValueBar value={ucb[index]} minValue={-1} formatFunc={f => f.toFixed(3)} />
           </ValueBarContainer>
         </TableCell>
         <TableCell padding="none">
