@@ -14,7 +14,7 @@ const config = {
     cPuct: 1.0,
     cUcb1: 0.7,
     temperature: 1,
-    explorationSteps: 28,
+    explorationSteps: 20,
     rolloutThreshold: 0,
   },
   neuralNetwork: {
