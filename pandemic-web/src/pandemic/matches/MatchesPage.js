@@ -8,6 +8,8 @@ import MatchSelection from './MatchSelection';
 import MatchTabs from './MatchTabs';
 import StepNavigation from './StepNavigation';
 import MatchSimulations from './MatchSimulations';
+import StateMap from './StateMap';
+import StateSummary from './StateSummary';
 
 const MatchesPage = ({ path }) => {
   let matchContent = null;
@@ -42,6 +44,8 @@ const MatchesPage = ({ path }) => {
       <Fragment>
         <SectionTitle>Game State</SectionTitle>
         <StepNavigation />
+        <StateMap />
+        <StateSummary />
       </Fragment>
     );
   }

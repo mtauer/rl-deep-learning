@@ -13,7 +13,7 @@ export const allPaths = [
 
 const initialState = {
   currentStep: 1,
-  path: SIMULATIONS_PATH,
+  path: STATES_PATH,
 };
 
 // Action Types
