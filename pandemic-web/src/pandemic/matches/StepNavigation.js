@@ -83,7 +83,7 @@ StepNavigation.defaultProps = {
 const mapStateToProps = (state) => {
   const currentStep = getCurrentStep(state);
   const matches = getMatches(state);
-  const matchId = 'a09c3e2c-65fa-47b4-9110-6d9ef04207d6';
+  const matchId = 'bbdea21a-cae8-402d-a1a1-f31a6692ebf5';
   const simulations = matches[matchId] ? matches[matchId].simulations : [];
   const states = matches[matchId] ? matches[matchId].states : [];
   const currentState = states[currentStep - 1];

@@ -91,7 +91,7 @@ export function fetchIterationsEpic(action$, state$, { apiClient }) {
 }
 
 export function fetchMatchDetailsEpic(action$, state$, { apiClient }) {
-  const matchId = 'a09c3e2c-65fa-47b4-9110-6d9ef04207d6';
+  const matchId = 'bbdea21a-cae8-402d-a1a1-f31a6692ebf5';
   return apiClient.getMatchDetails$(matchId).pipe(
     map(matchDetails => getMatchDetailsSuccessAction(matchDetails)),
   );
