@@ -27,6 +27,9 @@ const styles = () => ({
     padding: '0 8px',
     width: 58,
   },
+  bodyRow: {
+    height: 40,
+  },
 });
 
 const MatchSimulations = ({ classes }) => (
@@ -39,12 +42,13 @@ const MatchSimulations = ({ classes }) => (
           <TableCell className={classes.barHeadCell}>UCB</TableCell>
           <TableCell className={classes.barHeadCell}>Q</TableCell>
           <TableCell className={classes.barHeadCell}>P2</TableCell>
-          <TableCell style={{ width: 180 }}>Action</TableCell>
+          <TableCell className={classes.barHeadCell}>Pt</TableCell>
+          <TableCell style={{ width: 160 }}>Action</TableCell>
           <TableCell>Cards</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
-        <TableRow>
+        <TableRow className={classes.bodyRow}>
           <TableCell padding="none">
             <ValueBarContainer>
               <ValueBar value={0.125} color="#82AD4A" />
@@ -70,6 +74,11 @@ const MatchSimulations = ({ classes }) => (
               <ValueBar value={0.425} color="#82AD4A" />
             </ValueBarContainer>
           </TableCell>
+          <TableCell padding="none">
+            <ValueBarContainer>
+              <ValueBar value={0.425} />
+            </ValueBarContainer>
+          </TableCell>
           <TableCell>
             <PandemicAction action={{ type: 'DIRECT_FLIGHT', to: 3 }} />
           </TableCell>
@@ -77,7 +86,8 @@ const MatchSimulations = ({ classes }) => (
             <PandemicCards cardIds={[23, 24, 56]} />
           </TableCell>
         </TableRow>
-        <TableRow>
+        <TableRow className={classes.bodyRow}>
+          <TableCell padding="none">.</TableCell>
           <TableCell padding="none">.</TableCell>
           <TableCell padding="none">.</TableCell>
           <TableCell padding="none">.</TableCell>

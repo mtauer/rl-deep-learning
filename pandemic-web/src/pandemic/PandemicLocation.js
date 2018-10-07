@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import Tooltip from '@material-ui/core/Tooltip';
 
 const Container = styled.div`
   align-items: center;
@@ -20,9 +19,7 @@ const Circle = styled.span`
 const PandemicLocation = ({ locationId }) => (
   <Container>
     <Circle color={getLocationColor(locationId)} />
-    <Tooltip title={getLocationName(locationId)}>
-      <span>{getLocationAbbreviation()}</span>
-    </Tooltip>
+    <span>{getLocationAbbreviation()}</span>
   </Container>
 );
 PandemicLocation.propTypes = {
@@ -31,10 +28,6 @@ PandemicLocation.propTypes = {
 
 function getLocationColor() {
   return '#DA1C49';
-}
-
-function getLocationName() {
-  return 'Atlanta';
 }
 
 function getLocationAbbreviation() {

@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import Tooltip from '@material-ui/core/Tooltip';
 import FlightLand from '@material-ui/icons/FlightLand';
 
 import PandemicLocation from './PandemicLocation';
@@ -16,10 +17,12 @@ const Container = styled.div`
 `;
 
 const PandemicAction = ({ action }) => (
-  <Container>
-    {getActionIcon(action)}
-    {getActionDescription(action)}
-  </Container>
+  <Tooltip title="Direct flight to Atlanta">
+    <Container>
+      {getActionIcon(action)}
+      {getActionDescription(action)}
+    </Container>
+  </Tooltip>
 );
 PandemicAction.propTypes = {
   action: PropTypes.shape().isRequired,

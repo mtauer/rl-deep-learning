@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
 const Container = styled.div`
-  height: 48px;
+  height: 40px;
   margin: 0;
   position: relative;
 `;
