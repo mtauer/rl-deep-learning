@@ -108,6 +108,19 @@ export default class GoogleCloudStorage {
     return this.writeEntity(MATCH, matchId, matchData);
   }
 
+  async readMatchDetails(matchId) {
+    // eslint-disable-next-line no-console
+    console.log('Reading match details from Datastore', matchId);
+    const query = this.datastore.createQuery(MATCH_DETAILS)
+      .filter('matchId', '=', matchId);
+    return retry(
+      10,
+      () => this.datastore
+        .runQuery(query)
+        .then(results => results[0][0]),
+    );
+  }
+
   async writeMatchDetails(matchId = uuidv4(), matchDetails, iterationIndex,
     version = packageJson.version) {
     // eslint-disable-next-line no-console
