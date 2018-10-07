@@ -5,6 +5,7 @@ import PlayArrow from '@material-ui/icons/PlayArrow';
 import SkipNext from '@material-ui/icons/SkipNext';
 import SkipPrevious from '@material-ui/icons/SkipPrevious';
 
+import { PageSection } from '../components/Page';
 import LabeledValue from '../components/LabeledValue';
 
 const Container = styled.div`
@@ -16,31 +17,33 @@ const NavItem = styled.div`
 `;
 
 const StepNavigation = () => (
-  <Container>
-    <NavItem>
-      <IconButton color="primary" aria-label="Previous Step">
-        <SkipPrevious />
-      </IconButton>
-      <IconButton color="primary" aria-label="Play">
-        <PlayArrow />
-      </IconButton>
-      <IconButton color="primary" aria-label="Next Step">
-        <SkipNext />
-      </IconButton>
-    </NavItem>
-    <NavItem>
-      <LabeledValue label="Step" value="1 / 61" />
-    </NavItem>
-    <NavItem>
-      <LabeledValue label="Player" value="1" />
-    </NavItem>
-    <NavItem>
-      <LabeledValue label="Moves Left" value="4" />
-    </NavItem>
-    <NavItem>
-      <LabeledValue label="Location" value="Atlanta" />
-    </NavItem>
-  </Container>
+  <PageSection>
+    <Container>
+      <NavItem>
+        <IconButton color="primary" aria-label="Previous Step">
+          <SkipPrevious />
+        </IconButton>
+        <IconButton color="primary" aria-label="Play">
+          <PlayArrow />
+        </IconButton>
+        <IconButton color="primary" aria-label="Next Step">
+          <SkipNext />
+        </IconButton>
+      </NavItem>
+      <NavItem>
+        <LabeledValue label="Step" value="1 / 61" />
+      </NavItem>
+      <NavItem>
+        <LabeledValue label="Player" value="1" />
+      </NavItem>
+      <NavItem>
+        <LabeledValue label="Moves Left" value="4" />
+      </NavItem>
+      <NavItem>
+        <LabeledValue label="Location" value="Atlanta" />
+      </NavItem>
+    </Container>
+  </PageSection>
 );
 
 export default StepNavigation;

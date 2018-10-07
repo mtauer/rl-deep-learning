@@ -15,6 +15,13 @@ const theme = createMuiTheme({
   typography: {
     fontFamily: '"IBM Plex Sans", sans-serif',
   },
+  overrides: {
+    MuiTooltip: {
+      tooltip: {
+        backgroundColor: '#333333',
+      },
+    },
+  },
 });
 
 ReactDOM.render(
