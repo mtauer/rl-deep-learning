@@ -151,7 +151,6 @@ export default class Coach {
             actions,
             states,
             simulations,
-            nextAction,
             time: Date.now() - startTime,
           },
           steps: [],

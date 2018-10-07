@@ -4,6 +4,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import max from 'lodash/max';
 import mean from 'lodash/mean';
+import isEqual from 'lodash/isEqual';
 import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -44,7 +45,7 @@ const styles = () => ({
   },
 });
 
-const MatchSimulations = ({ currentSimulation, classes }) => {
+const MatchSimulations = ({ currentSimulation, nextAction, classes }) => {
   const {
     p1,
     n,
@@ -85,8 +86,11 @@ const MatchSimulations = ({ currentSimulation, classes }) => {
   );
 
   function renderSimulationRow(index) {
+    const rowClassName = nextAction && isEqual(nextAction, validActions[index])
+      ? classes.bodyRowActive
+      : classes.bodyRow;
     return (
-      <TableRow key={`action-${index}`} className={classes.bodyRow}>
+      <TableRow key={`action-${index}`} className={rowClassName}>
         <TableCell padding="none">
           <ValueBarContainer>
             <ValueBar value={p1[index]} color="#82AD4A" formatFunc={f => f.toFixed(3)} maxValue={p1Max} />
@@ -140,7 +144,11 @@ const MatchSimulations = ({ currentSimulation, classes }) => {
 };
 MatchSimulations.propTypes = {
   currentSimulation: PropTypes.shape().isRequired,
+  nextAction: PropTypes.shape(),
   classes: PropTypes.shape().isRequired,
+};
+MatchSimulations.defaultProps = {
+  nextAction: null,
 };
 
 const mapStateToProps = (state) => {
@@ -152,8 +160,11 @@ const mapStateToProps = (state) => {
     p1: [],
     validActions: [],
   };
+  const actions = matches[matchId] ? matches[matchId].actions : null;
+  const nextAction = actions ? actions[currentStep - 1] : null;
   return {
     currentSimulation,
+    nextAction,
   };
 };
 export default compose(
