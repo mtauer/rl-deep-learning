@@ -13,8 +13,10 @@ import ValueBar from './ValueBar';
 import PandemicAction from './PandemicAction';
 import PandemicCards from './PandemicCards';
 
+const Container = styled.div`
+  border-top: 2px solid #e0e0e0;
+`;
 const ValueBarContainer = styled.div`
-  border-left: 1px solid rgba(224, 224, 224, 1);
   padding: 0 8px 0 0;
 `;
 
@@ -30,74 +32,80 @@ const styles = () => ({
   bodyRow: {
     height: 40,
   },
+  bodyRowActive: {
+    backgroundColor: '#F3F7ED',
+    height: 40,
+  },
 });
 
 const MatchSimulations = ({ classes }) => (
   <PageSection>
-    <Table>
-      <TableHead>
-        <TableRow className={classes.headRow}>
-          <TableCell className={classes.barHeadCell}>P1</TableCell>
-          <TableCell className={classes.barHeadCell}>N</TableCell>
-          <TableCell className={classes.barHeadCell}>UCB</TableCell>
-          <TableCell className={classes.barHeadCell}>Q</TableCell>
-          <TableCell className={classes.barHeadCell}>P2</TableCell>
-          <TableCell className={classes.barHeadCell}>Pt</TableCell>
-          <TableCell style={{ width: 160 }}>Action</TableCell>
-          <TableCell>Cards</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        <TableRow className={classes.bodyRow}>
-          <TableCell padding="none">
-            <ValueBarContainer>
-              <ValueBar value={0.125} color="#82AD4A" />
-            </ValueBarContainer>
-          </TableCell>
-          <TableCell padding="none">
-            <ValueBarContainer>
-              <ValueBar value={0.425} />
-            </ValueBarContainer>
-          </TableCell>
-          <TableCell padding="none">
-            <ValueBarContainer>
-              <ValueBar value={0.425} />
-            </ValueBarContainer>
-          </TableCell>
-          <TableCell padding="none">
-            <ValueBarContainer>
-              <ValueBar value={0.425} />
-            </ValueBarContainer>
-          </TableCell>
-          <TableCell padding="none">
-            <ValueBarContainer>
-              <ValueBar value={0.425} color="#82AD4A" />
-            </ValueBarContainer>
-          </TableCell>
-          <TableCell padding="none">
-            <ValueBarContainer>
-              <ValueBar value={0.425} />
-            </ValueBarContainer>
-          </TableCell>
-          <TableCell>
-            <PandemicAction action={{ type: 'DIRECT_FLIGHT', to: 3 }} />
-          </TableCell>
-          <TableCell>
-            <PandemicCards cardIds={[23, 24, 56]} />
-          </TableCell>
-        </TableRow>
-        <TableRow className={classes.bodyRow}>
-          <TableCell padding="none">.</TableCell>
-          <TableCell padding="none">.</TableCell>
-          <TableCell padding="none">.</TableCell>
-          <TableCell padding="none">.</TableCell>
-          <TableCell padding="none">.</TableCell>
-          <TableCell padding="none">.</TableCell>
-          <TableCell>DRIVE_FERRY</TableCell>
-          <TableCell>LA_KH_LA_KH_LA</TableCell>
-        </TableRow>
-      </TableBody>
-    </Table>
+    <Container>
+      <Table>
+        <TableHead>
+          <TableRow className={classes.headRow}>
+            <TableCell className={classes.barHeadCell}>P1</TableCell>
+            <TableCell className={classes.barHeadCell}>N</TableCell>
+            <TableCell className={classes.barHeadCell}>UCB</TableCell>
+            <TableCell className={classes.barHeadCell}>Q</TableCell>
+            <TableCell className={classes.barHeadCell}>P2</TableCell>
+            <TableCell className={classes.barHeadCell}>Pt</TableCell>
+            <TableCell style={{ width: 160 }}>Action</TableCell>
+            <TableCell>Cards</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          <TableRow className={classes.bodyRow}>
+            <TableCell padding="none">
+              <ValueBarContainer>
+                <ValueBar value={0.125} color="#82AD4A" />
+              </ValueBarContainer>
+            </TableCell>
+            <TableCell padding="none">
+              <ValueBarContainer>
+                <ValueBar value={0.425} />
+              </ValueBarContainer>
+            </TableCell>
+            <TableCell padding="none">
+              <ValueBarContainer>
+                <ValueBar value={0.425} />
+              </ValueBarContainer>
+            </TableCell>
+            <TableCell padding="none">
+              <ValueBarContainer>
+                <ValueBar value={0.425} />
+              </ValueBarContainer>
+            </TableCell>
+            <TableCell padding="none">
+              <ValueBarContainer>
+                <ValueBar value={0.425} color="#82AD4A" />
+              </ValueBarContainer>
+            </TableCell>
+            <TableCell padding="none">
+              <ValueBarContainer>
+                <ValueBar value={0.425} />
+              </ValueBarContainer>
+            </TableCell>
+            <TableCell>
+              <PandemicAction action={{ type: 'DIRECT_FLIGHT', to: 3 }} />
+            </TableCell>
+            <TableCell>
+              <PandemicCards cardIds={[23, 24, 56]} />
+            </TableCell>
+          </TableRow>
+          <TableRow className={classes.bodyRow}>
+            <TableCell padding="none">.</TableCell>
+            <TableCell padding="none">.</TableCell>
+            <TableCell padding="none">.</TableCell>
+            <TableCell padding="none">.</TableCell>
+            <TableCell padding="none">.</TableCell>
+            <TableCell padding="none">.</TableCell>
+            <TableCell>DRIVE_FERRY</TableCell>
+            <TableCell>LA_KH_LA_KH_LA</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    </Container>
   </PageSection>
 );
 MatchSimulations.propTypes = {
