@@ -1,7 +1,7 @@
 import { createStore, applyMiddleware, combineReducers, compose } from 'redux';
 import { createEpicMiddleware, combineEpics } from 'redux-observable';
 
-import dataReducer, { fetchIterationsEpic } from './data/redux';
+import dataReducer, { fetchMatchDetailsEpic } from './data/redux';
 import pandemicReducer from './pandemic/redux';
 import ApiClient from './utils/apiClient';
 
@@ -10,7 +10,7 @@ const rootReducer = combineReducers({
   pandemic: pandemicReducer,
 });
 const rootEpic = combineEpics(
-  fetchIterationsEpic,
+  fetchMatchDetailsEpic,
 );
 
 const apiClient = new ApiClient();

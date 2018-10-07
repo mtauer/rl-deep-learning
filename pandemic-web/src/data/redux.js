@@ -7,6 +7,7 @@ import { mergeArrayIntoObject } from '../utils/reduxHelpers';
 
 const initialState = {
   iterations: {},
+  matches: {},
   isInitialized: {},
 };
 
@@ -14,11 +15,16 @@ const initialState = {
 
 const PREFIX = 'data/';
 export const GET_ALL_ITERATIONS_SUCCESS = `${PREFIX}GET_ALL_ITERATIONS_SUCCESS`;
+export const GET_MATCH_DETAILS_SUCCESS = `${PREFIX}GET_MATCH_DETAILS_SUCCESS`;
 
 // Action Creators
 
 export function getAllIterationsSuccessAction(iterations) {
   return { type: GET_ALL_ITERATIONS_SUCCESS, iterations };
+}
+
+export function getMatchDetailsSuccessAction(matchDetails) {
+  return { type: GET_MATCH_DETAILS_SUCCESS, matchDetails };
 }
 
 // Reducer
@@ -37,6 +43,21 @@ export default function dataReducer(state = initialState, action) {
           state.isInitialized,
           [true],
           () => 'iterations',
+        ),
+      };
+    }
+    case GET_MATCH_DETAILS_SUCCESS: {
+      return {
+        ...state,
+        iterations: mergeArrayIntoObject(
+          state.matches,
+          [action.matchDetails],
+          m => m.matchId,
+        ),
+        isInitialized: mergeArrayIntoObject(
+          state.isInitialized,
+          [{ [action.matchDetails.matchId]: true }],
+          () => 'matches',
         ),
       };
     }
@@ -62,5 +83,12 @@ export function fetchIterationsEpic(action$, state$, { apiClient }) {
   const version = '0.3.2';
   return apiClient.getAllIterations$(version).pipe(
     map(iterations => getAllIterationsSuccessAction(iterations)),
+  );
+}
+
+export function fetchMatchDetailsEpic(action$, state$, { apiClient }) {
+  const matchId = 'a09c3e2c-65fa-47b4-9110-6d9ef04207d6';
+  return apiClient.getMatchDetails$(matchId).pipe(
+    map(matchDetails => getMatchDetailsSuccessAction(matchDetails)),
   );
 }

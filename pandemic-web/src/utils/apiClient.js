@@ -13,10 +13,16 @@ class ApiClient {
     };
   }
 
-  // eslint-disable-next-line class-methods-use-this
   getAllIterations$(version) {
     return this.request$(
       `versions/${version}/iterations`,
+      { method: 'GET' },
+    );
+  }
+
+  getMatchDetails$(matchId) {
+    return this.request$(
+      `matches/${matchId}/details`,
       { method: 'GET' },
     );
   }
