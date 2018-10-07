@@ -73,6 +73,10 @@ export function getIterations(state) {
   return state.data.iterations;
 }
 
+export function getMatches(state) {
+  return state.data.matches;
+}
+
 export function getIsInitialized(state) {
   return state.data.isInitialized;
 }
