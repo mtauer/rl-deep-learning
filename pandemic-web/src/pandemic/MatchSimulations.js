@@ -10,6 +10,7 @@ import styled from 'styled-components';
 
 import { PageSection } from '../components/Page';
 import ValueBar from './ValueBar';
+import PandemicAction from './PandemicAction';
 
 const ValueBarContainer = styled.div`
   border-left: 1px solid rgba(224, 224, 224, 1);
@@ -64,7 +65,9 @@ const MatchSimulations = ({ classes }) => (
               <ValueBar value={0.425} color="#82AD4A" />
             </ValueBarContainer>
           </TableCell>
-          <TableCell>DRIVE_FERRY</TableCell>
+          <TableCell>
+            <PandemicAction action={{ type: 'DIRECT_FLIGHT', to: 3 }} />
+          </TableCell>
           <TableCell>LA_KH_LA_KH_LA</TableCell>
         </TableRow>
         <TableRow>
