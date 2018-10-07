@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Page, PageSide, PageContent, PageContentWrapper, Title, SectionTitle } from '../components/Page';
+import { Page, PageSide, PageContent, PageContentWrapper, Title, SectionTitle } from '../../components/Page';
 import MatchSelection from './MatchSelection';
 import MatchTabs from './MatchTabs';
 import StepNavigation from './StepNavigation';

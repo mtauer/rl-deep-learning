@@ -8,7 +8,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import styled from 'styled-components';
 
-import { PageSection } from '../components/Page';
+import { PageSection } from '../../components/Page';
 import ValueBar from './ValueBar';
 import PandemicAction from './PandemicAction';
 import PandemicCards from './PandemicCards';

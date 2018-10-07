@@ -5,7 +5,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 
-import { PageSection } from '../components/Page';
+import { PageSection } from '../../components/Page';
 
 const MatchSelection = () => (
   <PageSection>

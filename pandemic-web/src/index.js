@@ -7,7 +7,7 @@ import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
 import { createMuiTheme } from '@material-ui/core/styles';
 
 import store from './configureStore';
-import MatchesPage from './pandemic/MatchesPage';
+import MatchesPage from './pandemic/matches/MatchesPage';
 import registerServiceWorker from './registerServiceWorker';
 import './index.css';
 

@@ -5,8 +5,8 @@ import PlayArrow from '@material-ui/icons/PlayArrow';
 import SkipNext from '@material-ui/icons/SkipNext';
 import SkipPrevious from '@material-ui/icons/SkipPrevious';
 
-import { PageSection } from '../components/Page';
-import LabeledValue from '../components/LabeledValue';
+import { PageSection } from '../../components/Page';
+import LabeledValue from '../../components/LabeledValue';
 
 const Container = styled.div`
   align-items: center;
