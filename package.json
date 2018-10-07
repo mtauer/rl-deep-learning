@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "babel-node --expose-gc server.js",
+    "start": "babel-node server.js",
     "deployApi": "gcloud app deploy",
     "start:inspect": "babel-node --expose-gc --inspect main.js",
     "migrate:models": "babel-node migrateModels.js",
@@ -48,7 +48,6 @@
     "lodash": "^4.17.10",
     "pngjs": "^3.3.3",
     "progress": "^1.1.8",
-    "socket.io": "^2.1.1",
     "uuid": "^3.3.2"
   }
 }
