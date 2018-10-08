@@ -8,6 +8,7 @@ import { getCurrentStep } from './redux';
 import { getMatches } from '../../data/redux';
 import PandemicLocation from './PandemicLocation';
 import PandemicCards from './PandemicCards';
+import { SectionTitle } from '../../components/Page';
 
 const Panel = styled.div`
   display: flex;
@@ -22,7 +23,7 @@ const Label = styled.div`
   margin: 0;
   padding: 0 0 4px 0;
 `;
-const ResearchCentersPanel = styled.div`
+const LocationsContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
 
@@ -30,23 +31,70 @@ const ResearchCentersPanel = styled.div`
     margin: 0 16px 4px 0;
   }
 `;
+const Note = styled.div`
+  background-color: #F3F7ED;
+  border-radius: 2px;
+  color: #82AD4A;
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 8px 16px;
+
+  strong {
+    color: #4F8D00;
+  }
+`;
 
 const StateSummary = ({ currentState }) => (
   <Grid container spacing={24}>
     <Grid item xs={4}>
-      Player 1
+      <Panel>
+        <SectionTitle>Player 1</SectionTitle>
+        <Note style={{ visibility: currentState !== undefined && currentState.currentPlayer === 0 ? 'visible' : 'hidden' }}>
+          Current player – <strong>{currentState.currentMovesLeft}</strong> moves left
+        </Note>
+      </Panel>
+      <Panel>
+        <Label>Location</Label>
+        <LocationsContainer>
+          <PandemicLocation
+            locationId={currentState.playerPosition ? currentState.playerPosition[0] : null}
+          />
+        </LocationsContainer>
+      </Panel>
+      <Panel>
+        <Label>Cards</Label>
+        <PandemicCards cardIds={currentState.playerCards ? currentState.playerCards[0] : []} />
+      </Panel>
     </Grid>
     <Grid item xs={4}>
-      Player 2
+      <Panel>
+        <SectionTitle>Player 2</SectionTitle>
+        <Note style={{ visibility: currentState !== undefined && currentState.currentPlayer === 1 ? 'visible' : 'hidden' }}>
+          Current player – <strong>{currentState.currentMovesLeft}</strong> moves left
+        </Note>
+      </Panel>
+      <Panel>
+        <Label>Location</Label>
+        <LocationsContainer>
+          <PandemicLocation
+            locationId={currentState.playerPosition ? currentState.playerPosition[1] : null}
+          />
+        </LocationsContainer>
+      </Panel>
+      <Panel>
+        <Label>Cards</Label>
+        <PandemicCards cardIds={currentState.playerCards ? currentState.playerCards[1] : []} />
+      </Panel>
     </Grid>
     <Grid item xs={4}>
       <Panel>
         <Label>Research Centers</Label>
-        <ResearchCentersPanel>
+        <LocationsContainer>
           {currentState.researchCenters && currentState.researchCenters.map(rc => (
             <PandemicLocation key={`research-center-${rc}`} locationId={rc} />
           ))}
-        </ResearchCentersPanel>
+        </LocationsContainer>
       </Panel>
       <Panel>
         <Label>Played Cards</Label>
