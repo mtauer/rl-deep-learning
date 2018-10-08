@@ -73,9 +73,9 @@ function getActionDescription(action) {
     case 'DIRECT_FLIGHT':
     case 'CHARTER_FLIGHT':
     case 'SHUTTLE_FLIGHT':
-      return (<PandemicLocation locationId={action.to} />);
+      return (<PandemicLocation locationId={action.to} hideTooltip />);
     case 'BUILD_RESEARCH_CENTER':
-      return (<PandemicLocation locationId={action.at} />);
+      return (<PandemicLocation locationId={action.at} hideTooltip />);
     default: return null;
   }
 }

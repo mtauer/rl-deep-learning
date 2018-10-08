@@ -7,9 +7,10 @@ import PandemicCard from './PandemicCard';
 
 const Container = styled.div`
   display: flex;
+  flex-wrap: wrap;
 
   & > * {
-    margin: 0 2px 0 0;
+    margin: 0 2px 2px 0;
   }
 `;
 
