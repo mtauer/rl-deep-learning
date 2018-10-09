@@ -1,8 +1,13 @@
+import fromPairs from 'lodash/fromPairs';
+
 import { locationsMap } from '../pandemic-shared/game';
-import iconCityBlue from '../assets/city-blue.svg';
-import iconCityBlack from '../assets/city-black.svg';
-import iconCityRed from '../assets/city-red.svg';
-import iconCityYellow from '../assets/city-yellow.svg';
+import { locations } from '../pandemic-shared/constants';
+import iconCityBlue from '../assets/map-city-blue.svg';
+import iconCityBlack from '../assets/map-city-black.svg';
+import iconCityRed from '../assets/map-city-red.svg';
+import iconCityYellow from '../assets/map-city-yellow.svg';
+
+const locationIdsByName = fromPairs(locations.map(l => [l.name, l.id]));
 
 export function getLocationName(locationId) {
   return locationsMap[locationId].name;
@@ -51,4 +56,10 @@ export function getLocationMarkerIcon(locationId) {
     },
   };
   return icons[locationsMap[locationId].disease];
+}
+
+export function getRoutePath(route) {
+  return route
+    .map(name => locationsMap[locationIdsByName[name]])
+    .map(l => l.coordinates);
 }
