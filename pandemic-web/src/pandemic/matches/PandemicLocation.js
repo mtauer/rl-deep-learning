@@ -37,10 +37,11 @@ const PandemicLocation = ({ locationId, hideTooltip }) => {
   );
 };
 PandemicLocation.propTypes = {
-  locationId: PropTypes.number.isRequired,
+  locationId: PropTypes.number,
   hideTooltip: PropTypes.bool,
 };
 PandemicLocation.defaultProps = {
+  locationId: null,
   hideTooltip: false,
 };
 
