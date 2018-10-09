@@ -6,6 +6,8 @@ import iconCityBlue from '../assets/map-city-blue.svg';
 import iconCityBlack from '../assets/map-city-black.svg';
 import iconCityRed from '../assets/map-city-red.svg';
 import iconCityYellow from '../assets/map-city-yellow.svg';
+import iconPlayer1 from '../assets/map-player-1.svg';
+import iconPlayer2 from '../assets/map-player-2.svg';
 
 const locationIdsByName = fromPairs(locations.map(l => [l.name, l.id]));
 
@@ -56,6 +58,20 @@ export function getLocationMarkerIcon(locationId) {
     },
   };
   return icons[locationsMap[locationId].disease];
+}
+
+export function getPlayerMarkerIcon(playerId) {
+  const icons = {
+    0: {
+      url: iconPlayer1,
+      anchor: { x: 16, y: 16 },
+    },
+    1: {
+      url: iconPlayer2,
+      anchor: { x: 16, y: 16 },
+    },
+  };
+  return icons[playerId];
 }
 
 export function getRoutePath(route) {

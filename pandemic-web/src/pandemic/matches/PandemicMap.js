@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { compose } from 'redux';
 import { withScriptjs, withGoogleMap, GoogleMap, Marker, Polyline } from 'react-google-maps';
 import { withProps } from 'recompose';
@@ -6,10 +7,11 @@ import range from 'lodash/range';
 
 import config from '../../config.json';
 import mapStyles from './mapStyles.json';
-import { getLocationMarkerIcon, getLocationPosition, getRoutePath } from '../../utils/formatHelpers';
+import { getLocationMarkerIcon, getPlayerMarkerIcon, getLocationPosition,
+  getRoutePath } from '../../utils/formatHelpers';
 import { routes } from '../../pandemic-shared/constants';
 
-const PandemicMap = () => {
+const PandemicMap = ({ currentState }) => {
   return (
     <GoogleMap
       defaultZoom={1.9}
@@ -18,6 +20,7 @@ const PandemicMap = () => {
     >
       {renderRoutes()}
       {renderLocations()}
+      {renderPlayers()}
     </GoogleMap>
   );
 
@@ -40,6 +43,23 @@ const PandemicMap = () => {
       />
     ));
   }
+
+  function renderPlayers() {
+    if (!currentState) { return null; }
+    return range(2).map(id => (
+      <Marker
+        key={`player-${id}`}
+        position={getLocationPosition(currentState.playerPosition[id])}
+        icon={getPlayerMarkerIcon(id)}
+      />
+    ));
+  }
+};
+PandemicMap.propTypes = {
+  currentState: PropTypes.shape(),
+};
+PandemicMap.defaultProps = {
+  currentState: null,
 };
 
 export default compose(
