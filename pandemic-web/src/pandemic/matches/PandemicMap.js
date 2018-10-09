@@ -2,9 +2,11 @@ import React from 'react';
 import { compose } from 'redux';
 import { withScriptjs, withGoogleMap, GoogleMap, Marker } from 'react-google-maps';
 import { withProps } from 'recompose';
+import range from 'lodash/range';
 
 import config from '../../config.json';
 import mapStyles from './mapStyles.json';
+import { getLocationMarkerIcon, getLocationPosition } from '../../utils/formatHelpers';
 
 const PandemicMap = () => (
   <GoogleMap
@@ -12,7 +14,12 @@ const PandemicMap = () => (
     defaultCenter={{ lat: 12, lng: 13 }}
     defaultOptions={{ styles: mapStyles, disableDefaultUI: true }}
   >
-    <Marker position={{ lat: -34.397, lng: 150.644 }} />
+    {range(48).map(id => (
+      <Marker
+        position={getLocationPosition(id)}
+        icon={getLocationMarkerIcon(id)}
+      />
+    ))}
   </GoogleMap>
 );
 
