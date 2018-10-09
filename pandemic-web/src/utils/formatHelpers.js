@@ -8,6 +8,7 @@ import iconCityRed from '../assets/map-city-red.svg';
 import iconCityYellow from '../assets/map-city-yellow.svg';
 import iconPlayer1 from '../assets/map-player-1.svg';
 import iconPlayer2 from '../assets/map-player-2.svg';
+import iconResearchCenter from '../assets/map-research-center.svg';
 
 const locationIdsByName = fromPairs(locations.map(l => [l.name, l.id]));
 
@@ -72,6 +73,13 @@ export function getPlayerMarkerIcon(playerId) {
     },
   };
   return icons[playerId];
+}
+
+export function getResearchCenterIcon() {
+  return {
+    url: iconResearchCenter,
+    anchor: { x: 16, y: 16 },
+  };
 }
 
 export function getRoutePath(route) {

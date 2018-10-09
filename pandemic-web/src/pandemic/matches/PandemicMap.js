@@ -7,8 +7,8 @@ import range from 'lodash/range';
 
 import config from '../../config.json';
 import mapStyles from './mapStyles.json';
-import { getLocationMarkerIcon, getPlayerMarkerIcon, getLocationPosition,
-  getRoutePath } from '../../utils/formatHelpers';
+import { getLocationMarkerIcon, getPlayerMarkerIcon, getResearchCenterIcon,
+  getLocationPosition, getRoutePath } from '../../utils/formatHelpers';
 import { routes } from '../../pandemic-shared/constants';
 
 const PandemicMap = ({ currentState }) => {
@@ -21,6 +21,7 @@ const PandemicMap = ({ currentState }) => {
       {renderRoutes()}
       {renderLocations()}
       {renderPlayers()}
+      {renderResearchCenters()}
     </GoogleMap>
   );
 
@@ -51,6 +52,19 @@ const PandemicMap = ({ currentState }) => {
         key={`player-${id}`}
         position={getLocationPosition(currentState.playerPosition[id])}
         icon={getPlayerMarkerIcon(id)}
+        zIndex={1}
+      />
+    ));
+  }
+
+  function renderResearchCenters() {
+    if (!currentState) { return null; }
+    return currentState.researchCenters.map(id => (
+      <Marker
+        key={`player-${id}`}
+        position={getLocationPosition(id)}
+        icon={getResearchCenterIcon()}
+        zIndex={1}
       />
     ));
   }
