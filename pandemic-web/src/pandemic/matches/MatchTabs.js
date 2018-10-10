@@ -17,7 +17,7 @@ const MatchTabs = ({ path, onTabClick }) => {
         textColor="primary"
         onChange={(e, v) => onTabClick(v)}
       >
-        <Tab label="Overview" disabled />
+        <Tab label="Overview" />
         <Tab label="Replay" />
         <Tab label="Policy Improvement" />
       </Tabs>

@@ -13,7 +13,7 @@ export const allPaths = [
 
 const initialState = {
   currentStep: 1,
-  path: STATES_PATH,
+  path: ACTIONS_PATH,
 };
 
 // Action Types
