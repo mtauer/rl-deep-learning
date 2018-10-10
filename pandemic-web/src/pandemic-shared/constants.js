@@ -4,288 +4,480 @@ export const locations = [
     name: 'San Francisco',
     abbreviation: 'SF',
     disease: 'Blue',
+    coordinates: {
+      lat: 37.773972,
+      lng: -122.431297,
+    },
   },
   {
     id: 1,
     name: 'Chicago',
     abbreviation: 'CH',
     disease: 'Blue',
+    coordinates: {
+      lat: 41.881832,
+      lng: -87.623177,
+    },
   },
   {
     id: 2,
     name: 'Toronto',
     abbreviation: 'TO',
     disease: 'Blue',
+    coordinates: {
+      lat: 43.653908,
+      lng: -79.384293,
+    },
   },
   {
     id: 3,
     name: 'Atlanta',
     abbreviation: 'AT',
     disease: 'Blue',
+    coordinates: {
+      lat: 33.753746,
+      lng: -84.386330,
+    },
   },
   {
     id: 4,
     name: 'New York',
     abbreviation: 'NY',
     disease: 'Blue',
+    coordinates: {
+      lat: 40.730610,
+      lng: -73.935242,
+    },
   },
   {
     id: 5,
     name: 'Washington DC',
     abbreviation: 'WA',
     disease: 'Blue',
+    coordinates: {
+      lat: 38.889931,
+      lng: -77.009003,
+    },
   },
   {
     id: 6,
     name: 'London',
     abbreviation: 'LO',
     disease: 'Blue',
+    coordinates: {
+      lat: 51.509865,
+      lng: -0.118092,
+    },
   },
   {
     id: 7,
     name: 'Madrid',
     abbreviation: 'MA',
     disease: 'Blue',
+    coordinates: {
+      lat: 40.416775,
+      lng: -3.703790,
+    },
   },
   {
     id: 8,
     name: 'Essen',
     abbreviation: 'ES',
     disease: 'Blue',
+    coordinates: {
+      lat: 51.4565700,
+      lng: 7.0122800,
+    },
   },
   {
     id: 9,
     name: 'Paris',
     abbreviation: 'PA',
     disease: 'Blue',
+    coordinates: {
+      lat: 48.864716,
+      lng: 2.349014,
+    },
   },
   {
     id: 10,
     name: 'Milan',
     abbreviation: 'MI',
     disease: 'Blue',
+    coordinates: {
+      lat: 45.4642700,
+      lng: 9.1895100,
+    },
   },
   {
     id: 11,
     name: 'St. Petersburg',
     abbreviation: 'SP',
     disease: 'Blue',
+    coordinates: {
+      lat: 59.9386300,
+      lng: 30.3141300,
+    },
   },
   {
     id: 12,
     name: 'Algiers',
     abbreviation: 'AL',
     disease: 'Black',
+    coordinates: {
+      lat: 36.737232,
+      lng: 3.086472,
+    },
   },
   {
     id: 13,
     name: 'Cairo',
     abbreviation: 'CA',
     disease: 'Black',
+    coordinates: {
+      lat: 30.045916,
+      lng: 31.224291,
+    },
   },
   {
     id: 14,
     name: 'Riyadh',
     abbreviation: 'RI',
     disease: 'Black',
+    coordinates: {
+      lat: 24.774265,
+      lng: 46.738586,
+    },
   },
   {
     id: 15,
     name: 'Baghdad',
     abbreviation: 'BA',
     disease: 'Black',
+    coordinates: {
+      lat: 33.312805,
+      lng: 44.361488,
+    },
   },
   {
     id: 16,
     name: 'Istanbul',
     abbreviation: 'IS',
     disease: 'Black',
+    coordinates: {
+      lat: 41.015137,
+      lng: 28.979530,
+    },
   },
   {
     id: 17,
     name: 'Moscow',
     abbreviation: 'MO',
     disease: 'Black',
+    coordinates: {
+      lat: 55.751244,
+      lng: 37.618423,
+    },
   },
   {
     id: 18,
     name: 'Tehran',
     abbreviation: 'TE',
     disease: 'Black',
+    coordinates: {
+      lat: 35.715298,
+      lng: 51.404343,
+    },
   },
   {
     id: 19,
     name: 'Karachi',
     abbreviation: 'KA',
     disease: 'Black',
+    coordinates: {
+      lat: 24.926294,
+      lng: 67.022095,
+    },
   },
   {
     id: 20,
     name: 'Delhi',
     abbreviation: 'DE',
     disease: 'Black',
+    coordinates: {
+      lat: 28.644800,
+      lng: 77.216721,
+    },
   },
   {
     id: 21,
     name: 'Mumbai',
     abbreviation: 'MU',
     disease: 'Black',
+    coordinates: {
+      lat: 19.07283,
+      lng: 72.88261,
+    },
   },
   {
     id: 22,
     name: 'Chennai',
     abbreviation: 'CH',
     disease: 'Black',
+    coordinates: {
+      lat: 13.067439,
+      lng: 80.237617,
+    },
   },
   {
     id: 23,
     name: 'Kolkata',
     abbreviation: 'KO',
     disease: 'Black',
+    coordinates: {
+      lat: 22.572645,
+      lng: 88.363892,
+    },
   },
   {
     id: 24,
     name: 'Bangkok',
     abbreviation: 'BA',
     disease: 'Red',
+    coordinates: {
+      lat: 13.736717,
+      lng: 100.523186,
+    },
   },
   {
     id: 25,
     name: 'Jakarta',
     abbreviation: 'JA',
     disease: 'Red',
+    coordinates: {
+      lat: -6.2146200,
+      lng: 106.8451300,
+    },
   },
   {
     id: 26,
     name: 'Sydney',
     abbreviation: 'SY',
     disease: 'Red',
+    coordinates: {
+      lat: -33.865143,
+      lng: 151.209900,
+    },
   },
   {
     id: 27,
     name: 'Manila',
     abbreviation: 'MA',
     disease: 'Red',
+    coordinates: {
+      lat: 14.599512,
+      lng: 120.984222,
+    },
   },
   {
     id: 28,
     name: 'Ho Chi Minh',
     abbreviation: 'HC',
     disease: 'Red',
+    coordinates: {
+      lat: 10.762622,
+      lng: 106.660172,
+    },
   },
   {
     id: 29,
     name: 'Hong Kong',
     abbreviation: 'HK',
     disease: 'Red',
+    coordinates: {
+      lat: 22.302219,
+      lng: 114.174637,
+    },
   },
   {
     id: 30,
     name: 'Shanghai',
     abbreviation: 'SH',
     disease: 'Red',
+    coordinates: {
+      lat: 31.234564,
+      lng: 121.507439,
+    },
   },
   {
     id: 31,
     name: 'Beijing',
     abbreviation: 'BE',
     disease: 'Red',
+    coordinates: {
+      lat: 39.9075000,
+      lng: 116.3972300,
+    },
   },
   {
     id: 32,
     name: 'Seoul',
     abbreviation: 'SE',
     disease: 'Red',
+    coordinates: {
+      lat: 37.532600,
+      lng: 127.024612,
+    },
   },
   {
     id: 33,
     name: 'Tokyo',
     abbreviation: 'TO',
     disease: 'Red',
+    coordinates: {
+      lat: 35.652832,
+      lng: 139.839478,
+    },
   },
   {
     id: 34,
     name: 'Osaka',
     abbreviation: 'OS',
     disease: 'Red',
+    coordinates: {
+      lat: 34.652500,
+      lng: 135.506302,
+    },
   },
   {
     id: 35,
     name: 'Taipei',
     abbreviation: 'TA',
     disease: 'Red',
+    coordinates: {
+      lat: 25.105497,
+      lng: 121.597366,
+    },
   },
   {
     id: 36,
     name: 'Los Angeles',
     abbreviation: 'LA',
     disease: 'Yellow',
+    coordinates: {
+      lat: 34.052235,
+      lng: -118.243683,
+    },
   },
   {
     id: 37,
     name: 'Mexico City',
     abbreviation: 'MC',
     disease: 'Yellow',
+    coordinates: {
+      lat: 19.432608,
+      lng: -99.133209,
+    },
   },
   {
     id: 38,
     name: 'Miami',
     abbreviation: 'MI',
     disease: 'Yellow',
+    coordinates: {
+      lat: 25.761681,
+      lng: -80.191788,
+    },
   },
   {
     id: 39,
     name: 'Bogota',
     abbreviation: 'BO',
     disease: 'Yellow',
+    coordinates: {
+      lat: 4.624335,
+      lng: -74.063644,
+    },
   },
   {
     id: 40,
     name: 'Lima',
     abbreviation: 'LI',
     disease: 'Yellow',
+    coordinates: {
+      lat: -12.046374,
+      lng: -77.042793,
+    },
   },
   {
     id: 41,
     name: 'Santiago',
     abbreviation: 'SA',
     disease: 'Yellow',
+    coordinates: {
+      lat: -33.447487,
+      lng: -70.673676,
+    },
   },
   {
     id: 42,
     name: 'Buenos Aires',
     abbreviation: 'BA',
     disease: 'Yellow',
+    coordinates: {
+      lat: -34.603722,
+      lng: -58.381592,
+    },
   },
   {
     id: 43,
     name: 'São Paulo',
     abbreviation: 'SP',
     disease: 'Yellow',
+    coordinates: {
+      lat: -23.533773,
+      lng: -46.625290,
+    },
   },
   {
     id: 44,
     name: 'Lagos',
     abbreviation: 'LA',
     disease: 'Yellow',
+    coordinates: {
+      lat: 6.465422,
+      lng: 3.406448,
+    },
   },
   {
     id: 45,
     name: 'Khartoum',
     abbreviation: 'KH',
     disease: 'Yellow',
+    coordinates: {
+      lat: 15.564836,
+      lng: 32.529831,
+    },
   },
   {
     id: 46,
     name: 'Johannesburg',
     abbreviation: 'JO',
     disease: 'Yellow',
+    coordinates: {
+      lat: -26.195246,
+      lng: 28.034088,
+    },
   },
   {
     id: 47,
     name: 'Kinshasa',
     abbreviation: 'KI',
     disease: 'Yellow',
+    coordinates: {
+      lat: -4.322447,
+      lng: 15.307045,
+    },
   },
 ];
 
