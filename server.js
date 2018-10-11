@@ -10,14 +10,43 @@ const app = express();
 const server = http.Server(app);
 const port = process.env.PORT || 8080;
 
-class IterationController {
-  async getAllIterations(req, res) {
-    const { versionId } = req.params;
-    const iterations = await googleCloudStorage.readIterationSummaries(versionId);
-    res.json(iterations);
+class VersionsController {
+  async getAllVersions(req, res) {
+    const versions = await googleCloudStorage.readVersions();
+    if (versions) {
+      res.json(versions);
+    } else {
+      res.status(404).json({ error: 'Not found' });
+    }
   }
 }
-const iterationController = new IterationController();
+const versionsController = new VersionsController();
+
+class IterationsController {
+  async getIterations(req, res) {
+    const { versionId } = req.params;
+    const iterations = await googleCloudStorage.readIterations(versionId);
+    if (iterations) {
+      res.json(iterations);
+    } else {
+      res.status(404).json({ error: 'Not found' });
+    }
+  }
+}
+const iterationsController = new IterationsController();
+
+class MatchesController {
+  async getMatches(req, res) {
+    const { iterationId } = req.params;
+    const matches = await googleCloudStorage.readMatches(iterationId);
+    if (matches) {
+      res.json(matches);
+    } else {
+      res.status(404).json({ error: 'Not found' });
+    }
+  }
+}
+const matchesController = new MatchesController();
 
 class MatchDetailsController {
   async getMatchDetails(req, res) {
@@ -35,8 +64,14 @@ const matchDetailsController = new MatchDetailsController();
 app.options('*', cors());
 app.use(cors());
 
+app.route('/versions')
+  .get(versionsController.getAllVersions);
+
 app.route('/versions/:versionId/iterations')
-  .get(iterationController.getAllIterations);
+  .get(iterationsController.getIterations);
+
+app.route('/iterations/:iterationId/matches')
+  .get(matchesController.getMatches);
 
 app.route('/matches/:matchId/details')
   .get(matchDetailsController.getMatchDetails);
