@@ -7,6 +7,7 @@ import { getLocationName, getLocationAbbreviation, getLocationColor } from '../.
 
 const Container = styled.div`
   align-items: center;
+  cursor: help;
   display: flex;
   flex-wrap: nowrap;
 `;

@@ -9,6 +9,7 @@ const Container = styled.div`
   align-items: center;
   border-radius: 2px;
   color: #ffffff;
+  cursor: help;
   display: flex;
   height: 24px;
   justify-content: center;
