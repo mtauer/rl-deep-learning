@@ -69,7 +69,8 @@ function getValidActions(state = initialState) {
   const actions = [];
 
   // Immediate actions
-  toPairs(playerCards).forEach(([player, cards]) => {
+  range(2).forEach((player) => {
+    const cards = playerCards[player];
     if (cards.length > 7) {
       actions.push(cards.map(card => ({
         type: DISCARD_CARD,
