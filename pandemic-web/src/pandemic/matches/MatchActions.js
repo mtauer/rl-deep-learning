@@ -12,6 +12,8 @@ import styled from 'styled-components';
 
 import { getMatches } from '../../data/redux';
 import { PageSection } from '../../components/Page';
+import PandemicAction from './PandemicAction';
+import PandemicCards from './PandemicCards';
 
 const Container = styled.div`
   border-top: 2px solid #e0e0e0;
@@ -65,8 +67,16 @@ const MatchActions = ({ actions, classes }) => {
           1
         </TableCell>
         <TableCell />
-        <TableCell />
-        <TableCell />
+        <TableCell>
+          <PandemicAction
+            action={action}
+          />
+        </TableCell>
+        <TableCell>
+          <PandemicCards
+            cardIds={action.card || action.cards || action.usedCards}
+          />
+        </TableCell>
       </TableRow>
     );
   }
