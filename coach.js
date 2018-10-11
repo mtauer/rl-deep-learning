@@ -51,13 +51,25 @@ export default class Coach {
       console.log('Stats', getTrainingEpisodesStats(trainingEpisodes));
       // eslint-disable-next-line no-await-in-loop
       const episodeResults = await this.executeEpisode(mcts);
+      const versionId = version;
+      const iterationId = `${version}-${iterationIndex}`;
       const matchId = uuidv4();
       // eslint-disable-next-line no-await-in-loop
       await this.trainingEpisodesStorage
-        .writeMatch(matchId, episodeResults.match, iterationIndex, version);
+        .writeMatch(
+          versionId,
+          iterationId,
+          matchId,
+          episodeResults.match,
+        );
       // eslint-disable-next-line no-await-in-loop
       await this.trainingEpisodesStorage
-        .writeMatchDetails(matchId, episodeResults.matchDetails, iterationIndex, version);
+        .writeMatchDetails(
+          versionId,
+          iterationId,
+          matchId,
+          episodeResults.matchDetails,
+        );
     }
     console.log('Training finished');
     console.log('Stats', getTrainingEpisodesStats(trainingEpisodes));

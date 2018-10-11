@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 import Datastore from '@google-cloud/datastore';
 import { Storage } from '@google-cloud/storage';
 import uuidv4 from 'uuid/v4';
@@ -7,11 +9,13 @@ import padStart from 'lodash/padStart';
 import packageJson from '../package.json';
 import { retry } from '../utils';
 
-const TRAINING_EPISODE = 'TrainingEpisode';
+const VERSION = 'Version';
 const ITERATION = 'Iteration';
-const ITERATION_SUMMARY = 'IterationSummary';
 const MATCH = 'Match';
 const MATCH_DETAILS = 'MatchDetails';
+
+const TRAINING_EPISODE = 'TrainingEpisode';
+const ITERATION_SUMMARY = 'IterationSummary';
 
 export default class GoogleCloudStorage {
   constructor() {
@@ -22,8 +26,98 @@ export default class GoogleCloudStorage {
     this.storage = new Storage(googleCloudConfig);
   }
 
+  // Versions
+
+  async readVersions() {
+    console.log('Loading versions from Datastore');
+    return this.read(
+      this.datastore.createQuery(VERSION),
+    );
+  }
+
+  async writeVersion(versionId, version) {
+    console.log('Write version to Datastore', versionId);
+    return this.write(
+      this.datastore.key([VERSION, versionId]),
+      { versionId, version },
+    );
+  }
+
+  // Iterations
+
+  async readIterations(versionId) {
+    console.log('Loading iterations from Datastore', versionId);
+    return this.read(
+      this.datastore.createQuery(ITERATION)
+        .filter('versionId', '=', versionId),
+    );
+  }
+
+  async writeIteration(versionId, iterationId, iteration) {
+    console.log('Write iteration to Datastore', iterationId);
+    return this.write(
+      this.datastore.key([ITERATION, iterationId]),
+      { versionId, iterationId, iteration },
+    );
+  }
+
+  // Matches
+
+  async readMatches(iterationId) {
+    console.log('Read matches from Datastore', iterationId);
+    return this.read(
+      this.datastore.createQuery(MATCH)
+        .filter('iterationId', '=', iterationId),
+    );
+  }
+
+  async writeMatch(versionId, iterationId, matchId, match) {
+    console.log('Write match to Datastore', matchId);
+    return this.write(
+      this.datastore.key([MATCH, matchId]),
+      { versionId, iterationId, matchId, match },
+    );
+  }
+
+  // Match details
+
+  async readMatchDetails(matchId) {
+    console.log('Read match details from Datastore', matchId);
+    return this.read(
+      this.datastore.createQuery(MATCH_DETAILS)
+        .filter('matchId', '=', matchId),
+    ).then(result => result[0]);
+  }
+
+  async writeMatchDetails(versionId, iterationId, matchId, matchDetails) {
+    console.log('Write match details to Datastore', matchId);
+    return this.write(
+      this.datastore.key([MATCH_DETAILS, matchId]),
+      { versionId, iterationId, matchId, matchDetails },
+    );
+  }
+
+  async read(query) {
+    return retry(
+      10,
+      () => this.datastore.runQuery(query).then(results => results[0]),
+    );
+  }
+
+  async write(key, data) {
+    return retry(
+      10,
+      () => this.datastore.save({
+        key,
+        data: {
+          ...data,
+          createdAt: new Date().toISOString(),
+        },
+      }),
+    );
+  }
+
   async readTrainingEpisodes(iteration, version = packageJson.version) {
-    // eslint-disable-next-line no-console
     console.log('Loading training episodes from Datastore', version, iteration);
     const query = this.datastore.createQuery(TRAINING_EPISODE)
       .filter('version', '=', version)
@@ -37,7 +131,6 @@ export default class GoogleCloudStorage {
   }
 
   async readLastTrainingEpisodes(limit, version = packageJson.version) {
-    // eslint-disable-next-line no-console
     console.log('Loading last training episodes from Datastore', version, limit);
     const query = this.datastore.createQuery(TRAINING_EPISODE)
       .filter('version', '=', version)
@@ -52,7 +145,6 @@ export default class GoogleCloudStorage {
   }
 
   async writeTrainingEpisode(trainingEpisode, iteration, version = packageJson.version) {
-    // eslint-disable-next-line no-console
     console.log('Writing training episode to Datastore', version, iteration);
     const name = uuidv4();
     const key = this.datastore.key([TRAINING_EPISODE, name]);
@@ -69,7 +161,6 @@ export default class GoogleCloudStorage {
   }
 
   async readIterationSummaries(version = packageJson.version) {
-    // eslint-disable-next-line no-console
     console.log('Reading iteration summary from Datastore', version);
     const query = this.datastore.createQuery(ITERATION_SUMMARY)
       .filter('version', '=', version)
@@ -82,73 +173,8 @@ export default class GoogleCloudStorage {
     );
   }
 
-  async writeIteration(iteration, iterationIndex, version = packageJson.version) {
-    // eslint-disable-next-line no-console
-    console.log('Writing iteration to Datastore', version, iterationIndex);
-    const iterationId = `${version}-${iterationIndex}`;
-    const iterationData = {
-      ...iteration,
-      name: `Iteration ${iterationIndex}`,
-      iterationId,
-      versionId: version,
-    };
-    return this.writeEntity(ITERATION, iterationId, iterationData);
-  }
-
-  async writeMatch(matchId = uuidv4(), match, iterationIndex,
-    version = packageJson.version) {
-    // eslint-disable-next-line no-console
-    console.log('Writing match to Datastore', version, iterationIndex);
-    const matchData = {
-      ...match,
-      matchId,
-      iterationId: `${version}-${iterationIndex}`,
-      versionId: version,
-    };
-    return this.writeEntity(MATCH, matchId, matchData);
-  }
-
-  async readMatchDetails(matchId) {
-    // eslint-disable-next-line no-console
-    console.log('Reading match details from Datastore', matchId);
-    const query = this.datastore.createQuery(MATCH_DETAILS)
-      .filter('matchId', '=', matchId);
-    return retry(
-      10,
-      () => this.datastore
-        .runQuery(query)
-        .then(results => results[0][0]),
-    );
-  }
-
-  async writeMatchDetails(matchId = uuidv4(), matchDetails, iterationIndex,
-    version = packageJson.version) {
-    // eslint-disable-next-line no-console
-    console.log('Writing match details to Datastore', version, iterationIndex);
-    const matchDetailsData = {
-      ...matchDetails,
-      matchId,
-      iterationId: `${version}-${iterationIndex}`,
-      versionId: version,
-    };
-    return this.writeEntity(MATCH_DETAILS, matchId, matchDetailsData);
-  }
-
-  async writeEntity(entityKey, id, data) {
-    const key = this.datastore.key([entityKey, id]);
-    const entity = {
-      key,
-      data: {
-        ...data,
-        createdAt: new Date().toISOString(),
-      },
-    };
-    return retry(10, () => this.datastore.save(entity));
-  }
-
   async writeDebugLog(debug, version = packageJson.version) {
     const bucketDirectory = this.getDebugBucketDirectory(version);
-    // eslint-disable-next-line no-console
     console.log('Uploading debug to', bucketDirectory);
     const tempDirectory = this.getDebugTempDirectory();
     const filename = `debug_${uuidv4()}.json`;
@@ -160,7 +186,6 @@ export default class GoogleCloudStorage {
 
   async readModel(neuralNetwork, iteration, version = packageJson.version) {
     const bucketDirectory = this.getModelBucketDirectory(iteration, version);
-    // eslint-disable-next-line no-console
     console.log('Downloading model from', bucketDirectory);
     const tempDirectory = this.getModelTempDirectory();
     fs.ensureDirSync(`${tempDirectory}/pModel`);
@@ -177,12 +202,10 @@ export default class GoogleCloudStorage {
       if (err.code === 404) {
         // If the model does not exist initialize it with random weights and
         // upload it.
-        // eslint-disable-next-line no-console
         console.log('### Initialize models with random weights ###');
         await neuralNetwork.build();
         await this.writeModel(neuralNetwork, iteration, version);
       } else {
-        // eslint-disable-next-line no-console
         console.log('Could not download the model', err.code);
       }
     }
@@ -191,7 +214,6 @@ export default class GoogleCloudStorage {
 
   async writeModel(neuralNetwork, iteration, version = packageJson.version) {
     const bucketDirectory = this.getModelBucketDirectory(iteration, version);
-    // eslint-disable-next-line no-console
     console.log('Uploading model to', bucketDirectory);
     const tempDirectory = this.getModelTempDirectory();
     fs.ensureDirSync(tempDirectory);
@@ -204,7 +226,6 @@ export default class GoogleCloudStorage {
         this.uploadFile(tempDirectory, bucketDirectory, 'vModel/', 'weights.bin'),
       ]);
     } catch (err) {
-      // eslint-disable-next-line no-console
       console.log('Could not upload the model', err.code);
     }
     fs.removeSync(tempDirectory);
