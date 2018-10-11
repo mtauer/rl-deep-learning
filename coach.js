@@ -21,6 +21,25 @@ export default class Coach {
     this.modelStorage = modelStorage;
   }
 
+  async summarizeVersion(versionId) {
+    const version = {
+      name: `Version ${versionId}`,
+      gameDescription: game.getDescription(),
+    };
+    await this.trainingEpisodesStorage
+      .writeVersion(versionId, version);
+  }
+
+  async summarizeIteration(monitor, iterationIndex, version) {
+    const trainingEpisodes = await this.trainingEpisodesStorage
+      .readTrainingEpisodes(iterationIndex, version);
+    const iteration = getIterationSummary(trainingEpisodes);
+    const versionId = version;
+    const iterationId = `${version}-${iterationIndex}`;
+    await this.trainingEpisodesStorage
+      .writeIteration(versionId, iterationId, iteration);
+  }
+
   async play(monitor) {
     this.neuralNetwork = new PandemicNeuronalNetwork(this.config.neuralNetwork);
     await this.neuralNetwork.init();
@@ -73,14 +92,6 @@ export default class Coach {
     }
     console.log('Training finished');
     console.log('Stats', getTrainingEpisodesStats(trainingEpisodes));
-  }
-
-  async summarizeIteration(monitor, iterationIndex, version) {
-    const trainingEpisodes = await this.trainingEpisodesStorage
-      .readTrainingEpisodes(iterationIndex, version);
-    const iteration = getIterationSummary(trainingEpisodes);
-    await this.trainingEpisodesStorage
-      .writeIteration(iteration, iterationIndex, version);
   }
 
   async train(monitor, iteration, version) {

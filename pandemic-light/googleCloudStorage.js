@@ -39,7 +39,7 @@ export default class GoogleCloudStorage {
     console.log('Write version to Datastore', versionId);
     return this.write(
       this.datastore.key([VERSION, versionId]),
-      { versionId, version },
+      { versionId, ...version },
     );
   }
 
@@ -57,7 +57,7 @@ export default class GoogleCloudStorage {
     console.log('Write iteration to Datastore', iterationId);
     return this.write(
       this.datastore.key([ITERATION, iterationId]),
-      { versionId, iterationId, iteration },
+      { versionId, iterationId, ...iteration },
     );
   }
 
@@ -75,7 +75,7 @@ export default class GoogleCloudStorage {
     console.log('Write match to Datastore', matchId);
     return this.write(
       this.datastore.key([MATCH, matchId]),
-      { versionId, iterationId, matchId, match },
+      { versionId, iterationId, matchId, ...match },
     );
   }
 
@@ -93,7 +93,7 @@ export default class GoogleCloudStorage {
     console.log('Write match details to Datastore', matchId);
     return this.write(
       this.datastore.key([MATCH_DETAILS, matchId]),
-      { versionId, iterationId, matchId, matchDetails },
+      { versionId, iterationId, matchId, ...matchDetails },
     );
   }
 

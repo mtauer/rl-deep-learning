@@ -33,16 +33,20 @@ function start() {
   // eslint-disable-next-line no-unused-vars
   const [arg1, arg2, action, ...actionArgs] = process.argv;
   switch (action) {
+    case 'summarizeVersion': {
+      summarizeVersion(actionArgs);
+      break;
+    }
+    case 'summarizeIteration': {
+      summarizeIteration(actionArgs);
+      break;
+    }
     case 'showVersionSummary': {
       showVersionSummary(actionArgs);
       break;
     }
     case 'generateTrainingData': {
       generateTrainingData(actionArgs);
-      break;
-    }
-    case 'summarizeIteration': {
-      summarizeIteration(actionArgs);
       break;
     }
     case 'train': {
@@ -55,6 +59,17 @@ function start() {
       break;
     }
   }
+}
+
+async function summarizeVersion(actionArgs) {
+  const version = actionArgs[0];
+  coach.summarizeVersion(version);
+}
+
+async function summarizeIteration(actionArgs) {
+  const version = actionArgs[0];
+  const iteration = actionArgs[1] ? Number(actionArgs[1]) : 0;
+  coach.summarizeIteration(undefined, iteration, version);
 }
 
 async function showVersionSummary(actionArgs) {
@@ -77,12 +92,6 @@ async function generateTrainingData(actionArgs) {
   const version = actionArgs[0];
   const iteration = actionArgs[1] ? Number(actionArgs[1]) : 0;
   coach.generateTrainingData(undefined, iteration, version);
-}
-
-async function summarizeIteration(actionArgs) {
-  const version = actionArgs[0];
-  const iteration = actionArgs[1] ? Number(actionArgs[1]) : 0;
-  coach.summarizeIteration(undefined, iteration, version);
 }
 
 async function train(actionArgs) {
