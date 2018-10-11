@@ -40,12 +40,12 @@ PandemicAction.propTypes = {
 function getActionTooltip(action) {
   switch (action.type) {
     case 'DO_NOTHING': return 'Do nothing';
-    case 'DRIVE_FERRY': return `Drive/ferry to ${getLocationName(action.to)}`;
-    case 'DIRECT_FLIGHT': return `Direct flight to ${getLocationName(action.to)}`;
-    case 'CHARTER_FLIGHT': return `Charter flight to ${getLocationName(action.to)}`;
-    case 'SHUTTLE_FLIGHT': return `Shuttle flight to ${getLocationName(action.to)}`;
+    case 'DRIVE_FERRY': return `Drive/ferry: ${getLocationName(action.from)} -> ${getLocationName(action.to)}`;
+    case 'DIRECT_FLIGHT': return `Direct flight: ${getLocationName(action.from)} -> ${getLocationName(action.to)}`;
+    case 'CHARTER_FLIGHT': return `Charter flight: ${getLocationName(action.from)} -> ${getLocationName(action.to)}`;
+    case 'SHUTTLE_FLIGHT': return `Shuttle flight: ${getLocationName(action.from)} -> ${getLocationName(action.to)}`;
     case 'BUILD_RESEARCH_CENTER': return `Build research center at ${getLocationName(action.at)}`;
-    case 'DISCOVER_CURE': return 'Discuver cure for ...';
+    case 'DISCOVER_CURE': return `Discuver cure: ${action.disease}`;
     case 'SHARE_KNOWLEDGE': return 'Share knowledre';
     case 'DISCARD_CARD': return 'Discard card';
     default: return null;

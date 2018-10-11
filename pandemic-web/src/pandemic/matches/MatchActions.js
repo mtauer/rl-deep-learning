@@ -14,6 +14,7 @@ import { getMatches } from '../../data/redux';
 import { PageSection } from '../../components/Page';
 import PandemicAction from './PandemicAction';
 import PandemicCards from './PandemicCards';
+import PandemicLocation from './PandemicLocation';
 
 const Container = styled.div`
   border-top: 2px solid #e0e0e0;
@@ -35,7 +36,7 @@ const styles = () => ({
   },
 });
 
-const MatchActions = ({ actions, classes }) => {
+const MatchActions = ({ actions, states, classes }) => {
   return (
     <PageSection>
       <Container>
@@ -58,15 +59,18 @@ const MatchActions = ({ actions, classes }) => {
   );
 
   function renderActionRow(action, index) {
+    const { playerPosition } = states[index];
     return (
       <TableRow key={`action-${index}`} className={classes.bodyRow}>
         <TableCell>
           <SmallLabel>{index + 1}</SmallLabel>
         </TableCell>
         <TableCell>
-          1
+          {Number.parseInt(action.player, 10) + 1}
         </TableCell>
-        <TableCell />
+        <TableCell>
+          <PandemicLocation locationId={playerPosition[action.player]} />
+        </TableCell>
         <TableCell>
           <PandemicAction
             action={action}
@@ -82,8 +86,10 @@ const MatchActions = ({ actions, classes }) => {
   }
 };
 MatchActions.propTypes = {
-  // eslint-disable-next-line
+  // eslint-disable-next-line react/forbid-prop-types
   actions: PropTypes.array.isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
+  states: PropTypes.array.isRequired,
   classes: PropTypes.shape().isRequired,
 };
 
@@ -91,8 +97,10 @@ const mapStateToProps = (state) => {
   const matches = getMatches(state);
   const matchId = 'bbdea21a-cae8-402d-a1a1-f31a6692ebf5';
   const actions = matches[matchId] ? matches[matchId].actions : [];
+  const states = matches[matchId] ? matches[matchId].states : [];
   return {
     actions,
+    states,
   };
 };
 export default compose(
