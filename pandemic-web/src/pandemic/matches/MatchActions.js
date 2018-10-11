@@ -1,16 +1,26 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { compose } from 'redux';
+import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import TableBody from '@material-ui/core/TableBody';
 import styled from 'styled-components';
 
+import { getMatches } from '../../data/redux';
 import { PageSection } from '../../components/Page';
 
 const Container = styled.div`
   border-top: 2px solid #e0e0e0;
+`;
+const SmallLabel = styled.span`
+  color: rgba(0, 0, 0, 0.54);
+  display: block;
+  font-size: 10px;
+  font-weight: 500;
 `;
 
 const styles = () => ({
@@ -18,24 +28,64 @@ const styles = () => ({
     backgroundColor: '#F7F7F7',
     height: 32,
   },
+  bodyRow: {
+    height: 40,
+  },
 });
 
-const MatchActions = ({ classes }) => (
-  <PageSection>
-    <Container>
-      <Table>
-        <TableHead>
-          <TableRow className={classes.headRow}>
-            <TableCell style={{ width: 160 }}>Action</TableCell>
-            <TableCell>Cards</TableCell>
-          </TableRow>
-        </TableHead>
-      </Table>
-    </Container>
-  </PageSection>
-);
+const MatchActions = ({ actions, classes }) => {
+  return (
+    <PageSection>
+      <Container>
+        <Table>
+          <TableHead>
+            <TableRow className={classes.headRow}>
+              <TableCell style={{ width: 40 }}>#</TableCell>
+              <TableCell style={{ width: 80 }}>Player</TableCell>
+              <TableCell style={{ width: 80 }}>Position</TableCell>
+              <TableCell style={{ width: 160 }}>Action</TableCell>
+              <TableCell>Cards</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {actions.map((a, i) => renderActionRow(a, i))}
+          </TableBody>
+        </Table>
+      </Container>
+    </PageSection>
+  );
+
+  function renderActionRow(action, index) {
+    return (
+      <TableRow key={`action-${index}`} className={classes.bodyRow}>
+        <TableCell>
+          <SmallLabel>{index + 1}</SmallLabel>
+        </TableCell>
+        <TableCell>
+          1
+        </TableCell>
+        <TableCell />
+        <TableCell />
+        <TableCell />
+      </TableRow>
+    );
+  }
+};
 MatchActions.propTypes = {
+  // eslint-disable-next-line
+  actions: PropTypes.array.isRequired,
   classes: PropTypes.shape().isRequired,
 };
 
-export default withStyles(styles)(MatchActions);
+const mapStateToProps = (state) => {
+  const matches = getMatches(state);
+  const matchId = 'bbdea21a-cae8-402d-a1a1-f31a6692ebf5';
+  const actions = matches[matchId] ? matches[matchId].actions : [];
+  return {
+    actions,
+  };
+};
+export default compose(
+  withStyles(styles),
+  connect(mapStateToProps),
+)(MatchActions);
