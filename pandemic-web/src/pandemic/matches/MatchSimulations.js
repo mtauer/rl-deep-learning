@@ -105,15 +105,20 @@ const MatchSimulations = ({ currentSimulation, nextAction, classes }) => {
           <ValueBarContainer>
             <ValueBar
               value={ucb[index]}
-              minValue={-1}
               formatFunc={f => f.toFixed(3)}
+              minValue={-1}
               maxValue={ucbMax}
             />
           </ValueBarContainer>
         </TableCell>
         <TableCell padding="none">
           <ValueBarContainer>
-            <ValueBar value={q[index]} formatFunc={f => f.toFixed(3)} maxValue={qMax} />
+            <ValueBar
+              value={q[index]}
+              formatFunc={f => f.toFixed(3)}
+              minValue={-1}
+              maxValue={qMax}
+            />
           </ValueBarContainer>
         </TableCell>
         <TableCell padding="none">
