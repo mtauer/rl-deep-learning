@@ -1,8 +1,6 @@
-import { map, switchMap } from 'rxjs/operators';
-import { ofType } from 'redux-observable';
+import { map } from 'rxjs/operators';
 
 import { mergeArrayIntoObject } from '../utils/reduxHelpers';
-import { SELECT_VERSION } from '../pandemic/matches/redux';
 
 // Initial State
 
@@ -10,7 +8,12 @@ const initialState = {
   versions: {},
   iterations: {},
   matches: {},
-  isInitialized: {},
+  isInitialized: {
+    versions: false,
+    versionIterations: {},
+    iterationMatches: {},
+    matchMatchDetails: {},
+  },
 };
 
 // Action Types
@@ -18,6 +21,7 @@ const initialState = {
 const PREFIX = 'data/';
 export const GET_VERSIONS_SUCCESS = `${PREFIX}GET_VERSIONS_SUCCESS`;
 export const GET_ITERATIONS_SUCCESS = `${PREFIX}GET_ITERATIONS_SUCCESS`;
+export const GET_MATCHES_SUCCESS = `${PREFIX}GET_MATCHES_SUCCESS`;
 export const GET_MATCH_DETAILS_SUCCESS = `${PREFIX}GET_MATCH_DETAILS_SUCCESS`;
 
 // Action Creators
@@ -26,12 +30,16 @@ export function getVersionsSuccessAction(versions) {
   return { type: GET_VERSIONS_SUCCESS, versions };
 }
 
-export function getIterationsSuccessAction(iterations) {
-  return { type: GET_ITERATIONS_SUCCESS, iterations };
+export function getIterationsSuccessAction(versionId, iterations) {
+  return { type: GET_ITERATIONS_SUCCESS, versionId, iterations };
 }
 
-export function getMatchDetailsSuccessAction(matchDetails) {
-  return { type: GET_MATCH_DETAILS_SUCCESS, matchDetails };
+export function getMatchesSuccessAction(iterationId, matches) {
+  return { type: GET_MATCHES_SUCCESS, iterationId, matches };
+}
+
+export function getMatchDetailsSuccessAction(matchId, matchDetails) {
+  return { type: GET_MATCH_DETAILS_SUCCESS, matchId, matchDetails };
 }
 
 // Reducer
@@ -54,17 +62,19 @@ export default function dataReducer(state = initialState, action) {
       };
     }
     case GET_ITERATIONS_SUCCESS: {
+      const { versionId, iterations } = action;
+      console.log('GET_ITERATIONS_SUCCESS', versionId, iterations);
       return {
         ...state,
         iterations: mergeArrayIntoObject(
           state.iterations,
-          action.iterations,
+          iterations,
           i => i.iterationId,
         ),
         isInitialized: mergeArrayIntoObject(
           state.isInitialized,
-          [{ [action.iterations.iterationId]: true }],
-          () => 'iterations',
+          { [versionId]: true },
+          () => 'versionIterations',
         ),
       };
     }
@@ -112,15 +122,6 @@ export function getIsInitialized(state) {
 export function fetchVersionsEpic(action$, state$, { apiClient }) {
   return apiClient.getAllVersions$().pipe(
     map(versions => getVersionsSuccessAction(versions)),
-  );
-}
-
-export function fetchIterationsEpic(action$, state$, { apiClient }) {
-  return action$.pipe(
-    ofType(SELECT_VERSION),
-    switchMap(({ versionId }) => apiClient.getIterations$(versionId).pipe(
-      map(iterations => getIterationsSuccessAction(iterations)),
-    )),
   );
 }
 

@@ -1,3 +1,9 @@
+import { map, switchMap } from 'rxjs/operators';
+import { ofType } from 'redux-observable';
+import values from 'lodash/values';
+
+import { getIterationsSuccessAction, getIterations } from '../../data/redux';
+
 // Constants
 
 export const ACTIONS_PATH = '/actions';
@@ -83,10 +89,28 @@ export function getSelectedVersion(state) {
   return state.matches.selectedVersion;
 }
 
+export function getSelectedIterationsArray(state) {
+  const versionId = getSelectedVersion(state);
+  const iterationsMap = getIterations(state);
+  return values(iterationsMap)
+    .filter(i => i.versionId === versionId);
+}
+
 export function getCurrentStep(state) {
   return state.matches.currentStep;
 }
 
 export function getMatchesPath(state) {
   return state.matches.path;
+}
+
+// Epics
+
+export function fetchIterationsEpic(action$, state$, { apiClient }) {
+  return action$.pipe(
+    ofType(SELECT_VERSION),
+    switchMap(({ versionId }) => apiClient.getIterations$(versionId).pipe(
+      map(iterations => getIterationsSuccessAction(versionId, iterations)),
+    )),
+  );
 }

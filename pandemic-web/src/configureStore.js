@@ -1,9 +1,9 @@
 import { createStore, applyMiddleware, combineReducers, compose } from 'redux';
 import { createEpicMiddleware, combineEpics } from 'redux-observable';
 
-import dataReducer, { fetchVersionsEpic, fetchIterationsEpic } from './data/redux';
+import dataReducer, { fetchVersionsEpic } from './data/redux';
 import pandemicReducer from './pandemic/redux';
-import matchesReducer from './pandemic/matches/redux';
+import matchesReducer, { fetchIterationsEpic } from './pandemic/matches/redux';
 import ApiClient from './utils/apiClient';
 
 const rootReducer = combineReducers({

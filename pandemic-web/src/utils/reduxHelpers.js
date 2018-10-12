@@ -3,7 +3,7 @@ import mergeWith from 'lodash/mergeWith';
 import fromPairs from 'lodash/fromPairs';
 import isArray from 'lodash/isArray';
 
-export function mergeArrayIntoObject(object, array, getKeyFunc) {
+export function mergeArrayIntoObject(object, arrayOrItem, getKeyFunc) {
   // Note: This method mutates object.
   //
   // Note: According to https://github.com/lodash/lodash/pull/2802
@@ -20,6 +20,7 @@ export function mergeArrayIntoObject(object, array, getKeyFunc) {
     return undefined;
   };
 
+  const array = isArray(arrayOrItem) ? arrayOrItem : [arrayOrItem];
   return mergeWith(
     object,
     fromPairs(array.map(r => [getKeyFunc(r), r])),

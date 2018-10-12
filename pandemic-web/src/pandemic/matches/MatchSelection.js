@@ -9,12 +9,14 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 
 import { getVersions, getIsInitialized } from '../../data/redux';
-import { selectVersionAction, getSelectedVersion } from './redux';
+import { selectVersionAction, getSelectedVersion, getSelectedIterationsArray } from './redux';
 import { PageSection } from '../../components/Page';
 
 const MatchSelection = ({
   versions,
+  iterations,
   isInitializedVersions,
+  isInitializedIterations,
   selectedVersion,
   onVersionSelectChange,
 }) => (
@@ -35,16 +37,16 @@ const MatchSelection = ({
         </FormControl>
       </Grid>
       <Grid item xs={4}>
-        <FormControl fullWidth disabled>
+        <FormControl fullWidth disabled={!isInitializedIterations}>
           <InputLabel htmlFor="iteration">Iteration</InputLabel>
           <Select
             value=""
             onChange={() => console.log('onChange')}
             inputProps={{ id: 'iteration' }}
           >
-            <MenuItem value={10}>Ten</MenuItem>
-            <MenuItem value={20}>Twenty</MenuItem>
-            <MenuItem value={30}>Thirty</MenuItem>
+            {iterations.map(i => (
+              <MenuItem key={i.iterationId} value={i.iterationId}>{i.name}</MenuItem>
+            ))}
           </Select>
         </FormControl>
       </Grid>
@@ -68,7 +70,10 @@ const MatchSelection = ({
 MatchSelection.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   versions: PropTypes.array.isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
+  iterations: PropTypes.array.isRequired,
   isInitializedVersions: PropTypes.bool.isRequired,
+  isInitializedIterations: PropTypes.bool.isRequired,
   selectedVersion: PropTypes.string,
   onVersionSelectChange: PropTypes.func.isRequired,
 };
@@ -78,11 +83,16 @@ MatchSelection.defaultProps = {
 
 const mapStateToProps = (state) => {
   const versions = values(getVersions(state));
+  const iterations = getSelectedIterationsArray(state);
   const isInitialized = getIsInitialized(state);
   const selectedVersion = getSelectedVersion(state);
   return {
     versions,
+    iterations,
     isInitializedVersions: Boolean(isInitialized.versions),
+    isInitializedIterations: selectedVersion
+      ? Boolean(isInitialized.versionIterations[selectedVersion])
+      : false,
     selectedVersion,
   };
 };
