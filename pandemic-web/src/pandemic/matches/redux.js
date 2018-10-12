@@ -2,7 +2,8 @@ import { map, switchMap } from 'rxjs/operators';
 import { ofType } from 'redux-observable';
 import values from 'lodash/values';
 
-import { getIterationsSuccessAction, getMatchesSuccessAction, getIterations } from '../../data/redux';
+import { getIterationsSuccessAction, getMatchesSuccessAction, getIterations,
+  getMatches } from '../../data/redux';
 
 // Constants
 
@@ -30,6 +31,7 @@ const initialState = {
 const PREFIX = 'matches/';
 export const SELECT_VERSION = `${PREFIX}SELECT_VERSION`;
 export const SELECT_ITERATION = `${PREFIX}SELECT_ITERATION`;
+export const SELECT_MATCH = `${PREFIX}SELECT_MATCH`;
 export const PREVIOUS_STEP = `${PREFIX}PREVIOUS_STEP`;
 export const NEXT_STEP = `${PREFIX}NEXT_STEP`;
 export const SET_MATCH_PATH = `${PREFIX}SET_MATCH_PATH`;
@@ -42,6 +44,10 @@ export function selectVersionAction(versionId) {
 
 export function selectIterationAction(iterationId) {
   return { type: SELECT_ITERATION, iterationId };
+}
+
+export function selectMatchAction(matchId) {
+  return { type: SELECT_MATCH, matchId };
 }
 
 export function previousStepAction() {
@@ -70,6 +76,12 @@ export default function dataReducer(state = initialState, action) {
       return {
         ...state,
         selectedIterationId: action.iterationId,
+      };
+    }
+    case SELECT_MATCH: {
+      return {
+        ...state,
+        selectedMatchId: action.matchId,
       };
     }
     case PREVIOUS_STEP: {
@@ -113,6 +125,13 @@ export function getSelectedIterationsArray(state) {
   const iterationsMap = getIterations(state);
   return values(iterationsMap)
     .filter(i => i.versionId === versionId);
+}
+
+export function getSelectedMatchesArray(state) {
+  const iterationId = getSelectedIterationId(state);
+  const matchesMap = getMatches(state);
+  return values(matchesMap)
+    .filter(m => m.iterationId === iterationId);
 }
 
 export function getCurrentStep(state) {

@@ -14,7 +14,11 @@ import StateMap from './StateMap';
 import StateSummary from './StateSummary';
 import MatchActions from './MatchActions';
 
-const MatchesPage = ({ path, isInitializedMatchDetails }) => {
+const MatchesPage = ({
+  path,
+  selectedMatchId,
+  isInitializedMatchDetails,
+}) => {
   let matchContent = null;
   switch (path) {
     case ACTIONS_PATH: {
@@ -38,7 +42,7 @@ const MatchesPage = ({ path, isInitializedMatchDetails }) => {
         <PageContentWrapper>
           <Title>Pandemic Matches</Title>
           <MatchSelection />
-          { isInitializedMatchDetails && (
+          { selectedMatchId && isInitializedMatchDetails && (
             <Fragment>
               <MatchTabs />
               {matchContent}
@@ -84,7 +88,11 @@ const MatchesPage = ({ path, isInitializedMatchDetails }) => {
 };
 MatchesPage.propTypes = {
   path: PropTypes.string.isRequired,
+  selectedMatchId: PropTypes.string,
   isInitializedMatchDetails: PropTypes.bool.isRequired,
+};
+MatchesPage.defaultProps = {
+  selectedMatchId: null,
 };
 
 const mapStateToProps = (state) => {
@@ -93,6 +101,7 @@ const mapStateToProps = (state) => {
   const selectedMatchId = getSelectedMatchId(state);
   return {
     path,
+    selectedMatchId,
     isInitializedMatchDetails: selectedMatchId
       ? Boolean(isInitialized.matchMatchDetails[selectedMatchId])
       : false,
