@@ -9,7 +9,8 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 
 import { getVersions, getIsInitialized } from '../../data/redux';
-import { selectVersionAction, getSelectedVersion, getSelectedIterationsArray } from './redux';
+import { selectVersionAction, selectIterationAction, getSelectedVersionId,
+  getSelectedIterationId, getSelectedIterationsArray } from './redux';
 import { PageSection } from '../../components/Page';
 
 const MatchSelection = ({
@@ -17,8 +18,10 @@ const MatchSelection = ({
   iterations,
   isInitializedVersions,
   isInitializedIterations,
-  selectedVersion,
+  selectedVersionId,
+  selectedIterationId,
   onVersionSelectChange,
+  onIterationSelectChange,
 }) => (
   <PageSection>
     <Grid container spacing={24}>
@@ -26,7 +29,7 @@ const MatchSelection = ({
         <FormControl fullWidth disabled={!isInitializedVersions}>
           <InputLabel htmlFor="version">Version</InputLabel>
           <Select
-            value={selectedVersion || ''}
+            value={selectedVersionId || ''}
             onChange={onVersionSelectChange}
             inputProps={{ id: 'version' }}
           >
@@ -40,8 +43,8 @@ const MatchSelection = ({
         <FormControl fullWidth disabled={!isInitializedIterations}>
           <InputLabel htmlFor="iteration">Iteration</InputLabel>
           <Select
-            value=""
-            onChange={() => console.log('onChange')}
+            value={selectedIterationId || ''}
+            onChange={onIterationSelectChange}
             inputProps={{ id: 'iteration' }}
           >
             {iterations.map(i => (
@@ -74,31 +77,40 @@ MatchSelection.propTypes = {
   iterations: PropTypes.array.isRequired,
   isInitializedVersions: PropTypes.bool.isRequired,
   isInitializedIterations: PropTypes.bool.isRequired,
-  selectedVersion: PropTypes.string,
+  selectedVersionId: PropTypes.string,
+  selectedIterationId: PropTypes.string,
   onVersionSelectChange: PropTypes.func.isRequired,
+  onIterationSelectChange: PropTypes.func.isRequired,
 };
 MatchSelection.defaultProps = {
-  selectedVersion: null,
+  selectedVersionId: null,
+  selectedIterationId: null,
 };
 
 const mapStateToProps = (state) => {
   const versions = values(getVersions(state));
   const iterations = getSelectedIterationsArray(state);
   const isInitialized = getIsInitialized(state);
-  const selectedVersion = getSelectedVersion(state);
+  const selectedVersionId = getSelectedVersionId(state);
+  const selectedIterationId = getSelectedIterationId(state);
   return {
     versions,
     iterations,
     isInitializedVersions: Boolean(isInitialized.versions),
-    isInitializedIterations: selectedVersion
-      ? Boolean(isInitialized.versionIterations[selectedVersion])
+    isInitializedIterations: selectedVersionId
+      ? Boolean(isInitialized.versionIterations[selectedVersionId])
       : false,
-    selectedVersion,
+    selectedVersionId,
+    selectedIterationId,
   };
 };
 const mapDispatchToProps = dispatch => ({
   onVersionSelectChange: (event) => {
     dispatch(selectVersionAction(event.target.value));
+  },
+  onIterationSelectChange: (event) => {
+    console.log('onIterationSelectChange', event.target.value);
+    dispatch(selectIterationAction(event.target.value));
   },
 });
 export default connect(mapStateToProps, mapDispatchToProps)(MatchSelection);

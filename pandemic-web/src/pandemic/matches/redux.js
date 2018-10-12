@@ -18,9 +18,9 @@ export const allPaths = [
 // Initial State
 
 const initialState = {
-  selectedVersion: null,
-  selectedIteration: null,
-  selectedMatch: null,
+  selectedVersionId: null,
+  selectedIterationId: null,
+  selectedMatchId: null,
   currentStep: 1,
   path: ACTIONS_PATH,
 };
@@ -29,6 +29,7 @@ const initialState = {
 
 const PREFIX = 'matches/';
 export const SELECT_VERSION = `${PREFIX}SELECT_VERSION`;
+export const SELECT_ITERATION = `${PREFIX}SELECT_ITERATION`;
 export const PREVIOUS_STEP = `${PREFIX}PREVIOUS_STEP`;
 export const NEXT_STEP = `${PREFIX}NEXT_STEP`;
 export const SET_MATCH_PATH = `${PREFIX}SET_MATCH_PATH`;
@@ -37,6 +38,10 @@ export const SET_MATCH_PATH = `${PREFIX}SET_MATCH_PATH`;
 
 export function selectVersionAction(versionId) {
   return { type: SELECT_VERSION, versionId };
+}
+
+export function selectIterationAction(iterationId) {
+  return { type: SELECT_ITERATION, iterationId };
 }
 
 export function previousStepAction() {
@@ -58,7 +63,13 @@ export default function dataReducer(state = initialState, action) {
     case SELECT_VERSION: {
       return {
         ...state,
-        selectedVersion: action.versionId,
+        selectedVersionId: action.versionId,
+      };
+    }
+    case SELECT_ITERATION: {
+      return {
+        ...state,
+        selectedIterationId: action.iterationId,
       };
     }
     case PREVIOUS_STEP: {
@@ -85,12 +96,16 @@ export default function dataReducer(state = initialState, action) {
 
 // Selectors
 
-export function getSelectedVersion(state) {
-  return state.matches.selectedVersion;
+export function getSelectedVersionId(state) {
+  return state.matches.selectedVersionId;
+}
+
+export function getSelectedIterationId(state) {
+  return state.matches.selectedIterationId;
 }
 
 export function getSelectedIterationsArray(state) {
-  const versionId = getSelectedVersion(state);
+  const versionId = getSelectedVersionId(state);
   const iterationsMap = getIterations(state);
   return values(iterationsMap)
     .filter(i => i.versionId === versionId);
