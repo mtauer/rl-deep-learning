@@ -1,6 +1,8 @@
-import { map } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
+import { ofType } from 'redux-observable';
 
 import { mergeArrayIntoObject } from '../utils/reduxHelpers';
+import { SELECT_VERSION } from '../pandemic/matches/redux';
 
 // Initial State
 
@@ -114,9 +116,11 @@ export function fetchVersionsEpic(action$, state$, { apiClient }) {
 }
 
 export function fetchIterationsEpic(action$, state$, { apiClient }) {
-  const version = '0.3.2';
-  return apiClient.getIterations$(version).pipe(
-    map(iterations => getIterationsSuccessAction(iterations)),
+  return action$.pipe(
+    ofType(SELECT_VERSION),
+    switchMap(({ versionId }) => apiClient.getIterations$(versionId).pipe(
+      map(iterations => getIterationsSuccessAction(iterations)),
+    )),
   );
 }
 

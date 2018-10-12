@@ -22,10 +22,10 @@ const initialState = {
 // Action Types
 
 const PREFIX = 'matches/';
-const SELECT_VERSION = `${PREFIX}SELECT_VERSION`;
-const PREVIOUS_STEP = `${PREFIX}PREVIOUS_STEP`;
-const NEXT_STEP = `${PREFIX}NEXT_STEP`;
-const SET_MATCH_PATH = `${PREFIX}SET_MATCH_PATH`;
+export const SELECT_VERSION = `${PREFIX}SELECT_VERSION`;
+export const PREVIOUS_STEP = `${PREFIX}PREVIOUS_STEP`;
+export const NEXT_STEP = `${PREFIX}NEXT_STEP`;
+export const SET_MATCH_PATH = `${PREFIX}SET_MATCH_PATH`;
 
 // Action Creators
 
