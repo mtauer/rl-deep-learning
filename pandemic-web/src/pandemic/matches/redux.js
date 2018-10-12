@@ -2,7 +2,7 @@ import { map, switchMap } from 'rxjs/operators';
 import { ofType } from 'redux-observable';
 import values from 'lodash/values';
 
-import { getIterationsSuccessAction, getIterations } from '../../data/redux';
+import { getIterationsSuccessAction, getMatchesSuccessAction, getIterations } from '../../data/redux';
 
 // Constants
 
@@ -104,6 +104,10 @@ export function getSelectedIterationId(state) {
   return state.matches.selectedIterationId;
 }
 
+export function getSelectedMatchId(state) {
+  return state.matches.selectedMatchId;
+}
+
 export function getSelectedIterationsArray(state) {
   const versionId = getSelectedVersionId(state);
   const iterationsMap = getIterations(state);
@@ -126,6 +130,15 @@ export function fetchIterationsEpic(action$, state$, { apiClient }) {
     ofType(SELECT_VERSION),
     switchMap(({ versionId }) => apiClient.getIterations$(versionId).pipe(
       map(iterations => getIterationsSuccessAction(versionId, iterations)),
+    )),
+  );
+}
+
+export function fetchMatchesEpic(action$, state$, { apiClient }) {
+  return action$.pipe(
+    ofType(SELECT_ITERATION),
+    switchMap(({ iterationId }) => apiClient.getMatches$(iterationId).pipe(
+      map(matches => getMatchesSuccessAction(iterationId, matches)),
     )),
   );
 }

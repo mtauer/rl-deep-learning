@@ -109,7 +109,6 @@ const mapDispatchToProps = dispatch => ({
     dispatch(selectVersionAction(event.target.value));
   },
   onIterationSelectChange: (event) => {
-    console.log('onIterationSelectChange', event.target.value);
     dispatch(selectIterationAction(event.target.value));
   },
 });

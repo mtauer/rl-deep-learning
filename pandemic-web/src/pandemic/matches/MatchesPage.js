@@ -2,7 +2,9 @@ import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import { getMatchesPath, ACTIONS_PATH, STATES_PATH, SIMULATIONS_PATH } from './redux';
+import { getMatchesPath, getSelectedMatchId,
+  ACTIONS_PATH, STATES_PATH, SIMULATIONS_PATH } from './redux';
+import { getIsInitialized } from '../../data/redux';
 import { Page, PageSide, PageContent, PageContentWrapper, Title, SectionTitle, PageSection } from '../../components/Page';
 import MatchSelection from './MatchSelection';
 import MatchTabs from './MatchTabs';
@@ -12,7 +14,7 @@ import StateMap from './StateMap';
 import StateSummary from './StateSummary';
 import MatchActions from './MatchActions';
 
-const MatchesPage = ({ path }) => {
+const MatchesPage = ({ path, isInitializedMatchDetails }) => {
   let matchContent = null;
   switch (path) {
     case ACTIONS_PATH: {
@@ -36,8 +38,12 @@ const MatchesPage = ({ path }) => {
         <PageContentWrapper>
           <Title>Pandemic Matches</Title>
           <MatchSelection />
-          <MatchTabs />
-          {matchContent}
+          { isInitializedMatchDetails && (
+            <Fragment>
+              <MatchTabs />
+              {matchContent}
+            </Fragment>
+          )}
         </PageContentWrapper>
       </PageContent>
       <PageSide right />
@@ -78,12 +84,18 @@ const MatchesPage = ({ path }) => {
 };
 MatchesPage.propTypes = {
   path: PropTypes.string.isRequired,
+  isInitializedMatchDetails: PropTypes.bool.isRequired,
 };
 
 const mapStateToProps = (state) => {
   const path = getMatchesPath(state);
+  const isInitialized = getIsInitialized(state);
+  const selectedMatchId = getSelectedMatchId(state);
   return {
     path,
+    isInitializedMatchDetails: selectedMatchId
+      ? Boolean(isInitialized.matchMatchDetails[selectedMatchId])
+      : false,
   };
 };
 export default connect(mapStateToProps)(MatchesPage);

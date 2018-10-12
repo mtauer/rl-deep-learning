@@ -63,7 +63,6 @@ export default function dataReducer(state = initialState, action) {
     }
     case GET_ITERATIONS_SUCCESS: {
       const { versionId, iterations } = action;
-      console.log('GET_ITERATIONS_SUCCESS', versionId, iterations);
       return {
         ...state,
         iterations: mergeArrayIntoObject(
@@ -78,6 +77,22 @@ export default function dataReducer(state = initialState, action) {
         ),
       };
     }
+    case GET_MATCHES_SUCCESS: {
+      const { iterationId, matches } = action;
+      return {
+        ...state,
+        matches: mergeArrayIntoObject(
+          state.matches,
+          matches,
+          i => i.matchId,
+        ),
+        isInitialized: mergeArrayIntoObject(
+          state.isInitialized,
+          { [iterationId]: true },
+          () => 'iterationMatches',
+        ),
+      };
+    }
     case GET_MATCH_DETAILS_SUCCESS: {
       return {
         ...state,
@@ -88,8 +103,8 @@ export default function dataReducer(state = initialState, action) {
         ),
         isInitialized: mergeArrayIntoObject(
           state.isInitialized,
-          [{ [action.matchDetails.matchId]: true }],
-          () => 'matches',
+          { [action.matchDetails.matchId]: true },
+          () => 'matchMatchDetails',
         ),
       };
     }
@@ -125,9 +140,9 @@ export function fetchVersionsEpic(action$, state$, { apiClient }) {
   );
 }
 
-export function fetchMatchDetailsEpic(action$, state$, { apiClient }) {
-  const matchId = 'bbdea21a-cae8-402d-a1a1-f31a6692ebf5';
-  return apiClient.getMatchDetails$(matchId).pipe(
-    map(matchDetails => getMatchDetailsSuccessAction(matchDetails)),
-  );
-}
+// export function fetchMatchDetailsEpic(action$, state$, { apiClient }) {
+//   const matchId = 'bbdea21a-cae8-402d-a1a1-f31a6692ebf5';
+//   return apiClient.getMatchDetails$(matchId).pipe(
+//     map(matchDetails => getMatchDetailsSuccessAction(matchDetails)),
+//   );
+// }
