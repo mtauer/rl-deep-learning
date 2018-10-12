@@ -70,12 +70,15 @@ export default function dataReducer(state = initialState, action) {
       return {
         ...state,
         selectedVersionId: action.versionId,
+        selectedIterationId: null,
+        selectedMatchId: null,
       };
     }
     case SELECT_ITERATION: {
       return {
         ...state,
         selectedIterationId: action.iterationId,
+        selectedMatchId: null,
       };
     }
     case SELECT_MATCH: {

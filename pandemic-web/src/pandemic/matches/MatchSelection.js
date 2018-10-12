@@ -53,7 +53,9 @@ const MatchSelection = ({
             inputProps={{ id: 'iteration' }}
           >
             {iterations.map(i => (
-              <MenuItem key={i.iterationId} value={i.iterationId}>{i.name}</MenuItem>
+              <MenuItem key={i.iterationId} value={i.iterationId}>
+                {`${i.name} – ${(i.winRate * 100).toFixed(2)}%`}
+              </MenuItem>
             ))}
           </Select>
         </FormControl>
@@ -67,7 +69,7 @@ const MatchSelection = ({
             inputProps={{ id: 'match' }}
           >
             {matches.map((m, i) => (
-              <MenuItem key={m.matchId} value={m.matchId}>{`Match ${i + 1}`}</MenuItem>
+              <MenuItem key={m.matchId} value={m.matchId}>{`Match ${i + 1} – ${m.resultValue.toFixed(3)}`}</MenuItem>
             ))}
           </Select>
         </FormControl>
