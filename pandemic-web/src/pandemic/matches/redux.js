@@ -49,6 +49,12 @@ export function setMatchPathAction(path) {
 
 export default function dataReducer(state = initialState, action) {
   switch (action.type) {
+    case SELECT_VERSION: {
+      return {
+        ...state,
+        selectedVersion: action.versionId,
+      };
+    }
     case PREVIOUS_STEP: {
       return {
         ...state,
@@ -72,6 +78,10 @@ export default function dataReducer(state = initialState, action) {
 }
 
 // Selectors
+
+export function getSelectedVersion(state) {
+  return state.matches.selectedVersion;
+}
 
 export function getCurrentStep(state) {
   return state.matches.currentStep;

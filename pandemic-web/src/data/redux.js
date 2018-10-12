@@ -89,6 +89,10 @@ export default function dataReducer(state = initialState, action) {
 
 // Selectors
 
+export function getVersions(state) {
+  return state.data.versions;
+}
+
 export function getIterations(state) {
   return state.data.iterations;
 }

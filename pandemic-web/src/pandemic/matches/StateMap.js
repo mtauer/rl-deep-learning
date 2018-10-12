@@ -34,7 +34,6 @@ const mapStateToProps = (state) => {
   const states = matches[matchId] ? matches[matchId].states : null;
   const currentStep = getCurrentStep(state);
   const currentState = states ? states[currentStep - 1] : null;
-  console.log('currentState', currentState);
   return {
     currentState,
   };
