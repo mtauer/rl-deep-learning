@@ -12,6 +12,9 @@ export const allPaths = [
 // Initial State
 
 const initialState = {
+  selectedVersion: null,
+  selectedIteration: null,
+  selectedMatch: null,
   currentStep: 1,
   path: ACTIONS_PATH,
 };
@@ -19,11 +22,16 @@ const initialState = {
 // Action Types
 
 const PREFIX = 'matches/';
+const SELECT_VERSION = `${PREFIX}SELECT_VERSION`;
 const PREVIOUS_STEP = `${PREFIX}PREVIOUS_STEP`;
 const NEXT_STEP = `${PREFIX}NEXT_STEP`;
 const SET_MATCH_PATH = `${PREFIX}SET_MATCH_PATH`;
 
 // Action Creators
+
+export function selectVersionAction(versionId) {
+  return { type: SELECT_VERSION, versionId };
+}
 
 export function previousStepAction() {
   return { type: PREVIOUS_STEP };

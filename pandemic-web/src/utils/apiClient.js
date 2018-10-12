@@ -13,9 +13,23 @@ class ApiClient {
     };
   }
 
-  getAllIterations$(version) {
+  getAllVersions$() {
     return this.request$(
-      `versions/${version}/iterations`,
+      'versions',
+      { method: 'GET' },
+    );
+  }
+
+  getIterations$(versionId) {
+    return this.request$(
+      `versions/${versionId}/iterations`,
+      { method: 'GET' },
+    );
+  }
+
+  getMatches$(iterationId) {
+    return this.request$(
+      `iterations/${iterationId}/matches`,
       { method: 'GET' },
     );
   }

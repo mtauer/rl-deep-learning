@@ -1,11 +1,11 @@
 import { map } from 'rxjs/operators';
-import padStart from 'lodash/padStart';
 
 import { mergeArrayIntoObject } from '../utils/reduxHelpers';
 
 // Initial State
 
 const initialState = {
+  versions: {},
   iterations: {},
   matches: {},
   isInitialized: {},
@@ -14,13 +14,18 @@ const initialState = {
 // Action Types
 
 const PREFIX = 'data/';
-export const GET_ALL_ITERATIONS_SUCCESS = `${PREFIX}GET_ALL_ITERATIONS_SUCCESS`;
+export const GET_VERSIONS_SUCCESS = `${PREFIX}GET_VERSIONS_SUCCESS`;
+export const GET_ITERATIONS_SUCCESS = `${PREFIX}GET_ITERATIONS_SUCCESS`;
 export const GET_MATCH_DETAILS_SUCCESS = `${PREFIX}GET_MATCH_DETAILS_SUCCESS`;
 
 // Action Creators
 
-export function getAllIterationsSuccessAction(iterations) {
-  return { type: GET_ALL_ITERATIONS_SUCCESS, iterations };
+export function getVersionsSuccessAction(versions) {
+  return { type: GET_VERSIONS_SUCCESS, versions };
+}
+
+export function getIterationsSuccessAction(iterations) {
+  return { type: GET_ITERATIONS_SUCCESS, iterations };
 }
 
 export function getMatchDetailsSuccessAction(matchDetails) {
@@ -31,17 +36,32 @@ export function getMatchDetailsSuccessAction(matchDetails) {
 
 export default function dataReducer(state = initialState, action) {
   switch (action.type) {
-    case GET_ALL_ITERATIONS_SUCCESS: {
+    case GET_VERSIONS_SUCCESS: {
+      return {
+        ...state,
+        versions: mergeArrayIntoObject(
+          state.versions,
+          action.versions,
+          v => v.versionId,
+        ),
+        isInitialized: mergeArrayIntoObject(
+          state.isInitialized,
+          [true],
+          () => 'versions',
+        ),
+      };
+    }
+    case GET_ITERATIONS_SUCCESS: {
       return {
         ...state,
         iterations: mergeArrayIntoObject(
           state.iterations,
           action.iterations,
-          i => `${i.version}-${padStart(i.iteration, 3, '0')}`,
+          i => i.iterationId,
         ),
         isInitialized: mergeArrayIntoObject(
           state.isInitialized,
-          [true],
+          [{ [action.iterations.iterationId]: true }],
           () => 'iterations',
         ),
       };
@@ -49,7 +69,7 @@ export default function dataReducer(state = initialState, action) {
     case GET_MATCH_DETAILS_SUCCESS: {
       return {
         ...state,
-        iterations: mergeArrayIntoObject(
+        matches: mergeArrayIntoObject(
           state.matches,
           [action.matchDetails],
           m => m.matchId,
@@ -83,10 +103,16 @@ export function getIsInitialized(state) {
 
 // Epics
 
+export function fetchVersionsEpic(action$, state$, { apiClient }) {
+  return apiClient.getAllVersions$().pipe(
+    map(versions => getVersionsSuccessAction(versions)),
+  );
+}
+
 export function fetchIterationsEpic(action$, state$, { apiClient }) {
   const version = '0.3.2';
-  return apiClient.getAllIterations$(version).pipe(
-    map(iterations => getAllIterationsSuccessAction(iterations)),
+  return apiClient.getIterations$(version).pipe(
+    map(iterations => getIterationsSuccessAction(iterations)),
   );
 }
 
