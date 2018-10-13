@@ -12,7 +12,7 @@ import MonteCarloTreeSearchNN from './MonteCarloTreeSearchNN';
 import { getTrainingEpisodesStats, getIterationSummary, savePlayingStats,
   loadPlayingStats } from './pandemic-light/stats';
 import { getTestExamples } from './pandemic-light/testData';
-import { toNNProbabilities } from './utils';
+import { toNetworkProbabilities } from './utils';
 
 export default class Coach {
   constructor(config, trainingEpisodesStorage, modelStorage) {
@@ -114,7 +114,9 @@ export default class Coach {
           const { steps, vValue } = trainingEpisode.episodeResults;
           const examples = steps.map((step) => {
             const s = game.toNNState(step.state);
-            const pValues = toNNProbabilities(game, step.pValues, game.getValidActions(step.state));
+            const pValues = toNetworkProbabilities(
+              game, step.pValues, game.getValidActions(step.state),
+            );
             return { s, pValues, vValue };
           });
           return examples;

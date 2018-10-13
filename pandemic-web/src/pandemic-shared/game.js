@@ -26,9 +26,21 @@ export const DIRECT_FLIGHT = 'DIRECT_FLIGHT';
 export const CHARTER_FLIGHT = 'CHARTER_FLIGHT';
 export const SHUTTLE_FLIGHT = 'SHUTTLE_FLIGHT';
 export const BUILD_RESEARCH_CENTER = 'BUILD_RESEARCH_CENTER';
-export const DISCOVER_CURE = 'DISCOVER_CURE';
-export const SHARE_KNOWLEDGE = 'SHARE_KNOWLEDGE';
 export const DISCARD_CARD = 'DISCARD_CARD';
+export const SHARE_KNOWLEDGE = 'SHARE_KNOWLEDGE';
+export const DISCOVER_CURE = 'DISCOVER_CURE';
+
+export const allActions = {
+  DO_NOTHING,
+  DRIVE_FERRY,
+  DIRECT_FLIGHT,
+  CHARTER_FLIGHT,
+  SHUTTLE_FLIGHT,
+  BUILD_RESEARCH_CENTER,
+  DISCARD_CARD,
+  SHARE_KNOWLEDGE,
+  DISCOVER_CURE,
+};
 
 export const PLAYERS = 'PLAYERS';
 export const BOARD = 'BOARD';
@@ -47,8 +59,6 @@ export default {
   hasEnded,
   getWinner,
   getInitialState,
-  getActionsOrder,
-  getActionsMaxCount,
   getDescription,
 };
 
@@ -445,33 +455,5 @@ function preparePlayerCards(state) {
     playerCards,
     playedPlayerCards: [],
     insufficientPlayerCards: false,
-  };
-}
-
-function getActionsOrder() {
-  return [
-    DO_NOTHING,
-    BUILD_RESEARCH_CENTER,
-    DISCOVER_CURE,
-    SHARE_KNOWLEDGE,
-    DISCARD_CARD,
-    DRIVE_FERRY,
-    DIRECT_FLIGHT,
-    SHUTTLE_FLIGHT,
-    CHARTER_FLIGHT,
-  ];
-}
-
-function getActionsMaxCount() {
-  return {
-    DO_NOTHING: 1,
-    BUILD_RESEARCH_CENTER: 1,
-    DISCOVER_CURE: 1,
-    SHARE_KNOWLEDGE: 1,
-    DISCARD_CARD: 9,
-    DRIVE_FERRY: 6,
-    DIRECT_FLIGHT: 7,
-    SHUTTLE_FLIGHT: 4,
-    CHARTER_FLIGHT: 47,
   };
 }
