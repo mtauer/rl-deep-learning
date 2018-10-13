@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
 
-import { getCurrentStep } from './redux';
+import { getCurrentStep, getSelectedMatchId } from './redux';
 import { getMatches } from '../../data/redux';
 import { PageSection } from '../../components/Page';
 import PandemicMap from './PandemicMap';
@@ -30,7 +30,7 @@ StateMap.defaultProps = {
 
 const mapStateToProps = (state) => {
   const matches = getMatches(state);
-  const matchId = 'bbdea21a-cae8-402d-a1a1-f31a6692ebf5';
+  const matchId = getSelectedMatchId(state);
   const states = matches[matchId] ? matches[matchId].states : null;
   const currentStep = getCurrentStep(state);
   const currentState = states ? states[currentStep - 1] : null;

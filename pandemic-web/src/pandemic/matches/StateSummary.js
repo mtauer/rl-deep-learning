@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { connect } from 'react-redux';
 import Grid from '@material-ui/core/Grid';
 
-import { getCurrentStep } from './redux';
+import { getCurrentStep, getSelectedMatchId } from './redux';
 import { getMatches } from '../../data/redux';
 import PandemicLocation from './PandemicLocation';
 import PandemicCards from './PandemicCards';
@@ -109,7 +109,7 @@ StateSummary.propTypes = {
 
 const mapStateToProps = (state) => {
   const matches = getMatches(state);
-  const matchId = 'bbdea21a-cae8-402d-a1a1-f31a6692ebf5';
+  const matchId = getSelectedMatchId(state);
   const states = matches[matchId] ? matches[matchId].states : null;
   const currentStep = getCurrentStep(state);
   const currentState = states ? states[currentStep - 1] : {};

@@ -94,16 +94,17 @@ export default function dataReducer(state = initialState, action) {
       };
     }
     case GET_MATCH_DETAILS_SUCCESS: {
+      const { matchId, matchDetails } = action;
       return {
         ...state,
         matches: mergeArrayIntoObject(
           state.matches,
-          [action.matchDetails],
-          m => m.matchId,
+          matchDetails,
+          i => i.matchId,
         ),
         isInitialized: mergeArrayIntoObject(
           state.isInitialized,
-          { [action.matchDetails.matchId]: true },
+          { [matchId]: true },
           () => 'matchMatchDetails',
         ),
       };
@@ -139,10 +140,3 @@ export function fetchVersionsEpic(action$, state$, { apiClient }) {
     map(versions => getVersionsSuccessAction(versions)),
   );
 }
-
-// export function fetchMatchDetailsEpic(action$, state$, { apiClient }) {
-//   const matchId = 'bbdea21a-cae8-402d-a1a1-f31a6692ebf5';
-//   return apiClient.getMatchDetails$(matchId).pipe(
-//     map(matchDetails => getMatchDetailsSuccessAction(matchDetails)),
-//   );
-// }

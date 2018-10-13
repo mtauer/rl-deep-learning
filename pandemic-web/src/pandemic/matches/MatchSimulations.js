@@ -14,7 +14,7 @@ import TableRow from '@material-ui/core/TableRow';
 import styled from 'styled-components';
 
 import { getMatches } from '../../data/redux';
-import { getCurrentStep } from './redux';
+import { getCurrentStep, getSelectedMatchId } from './redux';
 import { PageSection } from '../../components/Page';
 import ValueBar from './ValueBar';
 import PandemicAction from './PandemicAction';
@@ -158,7 +158,7 @@ MatchSimulations.defaultProps = {
 
 const mapStateToProps = (state) => {
   const matches = getMatches(state);
-  const matchId = 'bbdea21a-cae8-402d-a1a1-f31a6692ebf5';
+  const matchId = getSelectedMatchId(state);
   const simulations = matches[matchId] ? matches[matchId].simulations : null;
   const currentStep = getCurrentStep(state);
   const currentSimulation = simulations ? simulations[currentStep - 1] : {

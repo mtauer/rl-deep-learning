@@ -10,6 +10,7 @@ import TableRow from '@material-ui/core/TableRow';
 import TableBody from '@material-ui/core/TableBody';
 import styled from 'styled-components';
 
+import { getSelectedMatchId } from './redux';
 import { getMatches } from '../../data/redux';
 import { PageSection } from '../../components/Page';
 import PandemicAction from './PandemicAction';
@@ -95,7 +96,7 @@ MatchActions.propTypes = {
 
 const mapStateToProps = (state) => {
   const matches = getMatches(state);
-  const matchId = 'bbdea21a-cae8-402d-a1a1-f31a6692ebf5';
+  const matchId = getSelectedMatchId(state);
   const actions = matches[matchId] ? matches[matchId].actions : [];
   const states = matches[matchId] ? matches[matchId].states : [];
   return {

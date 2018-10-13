@@ -8,7 +8,7 @@ import SkipNext from '@material-ui/icons/SkipNext';
 import SkipPrevious from '@material-ui/icons/SkipPrevious';
 
 import { getMatches } from '../../data/redux';
-import { getCurrentStep, previousStepAction, nextStepAction } from './redux';
+import { getCurrentStep, previousStepAction, nextStepAction, getSelectedMatchId } from './redux';
 import { getLocationName } from '../../utils/formatHelpers';
 import { PageSection } from '../../components/Page';
 import LabeledValue from '../../components/LabeledValue';
@@ -111,7 +111,7 @@ StepNavigation.defaultProps = {
 const mapStateToProps = (state) => {
   const currentStep = getCurrentStep(state);
   const matches = getMatches(state);
-  const matchId = 'bbdea21a-cae8-402d-a1a1-f31a6692ebf5';
+  const matchId = getSelectedMatchId(state);
   const simulations = matches[matchId] ? matches[matchId].simulations : [];
   const states = matches[matchId] ? matches[matchId].states : [];
   const currentState = states[currentStep - 1];

@@ -3,7 +3,8 @@ import { createEpicMiddleware, combineEpics } from 'redux-observable';
 
 import dataReducer, { fetchVersionsEpic } from './data/redux';
 import pandemicReducer from './pandemic/redux';
-import matchesReducer, { fetchIterationsEpic, fetchMatchesEpic } from './pandemic/matches/redux';
+import matchesReducer, { fetchIterationsEpic, fetchMatchesEpic,
+  fetchMatchDetailsEpic } from './pandemic/matches/redux';
 import ApiClient from './utils/apiClient';
 
 const rootReducer = combineReducers({
@@ -15,6 +16,7 @@ const rootEpic = combineEpics(
   fetchVersionsEpic,
   fetchIterationsEpic,
   fetchMatchesEpic,
+  fetchMatchDetailsEpic,
 );
 
 const apiClient = new ApiClient();
