@@ -13,7 +13,7 @@ import MatchSimulations from './MatchSimulations';
 import StateMap from './StateMap';
 import StateSummary from './StateSummary';
 import MatchActions from './MatchActions';
-import VersionDescription from './VersionDescription';
+import VersionInfo from './VersionInfo';
 
 const MatchesPage = ({
   path,
@@ -52,7 +52,7 @@ const MatchesPage = ({
         </PageContentWrapper>
       </PageContent>
       <PageSide right>
-        <VersionDescription />
+        <VersionInfo />
       </PageSide>
     </Page>
   );

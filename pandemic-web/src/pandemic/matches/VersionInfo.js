@@ -6,7 +6,7 @@ import { getSelectedVersion } from './redux';
 import LabeledValue from '../../components/LabeledValue';
 import { PageSideSection, SectionTitle } from '../../components/Page';
 
-const VersionDescription = ({ version }) => {
+const VersionInfo = ({ version }) => {
   if (!version) { return null; }
   return (
     <Fragment>
@@ -34,10 +34,10 @@ const VersionDescription = ({ version }) => {
     </Fragment>
   );
 };
-VersionDescription.propTypes = {
+VersionInfo.propTypes = {
   version: PropTypes.shape(),
 };
-VersionDescription.defaultProps = {
+VersionInfo.defaultProps = {
   version: null,
 };
 
@@ -47,4 +47,4 @@ const mapStateToProps = (state) => {
     version,
   };
 };
-export default connect(mapStateToProps)(VersionDescription);
+export default connect(mapStateToProps)(VersionInfo);
