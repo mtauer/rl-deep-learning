@@ -72,6 +72,7 @@ export default function dataReducer(state = initialState, action) {
         selectedVersionId: action.versionId,
         selectedIterationId: null,
         selectedMatchId: null,
+        currentStep: 1,
       };
     }
     case SELECT_ITERATION: {
@@ -79,12 +80,14 @@ export default function dataReducer(state = initialState, action) {
         ...state,
         selectedIterationId: action.iterationId,
         selectedMatchId: null,
+        currentStep: 1,
       };
     }
     case SELECT_MATCH: {
       return {
         ...state,
         selectedMatchId: action.matchId,
+        currentStep: 1,
       };
     }
     case PREVIOUS_STEP: {
