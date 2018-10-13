@@ -22,9 +22,11 @@ export default class Coach {
   }
 
   async summarizeVersion(versionId) {
+    const neuralNetwork = new PandemicNeuronalNetwork(this.config.neuralNetwork);
     const version = {
       name: `Version ${versionId}`,
       gameDescription: game.getDescription(),
+      neuralNetworkDescription: neuralNetwork.getDescription(),
     };
     await this.trainingEpisodesStorage
       .writeVersion(versionId, version);

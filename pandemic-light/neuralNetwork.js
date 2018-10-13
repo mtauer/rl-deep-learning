@@ -17,6 +17,11 @@ const V_OUTPUT_UNITS = 1;
 export default class PandemicNeuronalNetwork {
   constructor(config = {}) {
     this.config = defaultsDeep(config, defaultConfig);
+    this.description = 'Use 2 separate models (for p and v) and 3 fully connected hidden layers. Input: 1 state. Output: indexed action types.';
+  }
+
+  getDescription() {
+    return this.description;
   }
 
   // Deprecated
