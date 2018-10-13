@@ -11,13 +11,13 @@ const defaultConfig = {
 
 const INPUT_UNITS = 299;
 const HIDDEN_LAYER_UNITS = 400;
-const P_OUTPUT_UNITS = 77;
+const P_OUTPUT_UNITS = 385;
 const V_OUTPUT_UNITS = 1;
 
 export default class PandemicNeuronalNetwork {
   constructor(config = {}) {
     this.config = defaultsDeep(config, defaultConfig);
-    this.description = 'Uses 2 separate models (for p and v) and for each model 3 fully connected hidden layers (with 400 neurons each). Input: a single state. Output for p: probabilities of indexed action types.';
+    this.description = 'Uses 2 separate models (for p and v) and for each model 3 fully connected hidden layers (with 400 neurons each). Input: a single state. Output for p: probabilities of action parameters.';
   }
 
   getDescription() {
