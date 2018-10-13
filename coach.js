@@ -75,13 +75,17 @@ export default class Coach {
       const versionId = version;
       const iterationId = `${version}-${iterationIndex}`;
       const matchId = uuidv4();
+      const name = `Match ${matchId.split('-')[0]}`;
       // eslint-disable-next-line no-await-in-loop
       await this.trainingEpisodesStorage
         .writeMatch(
           versionId,
           iterationId,
           matchId,
-          episodeResults.match,
+          {
+            ...episodeResults.match,
+            name,
+          },
         );
       // eslint-disable-next-line no-await-in-loop
       await this.trainingEpisodesStorage
@@ -89,7 +93,10 @@ export default class Coach {
           versionId,
           iterationId,
           matchId,
-          episodeResults.matchDetails,
+          {
+            ...episodeResults.matchDetails,
+            name,
+          },
         );
     }
     console.log('Training finished');
