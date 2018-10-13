@@ -9,6 +9,7 @@ export const PageSide = styled.div`
   bottom: 0;
   left: ${({ left }) => (left ? '0' : 'auto')};
   top: 0;
+  padding: 44px 16px 32px 16px;
   position: fixed;
   right: ${({ right }) => (right ? '0' : 'auto')};
   width: ${({ left }) => (left ? '220px' : '290px')};
@@ -45,12 +46,22 @@ export const Container = styled.div`
 export const Section = styled.div`
   padding: 0 0 32px 0;
 `;
+export const PageSideSection = styled.div`
+  padding: 0 0 16px 0;
+`;
 export const Title = styled.h1`
   font-family: 'IBM Plex Sans', sans-serif;
   font-size: 27px;
   font-weight: 400;
   margin: 0;
   padding: 0 0 16px 0;
+`;
+export const SectionTitle = styled.h2`
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: ${({ type }) => (type === 'secondary' ? '16px' : '18px')};
+  font-weight: ${({ type }) => (type === 'secondary' ? '400' : '700')};
+  margin: 0;
+  padding: 0 0 8px 0;
 `;
 export const Label = styled.label`
   display: block;
@@ -65,12 +76,6 @@ export const Column = styled.div`
   display: flex;
   flex: 1;
   flex-direction: column;
-`;
-export const SectionTitle = styled.h2`
-  font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 18px;
-  margin: 0;
-  padding: 0 0 8px 0;
 `;
 export const Button = styled.button`
   background-color: #e6e6e6;

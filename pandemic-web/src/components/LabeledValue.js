@@ -5,6 +5,7 @@ import styled from 'styled-components';
 const Container = styled.div`
   align-items: baseline;
   display: flex;
+  flex-direction: ${({ direction }) => direction};
 `;
 const Label = styled.p`
   color: rgba(0, 0, 0, 0.54);
@@ -12,27 +13,35 @@ const Label = styled.p`
   font-size: 0.75rem;
   font-weight: 500;
   margin: 0;
-  padding: 0 8px 0 0;
-`;
-const Value = styled.p`
-  display: block;
-  margin: 0;
-  font-weight: 700;
+  padding: 0 8px 4px 0;
 `;
 
-const LabeledValue = ({ label, value }) => (
-  <Container>
+const Value = styled.p`
+  color: ${({ type }) => (type === 'secondary' ? 'rgba(0, 0, 0, 0.54)' : '#333333')};
+  display: block;
+  margin: 0;
+  font-size: ${({ type }) => (type === 'secondary' ? '14px' : '16px')};
+  font-weight: 700;
+  padding: 0 0 4px 0;
+`;
+
+const LabeledValue = ({ label, value, direction, type }) => (
+  <Container direction={direction}>
     <Label>{label}</Label>
-    <Value>{value}</Value>
+    <Value type={type}>{value}</Value>
   </Container>
 );
 LabeledValue.propTypes = {
   label: PropTypes.node,
   value: PropTypes.node,
+  direction: PropTypes.string,
+  type: PropTypes.string,
 };
 LabeledValue.defaultProps = {
   label: null,
   value: null,
+  direction: 'row',
+  type: 'primary',
 };
 
 export default LabeledValue;
