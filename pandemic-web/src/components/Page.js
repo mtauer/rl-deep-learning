@@ -9,7 +9,7 @@ export const PageSide = styled.div`
   bottom: 0;
   left: ${({ left }) => (left ? '0' : 'auto')};
   top: 0;
-  padding: 44px 16px 32px 16px;
+  padding: 46px 24px 32px 16px;
   position: fixed;
   right: ${({ right }) => (right ? '0' : 'auto')};
   width: ${({ left }) => (left ? '220px' : '290px')};
@@ -58,10 +58,10 @@ export const Title = styled.h1`
 `;
 export const SectionTitle = styled.h2`
   font-family: 'IBM Plex Sans', sans-serif;
-  font-size: ${({ type }) => (type === 'secondary' ? '16px' : '18px')};
+  font-size: ${({ type }) => (type === 'secondary' ? '14px' : '18px')};
   font-weight: ${({ type }) => (type === 'secondary' ? '400' : '700')};
   margin: 0;
-  padding: 0 0 8px 0;
+  padding: 0 0 10px 0;
 `;
 export const Label = styled.label`
   display: block;

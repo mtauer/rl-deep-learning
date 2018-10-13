@@ -21,6 +21,13 @@ const theme = createMuiTheme({
         backgroundColor: '#333333',
       },
     },
+    MuiMenuItem: {
+      root: {
+        fontSize: '14px',
+        paddingBottom: '4px',
+        paddingTop: '4px',
+      },
+    },
   },
 });
 

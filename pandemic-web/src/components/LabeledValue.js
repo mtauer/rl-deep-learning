@@ -8,9 +8,9 @@ const Container = styled.div`
   flex-direction: ${({ direction }) => direction};
 `;
 const Label = styled.p`
-  color: rgba(0, 0, 0, 0.54);
+  color: ${({ type }) => (type === 'secondary' ? 'rgba(0, 0, 0, 0.40)' : 'rgba(0, 0, 0, 0.54)')};
   display: block;
-  font-size: 0.75rem;
+  font-size: 12px;
   font-weight: 500;
   margin: 0;
   padding: 0 8px 4px 0;
@@ -21,13 +21,13 @@ const Value = styled.p`
   display: block;
   margin: 0;
   font-size: ${({ type }) => (type === 'secondary' ? '14px' : '16px')};
-  font-weight: 700;
+  font-weight: ${({ type }) => (type === 'secondary' ? '500' : '700')};
   padding: 0 0 4px 0;
 `;
 
 const LabeledValue = ({ label, value, direction, type }) => (
   <Container direction={direction}>
-    <Label>{label}</Label>
+    <Label type={type}>{label}</Label>
     <Value type={type}>{value}</Value>
   </Container>
 );
