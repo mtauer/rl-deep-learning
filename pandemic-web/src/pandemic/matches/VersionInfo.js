@@ -10,11 +10,9 @@ const VersionInfo = ({ version }) => {
   if (!version) { return null; }
   return (
     <Fragment>
-      <PageSideSection>
-        <SectionTitle type="secondary">
-          {version.name}
-        </SectionTitle>
-      </PageSideSection>
+      <SectionTitle type="secondary">
+        {version.name}
+      </SectionTitle>
       <PageSideSection>
         <LabeledValue
           label="Game rules"

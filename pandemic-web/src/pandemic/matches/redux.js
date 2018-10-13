@@ -132,6 +132,12 @@ export function getSelectedVersion(state) {
   return versions[versionId];
 }
 
+export function getSelectedMatch(state) {
+  const matchId = getSelectedMatchId(state);
+  const matches = getMatches(state);
+  return matches[matchId];
+}
+
 export function getSelectedIterationsArray(state) {
   const versionId = getSelectedVersionId(state);
   const iterationsMap = getIterations(state);
