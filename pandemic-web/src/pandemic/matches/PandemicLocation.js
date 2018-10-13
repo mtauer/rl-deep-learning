@@ -21,7 +21,7 @@ const Circle = styled.span`
 `;
 
 const PandemicLocation = ({ locationId, hideTooltip }) => {
-  if (!locationId) { return null; }
+  if (locationId === null || locationId === undefined) { return null; }
   const location = (
     <Container>
       <Circle color={getLocationColor(locationId)} />
