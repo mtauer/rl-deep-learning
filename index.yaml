@@ -1,5 +1,13 @@
 indexes:
 
+- kind: Iteration
+  properties:
+  - name: versionId
+  - name: createdAt
+- kind: Match
+  properties:
+  - name: iterationId
+  - name: createdAt
 - kind: TrainingEpisode
   properties:
   - name: version

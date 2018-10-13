@@ -31,7 +31,8 @@ export default class GoogleCloudStorage {
   async readVersions() {
     console.log('Loading versions from Datastore');
     return this.read(
-      this.datastore.createQuery(VERSION),
+      this.datastore.createQuery(VERSION)
+        .order('createdAt', { descending: false }),
     );
   }
 
@@ -49,7 +50,8 @@ export default class GoogleCloudStorage {
     console.log('Loading iterations from Datastore', versionId);
     return this.read(
       this.datastore.createQuery(ITERATION)
-        .filter('versionId', '=', versionId),
+        .filter('versionId', '=', versionId)
+        .order('createdAt', { descending: false }),
     );
   }
 
@@ -67,7 +69,8 @@ export default class GoogleCloudStorage {
     console.log('Read matches from Datastore', iterationId);
     return this.read(
       this.datastore.createQuery(MATCH)
-        .filter('iterationId', '=', iterationId),
+        .filter('iterationId', '=', iterationId)
+        .order('createdAt', { descending: false }),
     );
   }
 
