@@ -57,7 +57,7 @@ const gameConfig = {
     cardsNeeded: 4,
     researchCenterNeeded: true,
   },
-  description: 'Discover one cure with 4 cards in a research center. No diseases, no roles, no special cards.',
+  description: 'Discover 1 cure in a research center with 4 cards (of the same color). No diseases, no roles, no special cards.',
 };
 
 function getDescription() {
