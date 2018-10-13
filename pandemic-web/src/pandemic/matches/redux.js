@@ -3,7 +3,7 @@ import { ofType } from 'redux-observable';
 import values from 'lodash/values';
 
 import { getIterationsSuccessAction, getMatchesSuccessAction,
-  getMatchDetailsSuccessAction, getIterations, getMatches } from '../../data/redux';
+  getMatchDetailsSuccessAction, getVersions, getIterations, getMatches } from '../../data/redux';
 
 // Constants
 
@@ -124,6 +124,12 @@ export function getSelectedIterationId(state) {
 
 export function getSelectedMatchId(state) {
   return state.matches.selectedMatchId;
+}
+
+export function getSelectedVersion(state) {
+  const versionId = getSelectedVersionId(state);
+  const versions = getVersions(state);
+  return versions[versionId];
 }
 
 export function getSelectedIterationsArray(state) {
