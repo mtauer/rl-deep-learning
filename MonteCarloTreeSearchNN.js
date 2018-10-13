@@ -12,7 +12,7 @@ import isEqual from 'lodash/isEqual';
 import remove from 'lodash/remove';
 import some from 'lodash/some';
 
-import { sleep, randomChoice, forceGC, fromNNProbabilities } from './utils';
+import { sleep, randomChoice, forceGC, fromNetworkProbabilities } from './utils';
 import { DISCOVER_CURE } from './pandemic-web/src/pandemic-shared/game';
 
 const defaultConfig = {
@@ -142,10 +142,10 @@ export default class MonteCarloTreeSearchNN {
 
     const validActions = this.game.getValidActions(state);
     const actionNodes = stateNode.createAndAddActionNodes(validActions);
-    const probabilities = fromNNProbabilities(
+    const probabilities = fromNetworkProbabilities(
       this.game,
-      this.neuralNetwork.predictP(this.game.toNNState(state)),
       validActions,
+      this.neuralNetwork.predictP(this.game.toNNState(state)),
     );
     actionNodes.forEach((actionNode, i) => {
       actionNode.p = probabilities[i];
@@ -203,10 +203,10 @@ export default class MonteCarloTreeSearchNN {
 
   getPredictedPValues() {
     const validActions = this.game.getValidActions(this.root.state);
-    const probabilities = fromNNProbabilities(
+    const probabilities = fromNetworkProbabilities(
       this.game,
-      this.neuralNetwork.predictP(this.game.toNNState(this.root.state)),
       validActions,
+      this.neuralNetwork.predictP(this.game.toNNState(this.root.state)),
     );
     return probabilities;
   }

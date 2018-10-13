@@ -115,7 +115,9 @@ export default class Coach {
           const examples = steps.map((step) => {
             const s = game.toNNState(step.state);
             const pValues = toNetworkProbabilities(
-              game, step.pValues, game.getValidActions(step.state),
+              game,
+              game.getValidActions(step.state),
+              step.pValues,
             );
             return { s, pValues, vValue };
           });
