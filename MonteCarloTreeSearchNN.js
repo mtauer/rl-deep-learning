@@ -17,7 +17,7 @@ import { DISCOVER_CURE } from './pandemic-web/src/pandemic-shared/game';
 
 const defaultConfig = {
   playingSimulations: 400,
-  trainingSimulations: 800,
+  trainingSimulationsPerAction: 80,
   cPuct: 1,
   cUcb1: Math.sqrt(2),
   temperature: 1,
@@ -42,8 +42,9 @@ export default class MonteCarloTreeSearchNN {
 
   async getActionProbabilities(step = 0, isTraining = true) {
     this.simulationsEnded = 0;
+    const validActions = this.game.getValidActions(this.root.state);
     const simulations = isTraining
-      ? this.config.trainingSimulations
+      ? this.config.trainingSimulationsPerAction * validActions.length
       : this.config.playingSimulations;
     for (let i = 0; i < simulations; i += 1) {
       this.runSimulation();
@@ -62,7 +63,6 @@ export default class MonteCarloTreeSearchNN {
     const tempNSum = sum(tempNValues);
     const tempProbabilities = tempNValues.map(v => v / tempNSum);
     const nextActionIndex = randomChoice(tempProbabilities);
-    const validActions = this.game.getValidActions(this.root.state);
     if (!validActions[nextActionIndex]) {
       console.log('Error: Could not choose action 1', tempProbabilities, nextActionIndex);
     }
