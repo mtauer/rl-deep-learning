@@ -1,8 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { compose } from 'redux';
 import { connect } from 'react-redux';
-import { withStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
@@ -17,9 +15,6 @@ import PandemicAction from './PandemicAction';
 import PandemicCards from './PandemicCards';
 import PandemicLocation from './PandemicLocation';
 
-const Container = styled.div`
-  border-top: 2px solid #e0e0e0;
-`;
 const SmallLabel = styled.span`
   color: rgba(0, 0, 0, 0.54);
   display: block;
@@ -27,42 +22,30 @@ const SmallLabel = styled.span`
   font-weight: 500;
 `;
 
-const styles = () => ({
-  headRow: {
-    backgroundColor: '#F7F7F7',
-    height: 32,
-  },
-  bodyRow: {
-    height: 40,
-  },
-});
-
-const MatchActions = ({ actions, states, classes }) => {
+const MatchActions = ({ actions, states }) => {
   return (
     <PageSection>
-      <Container>
-        <Table>
-          <TableHead>
-            <TableRow className={classes.headRow}>
-              <TableCell style={{ width: 40 }}>#</TableCell>
-              <TableCell style={{ width: 80 }}>Player</TableCell>
-              <TableCell style={{ width: 80 }}>Position</TableCell>
-              <TableCell style={{ width: 160 }}>Action</TableCell>
-              <TableCell>Cards</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {actions.map((a, i) => renderActionRow(a, i))}
-          </TableBody>
-        </Table>
-      </Container>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell style={{ width: 40 }}>#</TableCell>
+            <TableCell style={{ width: 80 }}>Player</TableCell>
+            <TableCell style={{ width: 80 }}>Position</TableCell>
+            <TableCell style={{ width: 160 }}>Action</TableCell>
+            <TableCell>Cards</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {actions.map((a, i) => renderActionRow(a, i))}
+        </TableBody>
+      </Table>
     </PageSection>
   );
 
   function renderActionRow(action, index) {
     const { playerPosition } = states[index];
     return (
-      <TableRow key={`action-${index}`} className={classes.bodyRow}>
+      <TableRow key={`action-${index}`}>
         <TableCell>
           <SmallLabel>{index + 1}</SmallLabel>
         </TableCell>
@@ -91,7 +74,6 @@ MatchActions.propTypes = {
   actions: PropTypes.array.isRequired,
   // eslint-disable-next-line react/forbid-prop-types
   states: PropTypes.array.isRequired,
-  classes: PropTypes.shape().isRequired,
 };
 
 const mapStateToProps = (state) => {
@@ -104,7 +86,4 @@ const mapStateToProps = (state) => {
     states,
   };
 };
-export default compose(
-  withStyles(styles),
-  connect(mapStateToProps),
-)(MatchActions);
+export default connect(mapStateToProps)(MatchActions);

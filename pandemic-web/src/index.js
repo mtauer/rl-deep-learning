@@ -28,6 +28,20 @@ const theme = createMuiTheme({
         paddingTop: '4px',
       },
     },
+    MuiTableRow: {
+      root: {
+        height: 40,
+      },
+      head: {
+        backgroundColor: '#F7F7F7',
+        height: 32,
+      },
+    },
+    MuiTableCell: {
+      head: {
+        borderTop: '2px solid #e0e0e0',
+      },
+    },
   },
 });
 
