@@ -23,9 +23,9 @@ const theme = createMuiTheme({
     },
     MuiMenuItem: {
       root: {
-        fontSize: '14px',
-        paddingBottom: '4px',
-        paddingTop: '4px',
+        fontSize: '12px',
+        paddingBottom: '2px',
+        paddingTop: '2px',
       },
     },
     MuiTableRow: {
@@ -38,6 +38,10 @@ const theme = createMuiTheme({
       },
     },
     MuiTableCell: {
+      root: {
+        paddingLeft: 16,
+        paddingRight: 16,
+      },
       head: {
         borderTop: '2px solid #e0e0e0',
       },
