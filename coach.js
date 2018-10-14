@@ -64,9 +64,8 @@ export default class Coach {
     const iterationId = `${version}-${iterationIndex}`;
     let matches = await this.trainingEpisodesStorage.readMatches(iterationId);
     const mcts = new MonteCarloTreeSearchNN(this.config.mcts, game, this.neuralNetwork, monitor);
-    for (let j = matches.length; j < this.config.trainingEpisodes; j += 1) {
+    while (matches.length < this.config.trainingEpisodes) {
       mcts.reset();
-      console.log('Training Episode', j);
       console.log('Heap used (in MB)', (process.memoryUsage().heapUsed / 1000000).toFixed(3));
       console.log('Stats', getIterationSummary(matches));
       // eslint-disable-next-line no-await-in-loop
