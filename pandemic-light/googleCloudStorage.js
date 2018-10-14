@@ -89,14 +89,52 @@ export default class GoogleCloudStorage {
     return this.read(
       this.datastore.createQuery(MATCH_DETAILS)
         .filter('matchId', '=', matchId),
-    ).then(result => result[0]);
+    )
+      .then(result => result[0])
+      .then((matchDetails) => {
+        // Workaroud for the Google Datastore API to store large arrays
+        // and to exclude the properties from indexing.
+        const {
+          actions,
+          states,
+          simulations,
+          networkPOutputs,
+          ...otherMatchDetails
+        } = matchDetails;
+        return {
+          actions: actions ? JSON.parse(actions) : [],
+          states: states ? JSON.parse(states) : [],
+          simulations: simulations ? JSON.parse(simulations) : [],
+          networkPOutputs: networkPOutputs ? JSON.parse(networkPOutputs) : [],
+          ...otherMatchDetails,
+        };
+      });
   }
 
   async writeMatchDetails(versionId, iterationId, matchId, matchDetails) {
     console.log('Write match details to Datastore', matchId);
+    const {
+      actions,
+      states,
+      simulations,
+      networkPOutputs,
+      ...otherMatchDetails
+    } = matchDetails;
     return this.write(
       this.datastore.key([MATCH_DETAILS, matchId]),
-      { versionId, iterationId, matchId, ...matchDetails },
+      {
+        versionId,
+        iterationId,
+        matchId,
+        // Workaroud for the Google Datastore API to store large arrays
+        // and to exclude the properties from indexing.
+        actions: JSON.stringify(actions),
+        states: JSON.stringify(states),
+        simulations: JSON.stringify(simulations),
+        networkPOutputs: JSON.stringify(networkPOutputs),
+        ...otherMatchDetails,
+      },
+      ['actions', 'states', 'simulations', 'networkPOutputs'],
     );
   }
 
@@ -107,7 +145,7 @@ export default class GoogleCloudStorage {
     );
   }
 
-  async write(key, data) {
+  async write(key, data, excludeFromIndexes = []) {
     return retry(
       10,
       () => this.datastore.save({
@@ -116,6 +154,7 @@ export default class GoogleCloudStorage {
           ...data,
           createdAt: new Date().toISOString(),
         },
+        excludeFromIndexes,
       }),
     );
   }
