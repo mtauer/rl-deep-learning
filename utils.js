@@ -4,15 +4,18 @@ import isArray from 'lodash/isArray';
 import flatten from 'lodash/flatten';
 import sum from 'lodash/sum';
 import mean from 'lodash/mean';
+import range from 'lodash/range';
+import sample from 'lodash/sample';
 
 import { allActions } from './pandemic-web/src/pandemic-shared/game';
 
 export function randomChoice(p) {
   let random = Math.random();
-  return p.findIndex((a) => {
+  const res = p.findIndex((a) => {
     random -= a;
     return random < 0;
   });
+  return res >= 0 ? res : sample(range(p.length));
 }
 
 export function sleep(timeInMs) {
@@ -118,7 +121,7 @@ export function fromNetworkProbabilities(game, actions, networkProbabilities) {
     }
   });
   const pValuesSum = sum(pValues);
-  return pValues.map(v => v / pValuesSum);
+  return pValues.map(v => (pValuesSum > 0 ? v / pValuesSum : v));
 
   function fromBufferByType(buffer, indices, offset) {
     const values = indices.map(index => buffer[offset + index]);

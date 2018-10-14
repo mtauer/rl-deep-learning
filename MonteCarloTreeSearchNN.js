@@ -63,6 +63,9 @@ export default class MonteCarloTreeSearchNN {
     const tempProbabilities = tempNValues.map(v => v / tempNSum);
     const nextActionIndex = randomChoice(tempProbabilities);
     const validActions = this.game.getValidActions(this.root.state);
+    if (!validActions[nextActionIndex]) {
+      console.log('Error: Could not choose action 1', tempProbabilities, nextActionIndex);
+    }
     const nextAction = validActions[nextActionIndex];
 
     if (some(validActions, a => a.type === DISCOVER_CURE) && nextAction.type !== DISCOVER_CURE) {
@@ -151,6 +154,9 @@ export default class MonteCarloTreeSearchNN {
       actionNode.p = probabilities[i];
     });
     const actionIndex = randomChoice(probabilities);
+    if (!validActions[actionIndex]) {
+      console.log('Error: Could not choose action 2', probabilities, actionIndex);
+    }
     const nextState = this.game.performAction(state, validActions[actionIndex]);
     const nextStateNode = actionNodes[actionIndex]
       .createAndAddStateNode(nextState, this.game.hasEnded(nextState));
