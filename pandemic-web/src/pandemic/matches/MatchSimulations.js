@@ -124,9 +124,9 @@ const MatchSimulations = ({ currentSimulation, nextAction, classes }) => {
         <TableCell>
           <PandemicCards
             cardIds={
-              validActions[index].card
-              || validActions[index].cards
-              || validActions[index].usedCards
+              validActions[index].card !== undefined
+                ? validActions[index].card
+                : validActions[index].cards || validActions[index].usedCards
             }
           />
         </TableCell>

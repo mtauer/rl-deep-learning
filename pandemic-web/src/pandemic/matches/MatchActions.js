@@ -62,7 +62,11 @@ const MatchActions = ({ actions, states }) => {
         </TableCell>
         <TableCell>
           <PandemicCards
-            cardIds={action.card || action.cards || action.usedCards}
+            cardIds={
+              action.card !== undefined
+                ? action.card
+                : action.cards || action.usedCards
+            }
           />
         </TableCell>
       </TableRow>
