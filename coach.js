@@ -155,15 +155,18 @@ export default class Coach {
     const actions = [];
     const states = [];
     const simulations = [];
+    const networkPOutputs = [];
     const bar = new ProgressBar('[:bar] :elapsed :ended', { total: 100, head: '>', incomplete: ' ' });
     // eslint-disable-next-line no-constant-condition
     while (true) {
       // eslint-disable-next-line no-await-in-loop
       const { state, nextAction, simulation, stats } = await mcts
         .getActionProbabilities(step, isTraining);
+      const networkPOutput = Array.from(mcts.neuralNetwork.predictP(game.toNNState(state)));
       actions.push(nextAction);
       states.push(state);
       simulations.push(simulation);
+      networkPOutputs.push(networkPOutput);
       bar.tick({ ended: stats.simulationsEnded });
       // Perform action and get new state
       const nextState = game.performAction(mcts.root.state, nextAction);
@@ -188,6 +191,7 @@ export default class Coach {
             actions,
             states,
             simulations,
+            networkPOutputs,
             time: Date.now() - startTime,
           },
           steps: [],
