@@ -6,6 +6,7 @@ import sum from 'lodash/sum';
 import mean from 'lodash/mean';
 import range from 'lodash/range';
 import sample from 'lodash/sample';
+import max from 'lodash/max';
 
 import { allActions } from './pandemic-web/src/pandemic-shared/game';
 
@@ -61,7 +62,11 @@ export function manyToValue(indexOrIndices, value, length) {
 
 // TODO move to game class
 export function toNetworkProbabilities(game, actions, actionProbabilities) {
-  const actionsWithP = actions.map((a, i) => ({ ...a, p: actionProbabilities[i] }));
+  const maxActionProbability = max(actionProbabilities) > 0 ? max(actionProbabilities) : 1;
+  const actionsWithP = actions.map((a, i) => ({
+    ...a,
+    p: actionProbabilities[i] / maxActionProbability,
+  }));
   const result = [];
   result.push(toBufferByType(actionsWithP, allActions.DO_NOTHING, () => 0, 1));
   result.push(toBufferByType(actionsWithP, allActions.DRIVE_FERRY, a => a.to, 48));
