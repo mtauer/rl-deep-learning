@@ -15,6 +15,7 @@ import StateSummary from './StateSummary';
 import MatchActions from './MatchActions';
 import VersionInfo from './VersionInfo';
 import MatchInfo from './MatchInfo';
+import MatchNetworkPOutputs from './MatchNetworkPOutputs';
 
 const MatchesPage = ({
   path,
@@ -87,6 +88,7 @@ const MatchesPage = ({
         <SectionTitle>Simulations</SectionTitle>
         <StepNavigation />
         <MatchSimulations />
+        <MatchNetworkPOutputs />
       </Fragment>
     );
   }

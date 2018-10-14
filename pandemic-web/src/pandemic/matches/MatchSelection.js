@@ -69,7 +69,9 @@ const MatchSelection = ({
             inputProps={{ id: 'match' }}
           >
             {matches.map(m => (
-              <MenuItem key={m.matchId} value={m.matchId}>{`Match ${m.matchId.split('-')[0]} – ${m.resultValue.toFixed(3)}`}</MenuItem>
+              <MenuItem key={m.matchId} value={m.matchId}>
+                {`Match ${m.matchId.split('-')[0]} – ${m.resultValue > 0 ? m.resultValue.toFixed(3) : 'lost'}`}
+              </MenuItem>
             ))}
           </Select>
         </FormControl>
