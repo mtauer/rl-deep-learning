@@ -40,7 +40,7 @@ export default class PandemicNeuronalNetwork {
           tf.layers.dense({ units: HIDDEN_LAYER_UNITS, inputShape: [INPUT_UNITS], activation: 'relu' }),
           tf.layers.dense({ units: HIDDEN_LAYER_UNITS, activation: 'relu' }),
           tf.layers.dense({ units: HIDDEN_LAYER_UNITS, activation: 'relu' }),
-          tf.layers.dense({ units: P_OUTPUT_UNITS, activation: 'softmax' }),
+          tf.layers.dense({ units: P_OUTPUT_UNITS, activation: 'relu' }),
         ],
       });
     }
