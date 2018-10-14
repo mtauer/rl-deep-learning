@@ -35,11 +35,12 @@ export default class Coach {
   async summarizeIteration(monitor, iterationIndex, version) {
     const trainingEpisodes = await this.trainingEpisodesStorage
       .readTrainingEpisodes(iterationIndex, version);
+    const name = `Iteration ${iterationIndex}`;
     const iteration = getIterationSummary(trainingEpisodes);
     const versionId = version;
     const iterationId = `${version}-${iterationIndex}`;
     await this.trainingEpisodesStorage
-      .writeIteration(versionId, iterationId, iteration);
+      .writeIteration(versionId, iterationId, { ...iteration, name });
   }
 
   async play(monitor) {
