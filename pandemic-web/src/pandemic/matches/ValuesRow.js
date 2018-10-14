@@ -19,17 +19,21 @@ const ValueCell = styled.span`
   width: 8px;
 `;
 
-const ValuesRow = ({ values }) => (
+const ValuesRow = ({ values, maxValue }) => (
   <Container>
     {values.map((v, i) => (
       // eslint-disable-next-line react/no-array-index-key
-      <ValueCell key={`value-${i}`} style={{ backgroundColor: valueColor(v) }} />
+      <ValueCell key={`value-${i}`} style={{ backgroundColor: valueColor(v / maxValue) }} />
     ))}
   </Container>
 );
 ValuesRow.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   values: PropTypes.array.isRequired,
+  maxValue: PropTypes.number,
+};
+ValuesRow.defaultProps = {
+  maxValue: 1,
 };
 
 export default ValuesRow;
