@@ -9,8 +9,7 @@ import uuidv4 from 'uuid/v4';
 import game from './pandemic-web/src/pandemic-shared/game';
 import PandemicNeuronalNetwork from './pandemic-light/neuralNetwork';
 import MonteCarloTreeSearchNN from './MonteCarloTreeSearchNN';
-import { getTrainingEpisodesStats, getIterationSummary, savePlayingStats,
-  loadPlayingStats } from './pandemic-light/stats';
+import { getIterationSummary, savePlayingStats, loadPlayingStats } from './pandemic-light/stats';
 import { getTestExamples } from './pandemic-light/testData';
 import { toNetworkProbabilities } from './utils';
 
@@ -33,12 +32,11 @@ export default class Coach {
   }
 
   async summarizeIteration(monitor, iterationIndex, version) {
-    const trainingEpisodes = await this.trainingEpisodesStorage
-      .readTrainingEpisodes(iterationIndex, version);
-    const name = `Iteration ${iterationIndex}`;
-    const iteration = getIterationSummary(trainingEpisodes);
     const versionId = version;
     const iterationId = `${version}-${iterationIndex}`;
+    const matches = await this.trainingEpisodesStorage.readMatches(iterationId);
+    const iteration = getIterationSummary(matches);
+    const name = `Iteration ${iterationIndex}`;
     await this.trainingEpisodesStorage
       .writeIteration(versionId, iterationId, { ...iteration, name });
   }
@@ -63,18 +61,17 @@ export default class Coach {
   async generateTrainingData(monitor, iterationIndex, version) {
     this.neuralNetwork = this.neuralNetwork
       || await this.getNeuralNetwork(iterationIndex, version);
-    const trainingEpisodes = await this.trainingEpisodesStorage
-      .readTrainingEpisodes(iterationIndex, version);
+    const iterationId = `${version}-${iterationIndex}`;
+    let matches = await this.trainingEpisodesStorage.readMatches(iterationId);
     const mcts = new MonteCarloTreeSearchNN(this.config.mcts, game, this.neuralNetwork, monitor);
-    for (let j = trainingEpisodes.length; j < this.config.trainingEpisodes; j += 1) {
+    for (let j = matches.length; j < this.config.trainingEpisodes; j += 1) {
       mcts.reset();
       console.log('Training Episode', j);
       console.log('Heap used (in MB)', (process.memoryUsage().heapUsed / 1000000).toFixed(3));
-      console.log('Stats', getTrainingEpisodesStats(trainingEpisodes));
+      console.log('Stats', getIterationSummary(matches));
       // eslint-disable-next-line no-await-in-loop
       const episodeResults = await this.executeEpisode(mcts);
       const versionId = version;
-      const iterationId = `${version}-${iterationIndex}`;
       const matchId = uuidv4();
       const name = `Match ${matchId.split('-')[0]}`;
       // eslint-disable-next-line no-await-in-loop
@@ -99,9 +96,11 @@ export default class Coach {
             name,
           },
         );
+      // eslint-disable-next-line no-await-in-loop
+      matches = await this.trainingEpisodesStorage.readMatches(iterationId);
     }
     console.log('Training finished');
-    console.log('Stats', getTrainingEpisodesStats(trainingEpisodes));
+    console.log('Stats', getIterationSummary(matches));
   }
 
   async train(monitor, iteration, version) {

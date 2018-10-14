@@ -45,10 +45,14 @@ export function getEpisodeStats(episodeResults) {
   };
 }
 
-export function getIterationSummary(trainingEpisodes) {
-  const trainingEpisodesStats = getTrainingEpisodesStats(trainingEpisodes);
+export function getIterationSummary(matches) {
+  const episodesCount = matches.length;
+  const episodesWon = matches.filter(m => m.won).length;
   return {
-    ...trainingEpisodesStats,
+    episodesCount,
+    episodesWon,
+    episodesLost: episodesCount - episodesWon,
+    winRate: episodesWon / episodesCount,
   };
 }
 
