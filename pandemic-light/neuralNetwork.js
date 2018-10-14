@@ -2,8 +2,6 @@ import * as tf from '@tensorflow/tfjs';
 import '@tensorflow/tfjs-node';
 import defaultsDeep from 'lodash/defaultsDeep';
 
-import packageJson from '../package.json';
-
 const defaultConfig = {
   modelPath: 'pandemic-light/nn-models/',
   trainingEpochs: 20,
@@ -17,63 +15,63 @@ const V_OUTPUT_UNITS = 1;
 export default class PandemicNeuronalNetwork {
   constructor(config = {}) {
     this.config = defaultsDeep(config, defaultConfig);
-    this.description = 'Uses 2 separate models (for p and v) and for each model 3 fully connected hidden layers (with 400 neurons each). Input: a single state. Output for p: probabilities of action parameters.';
+    this.description = 'Uses 2 separate models (for p and v) and for each model 2 fully connected hidden layers (with 400 neurons each). Input: a single state. Output for p: probabilities of action parameters.';
   }
 
   getDescription() {
     return this.description;
   }
 
-  // Deprecated
-  // TODO: delete this method
-  async init() {
-    try {
-      const pModelPath = `file://${this.config.modelPath}pModel-${packageJson.version}-rules-0/model.json`;
-      // eslint-disable-next-line no-console
-      console.log(`-> Loading p model from path "${pModelPath}"`);
-      this.pModel = await tf.loadModel(pModelPath);
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error('Could not load model. It will be created from scratch.');
-      this.pModel = tf.sequential({
-        layers: [
-          tf.layers.dense({ units: HIDDEN_LAYER_UNITS, inputShape: [INPUT_UNITS], activation: 'relu' }),
-          tf.layers.dense({ units: HIDDEN_LAYER_UNITS, activation: 'relu' }),
-          tf.layers.dense({ units: HIDDEN_LAYER_UNITS, activation: 'relu' }),
-          tf.layers.dense({ units: P_OUTPUT_UNITS, activation: 'relu' }),
-        ],
-      });
-    }
-    this.pModel.compile({
-      optimizer: 'adam',
-      loss: 'categoricalCrossentropy',
-      metrics: ['accuracy'],
-    });
-    this.pModel.summary();
-    try {
-      const vModelPath = `file://${this.config.modelPath}vModel-${packageJson.version}-rules-0/model.json`;
-      // eslint-disable-next-line no-console
-      console.log(`-> Loading v model from path "${vModelPath}"`);
-      this.vModel = await tf.loadModel(vModelPath);
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error('Could not load model. It will be created from scratch.');
-      this.vModel = tf.sequential({
-        layers: [
-          tf.layers.dense({ units: HIDDEN_LAYER_UNITS, inputShape: [INPUT_UNITS], activation: 'relu' }),
-          tf.layers.dense({ units: HIDDEN_LAYER_UNITS, activation: 'relu' }),
-          tf.layers.dense({ units: HIDDEN_LAYER_UNITS, activation: 'relu' }),
-          tf.layers.dense({ units: V_OUTPUT_UNITS, activation: 'tanh' }),
-        ],
-      });
-    }
-    this.vModel.compile({
-      optimizer: 'sgd',
-      loss: 'meanSquaredError',
-      metrics: ['accuracy'],
-    });
-    this.vModel.summary();
-  }
+  // // Deprecated
+  // // TODO: delete this method
+  // async init() {
+  //   try {
+  //     const pModelPath = `file://${this.config.modelPath}pModel-${packageJson.version}-rules-0/model.json`;
+  //     // eslint-disable-next-line no-console
+  //     console.log(`-> Loading p model from path "${pModelPath}"`);
+  //     this.pModel = await tf.loadModel(pModelPath);
+  //   } catch (e) {
+  //     // eslint-disable-next-line no-console
+  //     console.error('Could not load model. It will be created from scratch.');
+  //     this.pModel = tf.sequential({
+  //       layers: [
+  //         tf.layers.dense(
+  //           { units: HIDDEN_LAYER_UNITS, inputShape: [INPUT_UNITS], activation: 'relu' }),
+  //         tf.layers.dense({ units: HIDDEN_LAYER_UNITS, activation: 'relu' }),
+  //         tf.layers.dense({ units: P_OUTPUT_UNITS, activation: 'relu' }),
+  //       ],
+  //     });
+  //   }
+  //   this.pModel.compile({
+  //     optimizer: 'adam',
+  //     loss: 'meanSquaredError',
+  //     metrics: ['accuracy'],
+  //   });
+  //   this.pModel.summary();
+  //   try {
+  //     const vModelPath = `file://${this.config.modelPath}vModel-${packageJson.version}-rules-0/model.json`;
+  //     // eslint-disable-next-line no-console
+  //     console.log(`-> Loading v model from path "${vModelPath}"`);
+  //     this.vModel = await tf.loadModel(vModelPath);
+  //   } catch (e) {
+  //     // eslint-disable-next-line no-console
+  //     console.error('Could not load model. It will be created from scratch.');
+  //     this.vModel = tf.sequential({
+  //       layers: [
+  //         tf.layers.dense(
+  //          { units: HIDDEN_LAYER_UNITS, inputShape: [INPUT_UNITS], activation: 'relu' }),
+  //         tf.layers.dense({ units: HIDDEN_LAYER_UNITS, activation: 'relu' }),
+  //         tf.layers.dense({ units: V_OUTPUT_UNITS, activation: 'tanh' }),
+  //       ],
+  //     });
+  //   }
+  //   this.vModel.compile({
+  //     optimizer: 'sgd',
+  //     loss: 'meanSquaredError',
+  //     metrics: ['accuracy'],
+  //   });
+  //   this.vModel.summary();
+  // }
 
   predictP(s) {
     return tf.tidy(() => {
@@ -133,14 +131,12 @@ export default class PandemicNeuronalNetwork {
       layers: [
         tf.layers.dense({ units: HIDDEN_LAYER_UNITS, activation: 'relu', inputShape: [INPUT_UNITS] }),
         tf.layers.dense({ units: HIDDEN_LAYER_UNITS, activation: 'relu' }),
-        tf.layers.dense({ units: HIDDEN_LAYER_UNITS, activation: 'relu' }),
-        tf.layers.dense({ units: P_OUTPUT_UNITS, activation: 'softmax' }),
+        tf.layers.dense({ units: P_OUTPUT_UNITS, activation: 'relu' }),
       ],
     });
     this.vModel = tf.sequential({
       layers: [
         tf.layers.dense({ units: HIDDEN_LAYER_UNITS, activation: 'relu', inputShape: [INPUT_UNITS] }),
-        tf.layers.dense({ units: HIDDEN_LAYER_UNITS, activation: 'relu' }),
         tf.layers.dense({ units: HIDDEN_LAYER_UNITS, activation: 'relu' }),
         tf.layers.dense({ units: V_OUTPUT_UNITS, activation: 'tanh' }),
       ],
