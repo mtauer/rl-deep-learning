@@ -8,6 +8,15 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableBody from '@material-ui/core/TableBody';
+import Block from '@material-ui/icons/Block';
+import Commute from '@material-ui/icons/Commute';
+import FlightLand from '@material-ui/icons/FlightLand';
+import FlightTakeoff from '@material-ui/icons/FlightTakeoff';
+import Flight from '@material-ui/icons/Flight';
+import Home from '@material-ui/icons/Home';
+import Delete from '@material-ui/icons/Delete';
+import People from '@material-ui/icons/People';
+import Opacity from '@material-ui/icons/Opacity';
 
 import { getMatches } from '../../data/redux';
 import { getCurrentStep, getSelectedMatchId } from './redux';
@@ -22,6 +31,18 @@ const Label = styled.div`
   margin: 0;
   padding: 0 0 12px 0;
 `;
+const ActionType = styled.div`
+  align-items: center;
+  display: flex;
+`;
+const Icon = styled.span`
+  display: block;
+  height: 24px;
+  margin: 0 8px 0 0;
+`;
+const Type = styled.span`
+  display: block;
+`;
 
 const MatchNetworkPOutputs = ({ currentNetworkPOutput }) => {
   const maxValue = currentNetworkPOutput ? max(currentNetworkPOutput) : 1;
@@ -31,29 +52,34 @@ const MatchNetworkPOutputs = ({ currentNetworkPOutput }) => {
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell style={{ width: 220 }}>Action type</TableCell>
+            <TableCell style={{ width: 250 }}>Action type</TableCell>
             <TableCell>Action parameter probabilities</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {renderValuesRow('Do nothing', 0, 1)}
-          {renderValuesRow('Drive/ferry', 1, 49)}
-          {renderValuesRow('Direct flight', 49, 97)}
-          {renderValuesRow('Charter flight', 97, 145)}
-          {renderValuesRow('Shuttle flight', 145, 193)}
-          {renderValuesRow('Build research center', 193, 241)}
-          {renderValuesRow('Discard card', 241, 289)}
-          {renderValuesRow('Share knowledge', 289, 337)}
-          {renderValuesRow('Discover cure', 337, 385)}
+          {renderValuesRow(<Icon><Block /></Icon>, 'Do nothing', 0, 1)}
+          {renderValuesRow(<Icon><Commute /></Icon>, 'Drive/ferry', 1, 49)}
+          {renderValuesRow(<Icon><FlightLand /></Icon>, 'Direct flight', 49, 97)}
+          {renderValuesRow(<Icon><FlightTakeoff /></Icon>, 'Charter flight', 97, 145)}
+          {renderValuesRow(<Icon><Flight /></Icon>, 'Shuttle flight', 145, 193)}
+          {renderValuesRow(<Icon><Home /></Icon>, 'Build research center', 193, 241)}
+          {renderValuesRow(<Icon><Delete /></Icon>, 'Discard card', 241, 289)}
+          {renderValuesRow(<Icon><People /></Icon>, 'Share knowledge', 289, 337)}
+          {renderValuesRow(<Icon><Opacity /></Icon>, 'Discover cure', 337, 385)}
         </TableBody>
       </Table>
     </PageSection>
   );
 
-  function renderValuesRow(label, offsetFrom, offsetTo) {
+  function renderValuesRow(icon, label, offsetFrom, offsetTo) {
     return (
       <TableRow key={`values-row-${offsetFrom}`}>
-        <TableCell>{label}</TableCell>
+        <TableCell>
+          <ActionType>
+            {icon}
+            <Type>{label}</Type>
+          </ActionType>
+        </TableCell>
         <TableCell padding="none">
           <ValuesRow
             values={currentNetworkPOutput ? currentNetworkPOutput.slice(offsetFrom, offsetTo) : []}
