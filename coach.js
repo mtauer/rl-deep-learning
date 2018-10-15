@@ -2,8 +2,6 @@
 import ProgressBar from 'progress';
 import shuffle from 'lodash/shuffle';
 import flatten from 'lodash/flatten';
-import every from 'lodash/every';
-import isFinite from 'lodash/isFinite';
 import uuidv4 from 'uuid/v4';
 
 import game from './pandemic-web/src/pandemic-shared/game';
@@ -102,40 +100,37 @@ export default class Coach {
     console.log('Stats', getIterationSummary(matches));
   }
 
-  async train(monitor, iteration, version) {
-    this.neuralNetwork = this.neuralNetwork || await this.getNeuralNetwork(iteration, version);
+  async train(monitor, iterationIndex, version) {
+    this.neuralNetwork = this.neuralNetwork || await this.getNeuralNetwork(iterationIndex, version);
     console.log('Preparing training data');
-    const trainingEpisodes = await this.trainingEpisodesStorage
-      .readLastTrainingEpisodes(this.config.trainWithLatest, version);
-    const allTrainingExamples = shuffle(
-      flatten(
-        trainingEpisodes.map((trainingEpisode) => {
-          const { steps, vValue } = trainingEpisode.episodeResults;
-          const examples = steps.map((step) => {
-            const s = game.toNNState(step.state);
-            const pValues = toNetworkProbabilities(
-              game,
-              game.getValidActions(step.state),
-              step.pValues,
-            );
-            return { s, pValues, vValue };
-          });
-          return examples;
-        }),
-      ),
-    );
-    const trainingExamples = allTrainingExamples
-      .filter((example) => {
-        const validPValues = every(example.pValues, p => isFinite(p));
-        if (!validPValues) {
-          console.log('Invalid example detected');
-        }
-        return validPValues;
-      });
+    const matches = await this.trainingEpisodesStorage
+      .readLastMatches(version, this.config.trainWithLatest);
+    const allMatchDetails = await this.trainingEpisodesStorage
+      .readLastMatchDetails(version, this.config.trainWithLatest);
+    // console.log('matchDetails', matchDetails.length, matches.length);
+    const trainingExamples = shuffle(flatten(
+      allMatchDetails.map((matchDetails, i) => {
+        const { states, simulations } = matchDetails;
+        const vValue = matches[i].resultValue;
+        return states.map((state, j) => {
+          const s = game.toNNState(state);
+          const pValues = toNetworkProbabilities(
+            game,
+            game.getValidActions(state),
+            simulations[j].p2,
+          );
+          return {
+            s,
+            pValues,
+            vValue,
+          };
+        });
+      }),
+    ));
     console.log('Training examples', trainingExamples.length);
     await this.neuralNetwork.train(trainingExamples);
     console.log('Training complete');
-    this.modelStorage.writeModel(this.neuralNetwork, iteration + 1, version);
+    this.modelStorage.writeModel(this.neuralNetwork, iterationIndex + 1, version);
   }
 
   async evaluate() {

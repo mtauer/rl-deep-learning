@@ -74,6 +74,16 @@ export default class GoogleCloudStorage {
     );
   }
 
+  async readLastMatches(versionId, limit) {
+    console.log('Read last matches from Datastore', versionId, limit);
+    return this.read(
+      this.datastore.createQuery(MATCH)
+        .filter('versionId', '=', versionId)
+        .order('createdAt', { descending: true })
+        .limit(limit),
+    );
+  }
+
   async writeMatch(versionId, iterationId, matchId, match) {
     console.log('Write match to Datastore', matchId);
     return this.write(
@@ -109,6 +119,34 @@ export default class GoogleCloudStorage {
           ...otherMatchDetails,
         };
       });
+  }
+
+  async readLastMatchDetails(versionId, limit) {
+    console.log('Read last match details from Datastore', versionId, limit);
+    return this.read(
+      this.datastore.createQuery(MATCH_DETAILS)
+        .filter('versionId', '=', versionId)
+        .order('createdAt', { descending: true })
+        .limit(limit),
+    )
+      .then(matchDetailsArray => matchDetailsArray.map((matchDetails) => {
+        // Workaroud for the Google Datastore API to store large arrays
+        // and to exclude the properties from indexing.
+        const {
+          actions,
+          states,
+          simulations,
+          networkPOutputs,
+          ...otherMatchDetails
+        } = matchDetails;
+        return {
+          actions: actions ? JSON.parse(actions) : [],
+          states: states ? JSON.parse(states) : [],
+          simulations: simulations ? JSON.parse(simulations) : [],
+          networkPOutputs: networkPOutputs ? JSON.parse(networkPOutputs) : [],
+          ...otherMatchDetails,
+        };
+      }));
   }
 
   async writeMatchDetails(versionId, iterationId, matchId, matchDetails) {

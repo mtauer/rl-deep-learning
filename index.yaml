@@ -8,6 +8,16 @@ indexes:
   properties:
   - name: iterationId
   - name: createdAt
+- kind: Match
+  properties:
+  - name: versionId
+  - name: createdAt
+    direction: desc
+- kind: MatchDetails
+  properties:
+  - name: versionId
+  - name: createdAt
+    direction: desc
 - kind: TrainingEpisode
   properties:
   - name: version

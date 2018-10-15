@@ -19,7 +19,7 @@ const config = {
   },
   neuralNetwork: {
     modelPath: 'pandemic-light/nn-models/',
-    trainingEpochs: 12,
+    trainingEpochs: 16,
   },
 };
 const coach = new Coach(config, googleCloudStorage, googleCloudStorage);
