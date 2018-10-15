@@ -94,6 +94,17 @@ export default class Coach {
           },
         );
       // eslint-disable-next-line no-await-in-loop
+      await this.trainingEpisodesStorage
+        .writeMatchSteps(
+          versionId,
+          iterationId,
+          matchId,
+          {
+            ...episodeResults.matchSteps,
+            name,
+          },
+        );
+      // eslint-disable-next-line no-await-in-loop
       matches = await this.trainingEpisodesStorage.readMatches(iterationId);
     }
     console.log('Training finished');
@@ -175,6 +186,13 @@ export default class Coach {
 
       if (game.hasEnded(mcts.root.state)) {
         const resultValue = game.getValue(mcts.root.state);
+        const steps = states.map((s, i) => {
+          const { p2 } = simulations[i];
+          return {
+            state: s,
+            p2,
+          };
+        });
         return {
           match: {
             resultValue,
@@ -187,7 +205,10 @@ export default class Coach {
             networkPOutputs,
             time: Date.now() - startTime,
           },
-          steps: [],
+          matchSteps: {
+            resultValue,
+            steps,
+          },
         };
       }
       step += 1;

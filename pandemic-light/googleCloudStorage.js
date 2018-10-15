@@ -13,6 +13,7 @@ const VERSION = 'Version';
 const ITERATION = 'Iteration';
 const MATCH = 'Match';
 const MATCH_DETAILS = 'MatchDetails';
+const MATCH_STEPS = 'MatchSteps';
 
 const TRAINING_EPISODE = 'TrainingEpisode';
 const ITERATION_SUMMARY = 'IterationSummary';
@@ -173,6 +174,16 @@ export default class GoogleCloudStorage {
         ...otherMatchDetails,
       },
       ['actions', 'states', 'simulations', 'networkPOutputs'],
+    );
+  }
+
+  // Match steps
+
+  async writeMatchSteps(versionId, iterationId, matchId, matchSteps) {
+    console.log('Write match steps to Datastore', matchId);
+    return this.write(
+      this.datastore.key([MATCH_STEPS, matchId]),
+      { versionId, iterationId, matchId, ...matchSteps },
     );
   }
 
