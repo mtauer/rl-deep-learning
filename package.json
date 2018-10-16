@@ -8,6 +8,7 @@
     "deployApi": "gcloud app deploy",
     "start:inspect": "babel-node --expose-gc --inspect main.js",
     "migrate:models": "babel-node migrateModels.js",
+    "migrate:matchSteps": "babel-node migrateMatchSteps.js",
     "helloWorld": "babel-node helloWorld.js",
     "test": "jest",
     "summarizeVersion": "babel-node --expose-gc start summarizeVersion",
