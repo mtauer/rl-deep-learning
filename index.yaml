@@ -18,6 +18,11 @@ indexes:
   - name: versionId
   - name: createdAt
     direction: desc
+- kind: MatchSteps
+  properties:
+  - name: versionId
+  - name: createdAt
+    direction: desc
 - kind: TrainingEpisode
   properties:
   - name: version

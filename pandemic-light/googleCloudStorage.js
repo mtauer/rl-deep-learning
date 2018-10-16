@@ -179,6 +179,16 @@ export default class GoogleCloudStorage {
 
   // Match steps
 
+  async readLastMatchSteps(versionId, limit) {
+    console.log('Read last match steps from Datastore', versionId, limit);
+    return this.read(
+      this.datastore.createQuery(MATCH_STEPS)
+        .filter('versionId', '=', versionId)
+        .order('createdAt', { descending: true })
+        .limit(limit),
+    );
+  }
+
   async writeMatchSteps(versionId, iterationId, matchId, matchSteps) {
     console.log('Write match steps to Datastore', matchId);
     return this.write(
