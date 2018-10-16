@@ -114,21 +114,18 @@ export default class Coach {
   async train(monitor, iterationIndex, version) {
     this.neuralNetwork = this.neuralNetwork || await this.getNeuralNetwork(iterationIndex, version);
     console.log('Preparing training data');
-    const matches = await this.trainingEpisodesStorage
-      .readLastMatches(version, this.config.trainWithLatest);
-    const allMatchDetails = await this.trainingEpisodesStorage
-      .readLastMatchDetails(version, this.config.trainWithLatest);
-    // console.log('matchDetails', matchDetails.length, matches.length);
+    const allMatchSteps = await this.trainingEpisodesStorage
+      .readLastMatchSteps(version, this.config.trainWithLatest);
     const trainingExamples = shuffle(flatten(
-      allMatchDetails.map((matchDetails, i) => {
-        const { states, simulations } = matchDetails;
-        const vValue = matches[i].resultValue;
-        return states.map((state, j) => {
+      allMatchSteps.map((matchSteps) => {
+        const { steps, resultValue: vValue } = matchSteps;
+        return steps.map((step) => {
+          const { state, p2 } = step;
           const s = game.toNNState(state);
           const pValues = toNetworkProbabilities(
             game,
             game.getValidActions(state),
-            simulations[j].p2,
+            p2,
           );
           return {
             s,
@@ -155,7 +152,6 @@ export default class Coach {
   async executeEpisode(mcts, isTraining = true) {
     const startTime = Date.now();
     let step = 0;
-    // const steps = [];
     const actions = [];
     const states = [];
     const simulations = [];
