@@ -14,4 +14,4 @@ async function e6(version, iteration) {
   fs.writeFileSync(`pandemic-web/src/neuralNetwork/weights_${version}__${iteration}__layer_2.json`, JSON.stringify(weights));
 }
 
-e6('0.4.0', 1);
+e6('0.4.0', 8);
