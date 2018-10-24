@@ -1,4 +1,5 @@
 import GoogleCloudStorage from './pandemic-light/googleCloudStorage';
+import PandemicNeuronalNetwork from './pandemic-light/neuralNetwork';
 import Coach from './coach';
 import packageJson from './package.json';
 
@@ -53,6 +54,10 @@ function start() {
       train(actionArgs);
       break;
     }
+    case 'duplicateModel': {
+      duplicateModel(actionArgs);
+      break;
+    }
     default: {
       // eslint-disable-next-line no-console
       console.log('Action not supported', action);
@@ -98,6 +103,16 @@ async function train(actionArgs) {
   const version = actionArgs[0];
   const iteration = actionArgs[1] ? Number(actionArgs[1]) : 0;
   coach.train(undefined, iteration, version);
+}
+
+async function duplicateModel(actionArgs) {
+  const versionFrom = actionArgs[0];
+  const iterationFrom = actionArgs[1];
+  const versionTo = actionArgs[2];
+  const iterationTo = actionArgs[3];
+  const neuralNetwork = new PandemicNeuronalNetwork(config.neuralNetwork);
+  await googleCloudStorage.readModel(neuralNetwork, iterationFrom, versionFrom);
+  await googleCloudStorage.writeModel(neuralNetwork, iterationTo, versionTo);
 }
 
 start();

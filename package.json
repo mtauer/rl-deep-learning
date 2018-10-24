@@ -15,6 +15,7 @@
     "summarizeIteration": "babel-node --expose-gc start summarizeIteration",
     "showVersionSummary": "babel-node --expose-gc start showVersionSummary",
     "generateTrainingData": "babel-node --expose-gc start generateTrainingData",
+    "duplicateModel": "babel-node --expose-gc start duplicateModel",
     "train": "babel-node --max-old-space-size=8192 --expose-gc start train",
     "datastoreUpdateIndexes": "gcloud datastore create-indexes index.yaml",
     "docker:removeAllContainers": "docker stop $(docker ps -a -q) && docker rm $(docker ps -a -q)"
