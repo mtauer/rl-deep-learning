@@ -34,8 +34,8 @@ const LabeledValue = ({ label, value, direction, type }) => (
 LabeledValue.propTypes = {
   label: PropTypes.node,
   value: PropTypes.node,
-  direction: PropTypes.string,
-  type: PropTypes.string,
+  direction: PropTypes.oneOf(['row', 'column']),
+  type: PropTypes.oneOf(['primary', 'secondary']),
 };
 LabeledValue.defaultProps = {
   label: null,

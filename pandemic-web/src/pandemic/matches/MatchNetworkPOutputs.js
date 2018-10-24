@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import min from 'lodash/min';
 import max from 'lodash/max';
 import styled from 'styled-components';
 import Table from '@material-ui/core/Table';
@@ -21,6 +22,7 @@ import Opacity from '@material-ui/icons/Opacity';
 import { getMatches } from '../../data/redux';
 import { getCurrentStep, getSelectedMatchId } from './redux';
 import { PageSection } from '../../components/Page';
+import LabeledValue from '../../components/LabeledValue';
 import ValuesRow from './ValuesRow';
 
 const Label = styled.div`
@@ -43,8 +45,17 @@ const Icon = styled.span`
 const Type = styled.span`
   display: block;
 `;
+const ValuesContainer = styled.div`
+  display: flex;
+  margin: 16px 0 0 0;
+
+  & > * {
+    margin: 0 16px 0 0;
+  }
+`;
 
 const MatchNetworkPOutputs = ({ currentNetworkPOutput }) => {
+  const minValue = currentNetworkPOutput ? min(currentNetworkPOutput) : 0;
   const maxValue = currentNetworkPOutput ? max(currentNetworkPOutput) : 1;
   return (
     <PageSection>
@@ -68,6 +79,10 @@ const MatchNetworkPOutputs = ({ currentNetworkPOutput }) => {
           {renderValuesRow(<Icon><Opacity /></Icon>, 'Discover cure', 337, 385)}
         </TableBody>
       </Table>
+      <ValuesContainer>
+        <LabeledValue label="Min probability" value={minValue.toFixed(3)} type="secondary" />
+        <LabeledValue label="Max probability" value={maxValue.toFixed(3)} type="secondary" />
+      </ValuesContainer>
     </PageSection>
   );
 
