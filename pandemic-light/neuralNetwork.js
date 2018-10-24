@@ -131,7 +131,7 @@ export default class PandemicNeuronalNetwork {
       layers: [
         tf.layers.dense({ units: HIDDEN_LAYER_UNITS, activation: 'relu', inputShape: [INPUT_UNITS] }),
         tf.layers.dense({ units: HIDDEN_LAYER_UNITS, activation: 'relu' }),
-        tf.layers.dense({ units: P_OUTPUT_UNITS, activation: 'relu' }),
+        tf.layers.dense({ units: P_OUTPUT_UNITS, activation: 'sigmoid' }),
       ],
     });
     this.vModel = tf.sequential({
