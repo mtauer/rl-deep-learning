@@ -80,8 +80,8 @@ const MatchNetworkPOutputs = ({ currentNetworkPOutput }) => {
         </TableBody>
       </Table>
       <ValuesContainer>
-        <LabeledValue label="Min probability" value={minValue.toFixed(3)} type="secondary" />
-        <LabeledValue label="Max probability" value={maxValue.toFixed(3)} type="secondary" />
+        <LabeledValue label="Min p value" value={minValue.toFixed(3)} type="secondary" />
+        <LabeledValue label="Max p value" value={maxValue.toFixed(3)} type="secondary" />
       </ValuesContainer>
     </PageSection>
   );
