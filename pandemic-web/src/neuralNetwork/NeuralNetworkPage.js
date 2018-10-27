@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Container, Title } from '../components/Page';
 import WeightsChart from './WeightsChart';
-import weightsA from './weights_0.4.0__8__layer_0.json';
+import weightsA from './weights_0.4.1__3__layer_0.json';
 // import weightsB from './weights_0.4.0__6__layer_2.json';
 
 const weightsShape = weightsA[0].shape;
