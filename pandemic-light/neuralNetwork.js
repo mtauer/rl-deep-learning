@@ -9,7 +9,9 @@ const defaultConfig = {
 
 const INPUT_UNITS = 299;
 const HIDDEN_LAYER_UNITS = 400;
-const P_OUTPUT_UNITS = 385;
+// 7 * 48 + 1 + 4 = 341 (7 actions with 1 location as parameter + noop action +
+// 4 x discover cure action)
+const P_OUTPUT_UNITS = 341;
 const V_OUTPUT_UNITS = 1;
 
 export default class PandemicNeuronalNetwork {
