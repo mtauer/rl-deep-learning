@@ -6,9 +6,8 @@ import sum from 'lodash/sum';
 import mean from 'lodash/mean';
 import range from 'lodash/range';
 import sample from 'lodash/sample';
-import max from 'lodash/max';
 
-import { allActions } from './pandemic-web/src/pandemic-shared/game';
+import { allActions, allDiseases } from './pandemic-web/src/pandemic-shared/game';
 
 export function randomChoice(p) {
   let random = Math.random();
@@ -35,6 +34,7 @@ export async function retry(times, func, ignoreErrorFunc = () => false) {
       }
       // eslint-disable-next-line no-console
       console.log(`# Operation failed. ${err}`);
+      // eslint-disable-next-line no-console
       console.log(`-> Retry in ${waitingTime / 1000} s`);
       // eslint-disable-next-line no-await-in-loop
       await sleep(waitingTime);
@@ -62,10 +62,12 @@ export function manyToValue(indexOrIndices, value, length) {
 
 // TODO move to game class
 export function toNetworkProbabilities(game, actions, actionProbabilities) {
-  const maxActionProbability = max(actionProbabilities) > 0 ? max(actionProbabilities) : 1;
+  if (sum(actionProbabilities) !== 1) {
+    console.log('Action probabilities invalid', actionProbabilities, sum(actionProbabilities));
+  }
   const actionsWithP = actions.map((a, i) => ({
     ...a,
-    p: actionProbabilities[i] / maxActionProbability,
+    p: actionProbabilities[i],
   }));
   const result = [];
   result.push(toBufferByType(actionsWithP, allActions.DO_NOTHING, () => 0, 1));
@@ -76,7 +78,8 @@ export function toNetworkProbabilities(game, actions, actionProbabilities) {
   result.push(toBufferByType(actionsWithP, allActions.BUILD_RESEARCH_CENTER, a => a.at, 48));
   result.push(toBufferByType(actionsWithP, allActions.DISCARD_CARD, a => a.card, 48));
   result.push(toBufferByType(actionsWithP, allActions.SHARE_KNOWLEDGE, a => a.card, 48));
-  result.push(toBufferByType(actionsWithP, allActions.DISCOVER_CURE, a => a.usedCards, 48));
+  result.push(toBufferByType(actionsWithP, allActions.DISCOVER_CURE,
+    a => allDiseases.indexOf(a.disease), 4));
   return flatten(result);
 
   function toBufferByType(array, type, indexFunc, length) {
@@ -125,8 +128,10 @@ export function fromNetworkProbabilities(game, actions, networkProbabilities) {
       default: return 0;
     }
   });
-  const pValuesSum = sum(pValues);
-  return pValues.map(v => (pValuesSum > 0 ? v / pValuesSum : v));
+  if (sum(pValues) !== 1) {
+    console.log('P values invalid', pValues, sum(pValues));
+  }
+  return pValues;
 
   function fromBufferByType(buffer, indices, offset) {
     const values = indices.map(index => buffer[offset + index]);
