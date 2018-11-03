@@ -128,10 +128,8 @@ export function fromNetworkProbabilities(game, actions, networkProbabilities) {
       default: return 0;
     }
   });
-  if (sum(pValues) !== 1) {
-    console.log('P values invalid', pValues, sum(pValues));
-  }
-  return pValues;
+  const pValuesSum = sum(pValues);
+  return pValues.map(v => v / pValuesSum);
 
   function fromBufferByType(buffer, indices, offset) {
     const values = indices.map(index => buffer[offset + index]);
