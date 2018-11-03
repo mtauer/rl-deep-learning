@@ -123,7 +123,7 @@ export function fromNetworkProbabilities(game, actions, networkProbabilities) {
         return fromBufferByType(networkProbabilities, [a.card], 1 + 6 * 48);
       }
       case allActions.DISCOVER_CURE: {
-        return fromBufferByType(networkProbabilities, a.usedCards, 1 + 7 * 48);
+        return fromBufferByType(networkProbabilities, [allDiseases.indexOf(a.disease)], 1 + 7 * 48);
       }
       default: return 0;
     }
