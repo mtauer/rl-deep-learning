@@ -8,7 +8,7 @@ const config = {
   iterations: 2,
   trainingEpisodes: 1000,
   playingEpisodes: 50,
-  trainWithLatest: 1200,
+  trainWithLatest: 1400,
   mcts: {
     playingSimulations: 400,
     trainingSimulationsPerAction: 80,
