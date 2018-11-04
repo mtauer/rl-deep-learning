@@ -62,7 +62,7 @@ export function manyToValue(indexOrIndices, value, length) {
 
 // TODO move to game class
 export function toNetworkProbabilities(game, actions, actionProbabilities) {
-  if (sum(actionProbabilities) !== 1) {
+  if (Math.abs(sum(actionProbabilities) - 1) > 0.000001) {
     console.log('Action probabilities invalid', actionProbabilities, sum(actionProbabilities));
   }
   const actionsWithP = actions.map((a, i) => ({
