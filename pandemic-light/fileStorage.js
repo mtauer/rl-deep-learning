@@ -48,6 +48,21 @@ export default class FileStorage {
     await neuralNetwork.save(directory);
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  readMatches() {
+    return [];
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  readLastMatches() {
+    return [];
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  writeMatches() {
+    // no-op
+  }
+
   // eslint-disable-next-line
   getTrainingDataDirectory(iteration) {
     const iterationString = padStart(iteration, 3, '0');

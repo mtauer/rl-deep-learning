@@ -1,12 +1,14 @@
-import GoogleCloudStorage from './pandemic-light/googleCloudStorage';
+// import GoogleCloudStorage from './pandemic-light/googleCloudStorage';
+import FileStorage from './pandemic-light/fileStorage';
 import PandemicNeuronalNetwork from './pandemic-light/neuralNetwork';
 import Coach from './coach';
 import packageJson from './package.json';
 
-const googleCloudStorage = new GoogleCloudStorage();
+// const storage = new GoogleCloudStorage();
+const storage = new FileStorage();
 const config = {
   iterations: 2,
-  trainingEpisodes: 1000,
+  trainingEpisodes: 1,
   playingEpisodes: 50,
   trainWithLatest: 1400,
   mcts: {
@@ -23,7 +25,7 @@ const config = {
     trainingEpochs: 12,
   },
 };
-const coach = new Coach(config, googleCloudStorage, googleCloudStorage);
+const coach = new Coach(config, storage, storage);
 
 function start() {
   /* eslint-disable no-console */
@@ -79,7 +81,7 @@ async function summarizeIteration(actionArgs) {
 
 async function showVersionSummary(actionArgs) {
   const version = actionArgs[0];
-  const iterationSummaries = await googleCloudStorage.readIterationSummaries(version);
+  const iterationSummaries = await storage.readIterationSummaries(version);
   const winRates = iterationSummaries.map((s) => {
     const winRate = s.trainingEpisodesStats.winRate * 100;
     return `${winRate.toFixed(2)}%`;
@@ -111,8 +113,8 @@ async function duplicateModel(actionArgs) {
   const versionTo = actionArgs[2];
   const iterationTo = actionArgs[3];
   const neuralNetwork = new PandemicNeuronalNetwork(config.neuralNetwork);
-  await googleCloudStorage.readModel(neuralNetwork, iterationFrom, versionFrom);
-  await googleCloudStorage.writeModel(neuralNetwork, iterationTo, versionTo);
+  await storage.readModel(neuralNetwork, iterationFrom, versionFrom);
+  await storage.writeModel(neuralNetwork, iterationTo, versionTo);
 }
 
 start();
