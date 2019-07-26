@@ -1,8 +1,13 @@
+/* eslint-disable class-methods-use-this */
+
+import _ from 'lodash';
 import fs from 'fs';
 import padStart from 'lodash/padStart';
 import uuidv4 from 'uuid/v4';
 
 import packageJson from '../package.json';
+
+const MATCH = 'Match';
 
 export default class FileStorage {
   readTrainingEpisodes(iteration) {
@@ -48,32 +53,68 @@ export default class FileStorage {
     await neuralNetwork.save(directory);
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  readMatches() {
-    return [];
+  readMatches(iterationId) {
+    console.log('Read matches from file', iterationId);
+    const items = this.read(this.getKey(MATCH));
+    return items.filter(i => i.iterationId === iterationId);
   }
 
-  // eslint-disable-next-line class-methods-use-this
   readLastMatches() {
     return [];
   }
 
-  // eslint-disable-next-line class-methods-use-this
   writeMatches() {
     // no-op
   }
 
-  // eslint-disable-next-line
-  getTrainingDataDirectory(iteration) {
-    const iterationString = padStart(iteration, 3, '0');
-    const directory = `pandemic-light/v${packageJson.version}_iteration_${iterationString}_training_data`;
+  writeMatch(versionId, iterationId, matchId, match) {
+    console.log('Write match to file', matchId);
+    return this.write(
+      this.getKey(MATCH, matchId),
+      { versionId, iterationId, matchId, ...match },
+    );
+  }
+
+  writeMatchDetails() {
+    // no-op
+  }
+
+  writeMatchSteps() {
+    // no-op
+  }
+
+  getDataDirectory() {
+    const directory = `pandemic-light/file-storage/v${packageJson.version}_data`;
     return directory;
   }
 
-  // eslint-disable-next-line
   getModelDirectory(iteration, tag = '') {
     const iterationString = padStart(iteration, 3, '0');
-    const directory = `pandemic-light/v${packageJson.version}${tag}_iteration_${iterationString}_model`;
+    const directory = `pandemic-light/file-storage/v${packageJson.version}${tag}_iteration_${iterationString}_model`;
     return directory;
+  }
+
+  getKey(type, id) {
+    return { type, id };
+  }
+
+  read(entity) {
+    const directory = this.getDataDirectory();
+    if (!fs.existsSync(directory)) {
+      fs.mkdirSync(directory);
+    }
+    let items = [];
+    const filename = `${directory}/${entity.type}.json`;
+    if (fs.existsSync(filename)) {
+      items = JSON.parse(fs.readFileSync(filename));
+    }
+    return items;
+  }
+
+  write(entity, item) {
+    const directory = this.getDataDirectory();
+    const filename = `${directory}/${entity.type}.json`;
+    const items = this.read(entity);
+    fs.writeFileSync(filename, JSON.stringify([...items, ..._.castArray(item)]));
   }
 }

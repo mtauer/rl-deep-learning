@@ -11,7 +11,7 @@ const config = {
   trainWithLatest: 1400,
   mcts: {
     playingSimulations: 400,
-    trainingSimulationsPerAction: 80,
+    trainingSimulationsPerAction: 1,
     cPuct: 1.0,
     cUcb1: 0.7,
     temperature: 1,
@@ -94,7 +94,7 @@ async function showVersionSummary(actionArgs) {
 }
 
 async function generateTrainingData(actionArgs) {
-  const version = actionArgs[0];
+  const version = actionArgs[0] ? actionArgs[0] : packageJson.version;
   const iteration = actionArgs[1] ? Number(actionArgs[1]) : 0;
   coach.generateTrainingData(undefined, iteration, version);
 }

@@ -60,7 +60,7 @@ export default class Coach {
     this.neuralNetwork = this.neuralNetwork
       || await this.getNeuralNetwork(iterationIndex, version);
     const iterationId = `${version}-${iterationIndex}`;
-    let matches = await this.trainingEpisodesStorage.readMatches(iterationId);
+    let matches = []; // await this.trainingEpisodesStorage.readMatches(iterationId);
     const mcts = new MonteCarloTreeSearchNN(this.config.mcts, game, this.neuralNetwork, monitor);
     while (matches.length < this.config.trainingEpisodes) {
       mcts.reset();
