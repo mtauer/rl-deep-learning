@@ -1,10 +1,8 @@
-// import GoogleCloudStorage from './pandemic-light/googleCloudStorage';
 import FileStorage from './pandemic-light/fileStorage';
 import PandemicNeuronalNetwork from './pandemic-light/neuralNetwork';
 import Coach from './coach';
 import packageJson from './package.json';
 
-// const storage = new GoogleCloudStorage();
 const storage = new FileStorage();
 const config = {
   iterations: 2,
