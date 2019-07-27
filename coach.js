@@ -163,14 +163,16 @@ export default class Coach {
       const { state, nextAction, simulation, stats } = await mcts
         .getActionProbabilities(step, isTraining);
       const networkPOutput = Array.from(mcts.neuralNetwork.predictP(game.toNNState(state)));
+      // Perform action and get new state
+      const nextState = game.performAction(mcts.root.state, nextAction);
+      mcts.performAction(nextAction, nextState);
+
+      // logging
       actions.push(nextAction);
       states.push(state);
       simulations.push(simulation);
       networkPOutputs.push(networkPOutput);
       bar.tick({ ended: stats.simulationsEnded });
-      // Perform action and get new state
-      const nextState = game.performAction(mcts.root.state, nextAction);
-      mcts.performAction(nextAction, nextState);
 
       // The step count should never ever be greater than 120
       if (step > 120 && step <= 130) {

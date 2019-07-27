@@ -11,7 +11,7 @@ const config = {
   trainWithLatest: 1400,
   mcts: {
     playingSimulations: 400,
-    trainingSimulationsPerAction: 1,
+    trainingSimulationsPerAction: 80,
     cPuct: 1.0,
     cUcb1: 0.7,
     temperature: 1,

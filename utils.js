@@ -129,6 +129,8 @@ export function fromNetworkProbabilities(game, actions, networkProbabilities) {
     }
   });
   const pValuesSum = sum(pValues);
+  // TODO FIX
+  // Fix for pValuesSum === 0
   return pValues.map(v => v / pValuesSum);
 
   function fromBufferByType(buffer, indices, offset) {

@@ -1,6 +1,8 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-await-in-loop */
 
+import { performance } from 'perf_hooks';
+
 import defaultsDeep from 'lodash/defaultsDeep';
 import isEmpty from 'lodash/isEmpty';
 import repeat from 'lodash/repeat';
@@ -32,6 +34,7 @@ export default class MonteCarloTreeSearchNN {
     this.neuralNetwork = neuralNetwork;
     this.monitor = monitor;
     this.reset();
+    this.start = performance.now();
   }
 
   reset() {
@@ -48,8 +51,12 @@ export default class MonteCarloTreeSearchNN {
       : this.config.playingSimulations;
     for (let i = 0; i < simulations; i += 1) {
       this.runSimulation();
-      // Do not block the Node.js event loop
-      await sleep(0);
+      // Do not block the Node.js event loop – give it a possibility to
+      // execute queued events every 50 ms
+      if (performance.now() - this.start > 50) {
+        await sleep(0);
+        this.start = performance.now();
+      }
     }
 
     const nValues = this.getNsaValues();
@@ -145,6 +152,9 @@ export default class MonteCarloTreeSearchNN {
 
     const validActions = this.game.getValidActions(state);
     const actionNodes = stateNode.createAndAddActionNodes(validActions);
+
+    // TODO
+    // Improve performance here!
     const probabilities = fromNetworkProbabilities(
       this.game,
       validActions,
